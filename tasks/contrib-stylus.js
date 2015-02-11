@@ -8,13 +8,18 @@ module.exports = function(grunt) {
     dev: {
       options: {
         compress: false,
+        'include css': true
       },
       src: [
-        'src/styles/**/*.styl'
+        'src/styles/index.styl'
       ],
       dest: 'public/app.css',
     },
     'public': {
+      options: {
+        compress: true,
+        'include css': true
+      },
       src: '<%= stylus.dev.src %>',
       dest: '<%= stylus.dev.dest %>',
     }
