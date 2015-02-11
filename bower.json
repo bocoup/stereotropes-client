@@ -33,6 +33,7 @@
     "jquery": "~2.1.3",
     "lodash": "~2.4.1",
     "d3.chart": "~0.2.1",
-    "bluebird": "~2.9.8"
+    "bluebird": "~2.9.8",
+    "almond": "~0.3.0"
   }
 }
