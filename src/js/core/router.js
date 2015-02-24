@@ -1,6 +1,7 @@
 define(function(require) {
 
   var Backbone = require('backbone');
+  var Util = require('../core/util');
 
   var Layout = require('../core/layout');
   var layout = new Layout({
@@ -17,6 +18,19 @@ define(function(require) {
       "adjectives": "adjectives",
       "gender" : "gender",
       "about" : "about"
+    /**
+     * Overwrite default route execution to parse out query strings.
+     * @param  {Function} callback
+     * @param  {[Object]} arguments
+     */
+    execute: function(callback, args) {
+      // extract params
+      var params = Util.decodeQueryParams();
+      args.pop(); // remove the null at the end.
+      args.push(params);
+      if (callback) {
+        callback.apply(this, args);
+      }
     },
 
     initialize: function() {
