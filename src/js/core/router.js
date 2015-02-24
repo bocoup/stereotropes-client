@@ -10,7 +10,13 @@ define(function(require) {
   var Router = Backbone.Router.extend({
 
     routes: {
-      "": "index"
+      "": "tropes",
+      "trope/:trope_id" : "trope",
+      "films": "films",
+      "film/:film_id" : "film",
+      "adjectives": "adjectives",
+      "gender" : "gender",
+      "about" : "about"
     },
 
     initialize: function() {
@@ -22,7 +28,54 @@ define(function(require) {
       // TODO: Set up some event bus to pass into the layout.
     },
 
-    index: function() {
+    /**
+     * Index route - Trope Grid
+     */
+    tropes: function() {
+
+    },
+
+    /**
+     * Individual Trope page
+     * @param  {String} trope_id
+     */
+    trope: function(trope_id) {
+
+    },
+
+    /**
+     * Films grid page
+     */
+    films: function() {
+
+    },
+
+    /**
+     * Individual Film page
+     * @param  {String} film_id
+     */
+    film: function(film_id) {
+
+    },
+
+    /**
+     * Adjectives wheel page
+     */
+    adjectives: function() {
+
+    },
+
+    /**
+     * Gender split page
+     */
+    gender: function() {
+
+    },
+
+    /**
+     * About page
+     */
+    about: function() {
 
     }
 
