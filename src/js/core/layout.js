@@ -1,12 +1,12 @@
 define(function(require) {
 
-  var Backbone = require('backbone');
+  var View = require('../core/view');
   var template = require('tmpl!../core/layout');
 
-  return Backbone.View.extend({
+  return View.extend({
     template: template,
 
-    render: function() {
+    draw: function() {
       this.$el.html(this.template());
       return this;
     }
