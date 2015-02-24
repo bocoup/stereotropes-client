@@ -316,6 +316,9 @@ define(function(require) {
 
   // Return an instance so that this module is effectively
   // a singleton providing a single source of truth.
+  //
+  // With require.js semantics this will also be run once so all
+  // requires of this module will get this one instance.
   return new DataManager();
 
 });
