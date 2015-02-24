@@ -5,15 +5,11 @@ module.exports = function(grunt) {
   // this will most likely be done with Nginx/Apache rewrites.
   var root = '/index.html';
   function rewriteRoute(req, res, next) {
-    if (/^\/(?:tropes\/[^\/\?\=]+)$/.test(req.url) ||
-        /^\/(?:tropes\/[A-Za-z+\/\_0-9\?\=]+)$/.test(req.url) ||
-        /^\/(?:films\/[^\/\?\=]+)$/.test(req.url) ||
-        /^\/(?:films\/[A-Za-z+\/\_0-9\?\=]+)$/.test(req.url) ||
-        /^\/(?:adjectives\/[^\/\?\=]+)$/.test(req.url) ||
-        /^\/(?:adjectives\/[A-Za-z+\/\_0-9\?\=]+)$/.test(req.url) ||
-        /^\/(?:gender\/[^\/\?\=]+)$/.test(req.url) ||
-        /^\/(?:gender\/[A-Za-z+\/\_0-9\?\=]+)$/.test(req.url) ||
-        /^\/(?:about)$/.test(req.url)) {
+    if (/^\/adjectives/.test(req.url) ||
+        /^\/films/.test(req.url) ||
+        /^\/tropes/.test(req.url) ||
+        /^\/gender/.test(req.url) ||
+        /^\/about/.test(req.url)) {
       grunt.log.debug('PUSHSTATE ' + req.url + ' -> ' + root);
       req.url = root;
     }

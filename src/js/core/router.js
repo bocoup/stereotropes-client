@@ -8,16 +8,19 @@ define(function(require) {
     el: "#main"
   });
 
+
   var Router = Backbone.Router.extend({
 
     routes: {
-      "": "tropes",
-      "trope/:trope_id" : "trope",
-      "films": "films",
-      "film/:film_id" : "film",
-      "adjectives": "adjectives",
-      "gender" : "gender",
-      "about" : "about"
+      "(?*qs)": "tropes",
+      "tropes/:trope_id(?*qs)" : "trope",
+      "films(?*qs)": "films",
+      "films/:film_id(?*qs)" : "film",
+      "adjectives(?*qs)": "adjectives",
+      "gender(?*qs)" : "gender",
+      "about(?*qs)" : "about"
+    },
+
     /**
      * Overwrite default route execution to parse out query strings.
      * @param  {Function} callback
@@ -43,54 +46,68 @@ define(function(require) {
     },
 
     /**
-     * Index route - Trope Grid
+     * Trope index page
+     * @param  {String} qs Raw query string
+     * @param  {Object} params Parsed query string
      */
-    tropes: function() {
-
+    tropes: function(qs, params) {
+      layout.page('tropes', {}, params );
     },
 
     /**
      * Individual Trope page
      * @param  {String} trope_id
+     * @param {[String]} qs Raw query string
+     * @param {[Object]} params Parsed query string
      */
-    trope: function(trope_id) {
-
+    trope: function(trope_id, qs, params) {
+      layout.page('trope', { trope_id : trope_id }, params);
     },
 
     /**
      * Films grid page
+     * @param {[String]} qs Raw query string
+     * @param {[Object]} params Parsed query string
      */
-    films: function() {
-
+    films: function(qs, params) {
+      layout.page('films', {}, params);
     },
 
     /**
      * Individual Film page
      * @param  {String} film_id
+     * @param {[String]} qs Raw query string
+     * @param {[Object]} params Parsed query string
      */
-    film: function(film_id) {
-
+    film: function(film_id, qs, params) {
+      layout.page('film', { film_id : film_id }, params);
     },
 
     /**
      * Adjectives wheel page
+     * @param {[String]} qs Raw query string
+     * @param {[Object]} params Parsed query string
      */
-    adjectives: function() {
-
+    adjectives: function(qs, params) {
+      layout.page('adjectives', {}, params);
     },
 
     /**
      * Gender split page
+     * @param {[String]} qs Raw query string
+     * @param {[Object]} params Parsed query string
      */
-    gender: function() {
-
+    gender: function(qs, params) {
+      layout.page('gender', {}, params);
     },
 
     /**
      * About page
+     * @param {[String]} qs Raw query string
+     * @param {[Object]} params Parsed query string
      */
-    about: function() {
-
+    about: function(qs, params) {
+      layout.page('about', {}, params);
     }
 
   });
