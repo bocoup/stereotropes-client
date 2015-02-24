@@ -5,7 +5,7 @@ module.exports = function(grunt) {
       options: {
         livereload: true,
       },
-      files: ['src/js/**/*.{js,html}', 'public/*'],
+      files: ['src/js/**/*.{js,html}', 'public/*', '!public/assets/data'],
       tasks: [],
     },
     jshintrc: {
@@ -25,7 +25,7 @@ module.exports = function(grunt) {
       tasks: ['jade:dev'],
     },
     assets: {
-      files: 'assets/**/*',
+      files: 'assets/img/*',
       tasks: ['copy']
     },
     styles: {

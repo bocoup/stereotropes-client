@@ -6,12 +6,6 @@ module.exports = function(grunt) {
       cwd: 'assets/img',
       src: '**/*',
       dest: 'public/img',
-    },
-    data: {
-      expand: true,
-      cwd: 'assets/data',
-      src: '**/*',
-      dest: 'public/data',
     }
   });
 

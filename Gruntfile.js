@@ -11,7 +11,7 @@ module.exports = function(grunt) {
   // Tasks.
   grunt.registerTask('setup-dev',
     'Prepare development environment',
-    ['jshint', 'clean:public', 'copy', 'jade:dev', 'stylus:dev', 'connect:dev']);
+    ['jshint', 'clean:public', 'copy', 'symlink', 'jade:dev', 'stylus:dev', 'connect:dev']);
 
   grunt.registerTask('dev',
     'Compile and start a dev webserver.',
@@ -19,7 +19,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('public-build',
     'Build production',
-    ['clean:public', 'jade:public', 'stylus:public', 'copy', 'requirejs']);
+    ['clean:public', 'jade:public', 'stylus:public', 'copy', 'symlink', 'requirejs']);
 
   grunt.registerTask('public',
     'Compile for production and start a test webserver.',
