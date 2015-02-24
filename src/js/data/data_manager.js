@@ -107,18 +107,18 @@ define(function(require) {
    *
    * @param  {String} namespace
    * @param  {String} key
-   * @param  {Function} notFound  will be called with resolve and reject of the promise
-   *                              returned by this function. This callback is expected
-   *                              to populate the cache for this entry. It should also call
-   *                              resolve with the return value expected by the method using this
-   *                              one.
+   * @param  {Function} notFoundCallback  will be called with resolve and reject of the promise
+   *                                      returned by this function. This callback is expected
+   *                                      to populate the cache for this entry. It should also call
+   *                                      resolve with the return value expected by the method using this
+   *                                      one.
    * @return {Promise[Object]}
    */
-  DataManager.prototype._cacheFetch = function(namespace, key, notFound) {
+  DataManager.prototype._cacheFetch = function(namespace, key, notFoundCallback) {
     var self = this;
     return new Promise(function(resolve, reject){
       if(_.isUndefined(self._cacheGet(namespace, key))){
-        return notFound(resolve, reject);
+        return notFoundCallback(resolve, reject);
       } else {
         resolve(self._cacheGet(namespace, key));
       }
