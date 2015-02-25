@@ -6,6 +6,10 @@ module.exports = function(grunt) {
       cwd: 'assets/img',
       src: '**/*',
       dest: 'public/img',
+    },
+    'stylesheet': {
+      src: 'src/html/styleguide.html',
+      dest: 'public/styleguide.html'
     }
   });
 
