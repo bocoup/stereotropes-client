@@ -23,7 +23,7 @@ define(function(require) {
    */
   function DataManager(options){
     options = options || {};
-    this.baseUrl = options.baseUrl || 'assets/data';
+    this.baseUrl = options.baseUrl || '/assets/data';
 
     this.cache = {};
   }
