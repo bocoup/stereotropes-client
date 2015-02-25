@@ -1,43 +1,27 @@
-.trope-tile {
-  width: 160px
-  height: 160px
-  display: inline-block;
-  position: relative;
+.trope-page {
+  .trope-tile-container {
+    width: 160px;
+    float: left;
+  }
 
-  .image {
+  .trope-detail-container {
+    margin-left: 200px
 
-    div {
-      background-position: 50% 25%;
-      background-size: cover;
-
+    .details {
       height: 160px;
-      position: relative;
-      transition: ease 750ms background-position;
-      width: 100%;
+
+      div.description.short {
+        height: 140px;
+        display: -webkit-box;
+        text-overflow: ellipsis;
+        overflow-y:hidden;
+
+         margin: 0 auto;
+        -webkit-line-clamp: 6;
+        -webkit-box-orient: vertical;
+        text-overflow: -o-ellipsis-lastline; /* Opera just does this, I guess? */
+
+      }
     }
-
-    div:hover {
-      background-position: 50% 75%;
-    }
-  }
-
-  .name {
-    position: absolute
-    top: 70%
-    left: 5%
-    padding: 3px
-    color: white
-  }
-}
-
-.trope-tile.gender-m {
-  .name {
-    background-color: $male-col
-  }
-}
-
-.trope-tile.gender-f {
-  .name {
-    background-color: $female-col
   }
 }

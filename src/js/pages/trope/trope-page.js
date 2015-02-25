@@ -27,9 +27,8 @@ define(function(require) {
 
       this.views.push(thumbnailView, headerView);
       return Promise.join(thumbnailView.render(), headerView.render(), function(t_view, h_view) {
-        self.$el.find('.trope-header')
-          .append(t_view.$el)
-          .append(h_view.$el);
+        self.$el.find('.trope-tile-container').append(t_view.$el);
+        self.$el.find('.trope-detail-container').append(h_view.$el);
         return self;
       });
     }

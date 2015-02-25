@@ -6,7 +6,6 @@ define(function(require) {
 
   return View.extend({
     template: template,
-
     className: 'details',
 
     initialize: function(options) {
