@@ -11,7 +11,7 @@ define(function(require) {
       this.options = options;
     },
 
-    draw: function() {
+    _render: function() {
       this.$el.html(this.template(this.options));
       return this;
     }

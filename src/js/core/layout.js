@@ -60,7 +60,7 @@ define(function(require) {
       });
     }),
 
-    draw: function() {
+    _render: function() {
       this.$el.html(this.template());
       this.contentElement = this.$el.find(this.contentElement);
 

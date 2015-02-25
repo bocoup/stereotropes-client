@@ -9,14 +9,14 @@ define(function(require) {
     template: '<div></div>',
 
     /**
-     * Wrapped remove method that will call a destroy function if defined,
+     * Wrapped remove method that will call a _remove function if defined,
      * otherwise will just empty the element and kill listeners.
      * @param  {[type]}
      * @return {[type]}
      */
     remove: Promise.method(function() {
-      if (this.destroy) {
-        return this.destroy(arguments);
+      if (this._remove) {
+        return this._remove(arguments);
       } else {
         this.$el.empty();
         this.stopListening();
@@ -26,13 +26,13 @@ define(function(require) {
 
     /**
      * Wrapped render method that will be wrapped in a promise.
-     * Expects a .draw method to be defined, will auto wrap it in a promise.
+     * Expects a ._render method to be defined, will auto wrap it in a promise.
      * @param  ... arguments
      * @return {Promise}
      */
     render : Promise.method(function() {
-      if (this.draw) {
-        return this.draw(arguments);
+      if (this._render) {
+        return this._render(arguments);
       } else {
         this.$el.html(this.template());
         return this;

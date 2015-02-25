@@ -5,7 +5,7 @@ define(function(require) {
 
   return View.extend({
     template: template,
-    draw: function() {
+    _render: function() {
       this.$el.html(this.template());
       return this;
     }
