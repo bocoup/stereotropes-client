@@ -1,0 +1,76 @@
+html, button, input, select, textarea,
+.pure-g [class *= "pure-u"] {
+    font-family: $body-font;
+    color: $dark-grey;
+}
+
+h1, h2, h3, h4, h5 {
+  font-weight: 500;
+}
+
+body {
+  padding:20px;
+}
+
+a, a:visited{
+  padding: 0 2px 0 2px;
+  color: $highlight-col;
+  text-decoration: underline;
+}
+
+a:hover{
+  padding: 0 2px 0 2px;
+  color: white;
+  background-color: $highlight-col;
+  text-decoration: none;
+}
+
+a:active {
+  color: $dark-grey;
+}
+
+.secondary {
+  color: $grey
+}
+
+.adjective-name {
+  font-family: $adjective-font;
+  font-weight: 300;
+}
+
+.trope-name {
+  font-family: $trope-font;
+  font-weight: 300;
+}
+
+.film-name {
+  font-family: $film-font;
+  font-weight: 300;
+}
+
+// Top level nav
+
+nav {
+
+  ul {
+    display:inline;
+    padding: 0 0 8px 0;
+    border-bottom: 3px solid $dark-grey;
+  }
+
+  li {
+    display:inline;
+    font-size: 1.5em;
+    font-weight: 500;
+    padding-right: 15px;
+
+    .inactive {
+      color: $silver-blue-dark;
+    }
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+}

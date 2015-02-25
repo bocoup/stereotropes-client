@@ -25,7 +25,7 @@ module.exports = function(grunt) {
       tasks: ['jade:dev'],
     },
     assets: {
-      files: 'assets/img/*',
+      files: ['assets/img/*', 'src/html/*'],
       tasks: ['copy']
     },
     styles: {
