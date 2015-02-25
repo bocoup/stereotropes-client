@@ -1,0 +1,14 @@
+<% if (loading) { %>
+  <div class="loading">
+    Loading...
+  </div>
+<% } else { %>
+  <div class="image">
+    <% if (image_url) { %>
+      <div style="background-image: url(/<%= image_url %>);"></div>
+    <% } %>
+  </div>
+  <div class="name">
+    <%= name %>
+  </div>
+<% } %>
