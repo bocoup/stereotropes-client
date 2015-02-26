@@ -2,6 +2,6 @@
   <h4><%=name %>'s appearance over time</h4>
   <div class="vis"></div>
   <aside>
-    We look at each trope's film appearances per decade and compare them to the total number of films that appear in each decade. For example, '<%= name %>' appears in <%= occurrence_over_time[0][1] %> <%= occurrence_over_time[0][0] %>. There are a total of <%= occurrence_over_time[0][3] %> films in this decade in our dataset, which means ~<%= d3.format(".0%")(occurrence_over_time[0][1]/ occurrence_over_time[0][3]) %> of films in this decade contained characters identified as '<%= name %>'.
+    We look at each trope's film appearances per decade and compare them to the total number of films that appear in each decade. For example, '<%= name %>' appears in <%= occurrence_over_time[5][1] %> <%= occurrence_over_time[5][0] %>. There are a total of <%= occurrence_over_time[5][3] %> films in this decade in our dataset, which means ~<%= d3.format(".0%")(occurrence_over_time[5][1]/ occurrence_over_time[5][3]) %> of films in this decade contained characters identified as '<%= name %>'.
   </aside>
 </div>

@@ -66,7 +66,7 @@ define(function(require) {
             .attr("class", "area");
         },
         events: {
-          enter: function() {
+          merge: function() {
             var chart = this.chart();
             this.attr("d", function(d) {
               return chart.area(d);
@@ -93,7 +93,7 @@ define(function(require) {
           return this.append("line");
         },
         events: {
-          enter: function() {
+          merge: function() {
             var chart = this.chart();
             this.attr({
               x1 : function(d) {
@@ -131,10 +131,9 @@ define(function(require) {
           return this.append("text");
         },
         events: {
-          enter: function() {
+          merge: function() {
             var chart = this.chart();
             this.attr({
-
               x : function(d) {
                 return chart.width - 4;
               },
@@ -170,6 +169,14 @@ define(function(require) {
       this.bases.xAxis.call(this.xAxis);
 
       return data;
+    },
+
+    // this function can react to width! yey.
+    update: function(options) {
+      this.width = options.width;
+
+      // update scale
+      this.scales.x.rangeBands([-1, this.width-20]);
     }
 
   });
@@ -189,9 +196,21 @@ define(function(require) {
       this.options = options;
     },
 
+    update: function(options) {
+      this.options = _.extend(this.options, options);
+      if (this.chart && this.data) {
+        this.$el.find('svg').attr({
+          width : options.width
+        });
+        this.chart.update(options);
+        this.chart.draw(this.data.occurrence_over_time);
+      }
+    },
+
     _render: function() {
       var self = this;
       return dataManager.getTropeDetails(this.trope_id).then(function(trope_details) {
+        self.data = trope_details;
 
         // set gender class on container
         self.$el.html(self.template(trope_details));
