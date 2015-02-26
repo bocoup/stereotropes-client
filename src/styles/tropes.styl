@@ -37,16 +37,6 @@
 
     .vis {
 
-      path.area {
-        fill: $female-col-25;
-      }
-
-      path.arealine {
-        fill: none;
-        stroke: $female-col-75;
-        stroke-width: 2
-      }
-
       .axis {
         shape-rendering: crispEdges;
       }
@@ -64,14 +54,12 @@
       }
 
       .marker line {
-        stroke: $female-col;
         stroke-width: 2.5
       }
 
       .max_line text {
         text-anchor: end;
         font-size: 9pt;
-        fill: $female-col;
       }
 
     }
@@ -80,4 +68,29 @@
       padding-top: 10px
     }
   }
+
+  .trope-timeline-container.gender-f .vis {
+    path.area {
+      fill: $female-col-25;
+    }
+    .marker line {
+      stroke: $female-col;
+    }
+    .max_line text {
+      fill: $female-col;
+    }
+  }
+
+  .trope-timeline-container.gender-m .vis {
+    path.area {
+      fill: $male-col-25;
+    }
+    .marker line {
+      stroke: $male-col;
+    }
+    .max_line text {
+      fill: $male-col;
+    }
+  }
+
 }
