@@ -6,22 +6,78 @@
 
   .trope-detail-container {
     margin-left: 200px
-
+    padding-right: 40px;
     .details {
-      height: 160px;
+      height: 225px;
 
       div.description.short {
-        height: 140px;
+        height: 188px;
         display: -webkit-box;
         text-overflow: ellipsis;
         overflow-y:hidden;
 
          margin: 0 auto;
-        -webkit-line-clamp: 6;
+        -webkit-line-clamp: 8;
         -webkit-box-orient: vertical;
         text-overflow: -o-ellipsis-lastline; /* Opera just does this, I guess? */
-
       }
+
+      .more {
+        margin-top: 15px;
+        float:right;
+      }
+    }
+  }
+
+  .trope-timeline-container {
+    h4 {
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    .vis {
+
+      path.area {
+        fill: $female-col-25;
+      }
+
+      path.arealine {
+        fill: none;
+        stroke: $female-col-75;
+        stroke-width: 2
+      }
+
+      .axis {
+        shape-rendering: crispEdges;
+      }
+
+      .x.axis line {
+        stroke: none;
+      }
+
+      .x.axis path {
+        fill: none;
+      }
+
+      .x.axis .tick line {
+        stroke: #fff
+      }
+
+      .marker line {
+        stroke: $female-col;
+        stroke-width: 2.5
+      }
+
+      .max_line text {
+        text-anchor: end;
+        font-size: 9pt;
+        fill: $female-col;
+      }
+
+    }
+
+    aside {
+      padding-top: 10px
     }
   }
 }
