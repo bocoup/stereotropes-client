@@ -1,0 +1,27 @@
+.trope-page {
+  .trope-tile-container {
+    width: 160px;
+    float: left;
+  }
+
+  .trope-detail-container {
+    margin-left: 200px
+
+    .details {
+      height: 160px;
+
+      div.description.short {
+        height: 140px;
+        display: -webkit-box;
+        text-overflow: ellipsis;
+        overflow-y:hidden;
+
+         margin: 0 auto;
+        -webkit-line-clamp: 6;
+        -webkit-box-orient: vertical;
+        text-overflow: -o-ellipsis-lastline; /* Opera just does this, I guess? */
+
+      }
+    }
+  }
+}
