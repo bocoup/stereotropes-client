@@ -29,7 +29,9 @@ define(function(require) {
 
     _destroyCurrentPage: Promise.method(function() {
       if (this.currentPage) {
-        return this.pages[this.currentPage].remove();
+        var c = this.pages[this.currentPage];
+        delete this.pages[this.currentPage];
+        return c.remove();
       } else {
         return true;
       }
@@ -62,6 +64,7 @@ define(function(require) {
     }),
 
     _render: function() {
+      var self = this;
       this.$el.html(this.template());
       this.contentElement = this.$el.find(this.contentElement);
 
@@ -78,7 +81,9 @@ define(function(require) {
       });
 
       this.search.render();
-
+      this.search.on('search:selected', function(options) {
+        self.trigger('search:selected', options);
+      });
 
       return this;
     }
