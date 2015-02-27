@@ -29,7 +29,9 @@ define(function(require) {
 
     _destroyCurrentPage: Promise.method(function() {
       if (this.currentPage) {
-        return this.pages[this.currentPage].remove();
+        var c = this.pages[this.currentPage];
+        delete this.pages[this.currentPage];
+        return c.remove();
       } else {
         return true;
       }
