@@ -54,7 +54,10 @@ define(function(require) {
       films.initialize();
 
       var tropes = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+        datumTokenizer: function(datum) {
+          // adjs are already in an array - so just join with the name tokenizer
+          return Bloodhound.tokenizers.obj.whitespace('name')(datum).concat(datum.adjs);
+        },
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         local: tropesData
       });
@@ -71,7 +74,11 @@ define(function(require) {
         displayKey: 'name',
         source: tropes.ttAdapter(),
         templates: {
-          header: '<h3 class="search-name">Tropes</h3>'
+          header: '<h3 class="search-name">Tropes</h3>',
+          suggestion: function(datum) { 
+            return '<p class="tt-suggestion-title">' + datum.name + "</p>" + 
+              '<p class="tt-suggestion-detail">' + datum.adjs.join(", ") + "</p>"; 
+          }
         }
       },
       {
@@ -98,6 +105,17 @@ define(function(require) {
     onSelected: function(el, suggestion, source) {
       this.$el.find('.typeahead').blur();
       this.trigger('search:selected', {"id":suggestion.id, "type":source});
+    },
+    /**
+     * onFocus
+     *
+     * Called when typeahead input is selected.
+     * Clears any old result.
+     *
+     * @return {undefined}
+     */
+    onFocus: function() {
+      this.$el.find('.typeahead').typeahead('val','');
     }
   });
 });
