@@ -2,6 +2,7 @@ define(function(require) {
 
   var View = require('../core/view');
   var Nav = require('../shared/nav');
+  var Search = require('../shared/search');
   var Promise = require('bluebird');
 
   // pages:
@@ -70,6 +71,14 @@ define(function(require) {
       });
 
       this.nav.render();
+
+      // add search area
+      this.search = new Search({
+        el : this.$el.find('#search')
+      });
+
+      this.search.render();
+
 
       return this;
     }
