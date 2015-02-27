@@ -6,7 +6,7 @@ define(function(require) {
   var Bloodhound = require('bloodhound');
 
   // js hint gives an error for not using typeahead
-  // but we need it to be required to bring in the 
+  // but we need it to be required to bring in the
   // typeahead jquery plugin - so ignore the line.
   var typeahead = require('typeahead'); // jshint ignore:line
 
@@ -31,7 +31,7 @@ define(function(require) {
       this.$el.html(this.template());
       var self = this;
       return Promise.join(dataManager.getTropes(), dataManager.getFilms(), function(tropesData, filmsData) {
-        self.typeahead(tropesData, filmsData); 
+        self.typeahead(tropesData, filmsData);
         return self;
       });
     },
@@ -88,16 +88,16 @@ define(function(require) {
      * onSelected
      *
      * Called when suggestion from dropdown list is called
-     * this will trigger an event on 
+     * this will trigger an event on
      *
      * @param el - element selected
-     * @param suggestion - data for element clicked on 
+     * @param suggestion - data for element clicked on
      * @param source - data source ('films' or 'tropes'
      * @return {undefined}
      */
     onSelected: function(el, suggestion, source) {
       this.$el.find('.typeahead').blur();
-      this.$el.trigger('search:selected', {"id":suggestion.id, "type":source});
+      this.trigger('search:selected', {"id":suggestion.id, "type":source});
     }
   });
 });

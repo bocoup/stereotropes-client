@@ -43,6 +43,14 @@ define(function(require) {
       layout.render();
 
       // TODO: Set up some event bus to pass into the layout.
+      var self = this;
+      layout.on('search:selected', function(options) {
+        if (options.type === 'tropes') {
+          self.navigate('/tropes/' + options.id, { trigger: true });
+        } else if (options.type === 'films') {
+          self.navigate('/films/' + options.id, { trigger: true });
+        }
+      });
     },
 
     /**
