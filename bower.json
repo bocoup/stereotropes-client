@@ -34,6 +34,7 @@
     "lodash": "~2.4.1",
     "d3.chart": "~0.2.1",
     "bluebird": "~2.9.8",
-    "almond": "~0.3.0"
+    "almond": "~0.3.0",
+    "typeahead.js": "~0.10.5"
   }
 }

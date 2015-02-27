@@ -125,6 +125,34 @@ define(function(require) {
     });
   };
 
+   /**
+   * Get an object from the cache and do something if it is not present
+   * in the cache. This is a helper function to remove a small amount of boilerplate
+   * around checking if a value is in the cache and returning it if it is.
+   *
+   * @private
+   *
+   * @param  {String} namespace
+   * @param  {String} key
+   * @param  {Function} notFoundCallback  will be called with resolve and reject of the promise
+   *                                      returned by this function. This callback is expected
+   *                                      to populate the cache for this entry. It should also call
+   *                                      resolve with the return value expected by the method using this
+   *                                      one.
+   * @return {Promise[Object]}
+   */
+  DataManager.prototype._cacheFetchNamespace = function(namespace, notFoundCallback) {
+    var cacheNamespace = this.cache[namespace];
+    return new Promise(function(resolve, reject) {
+      if(_.isUndefined(cacheNamespace)){
+        return notFoundCallback(resolve, reject);
+      } else {
+        resolve(cacheNamespace);
+      }
+    });
+  };
+
+
 
   /*******************************************
   ***  Network operation helpers
@@ -149,10 +177,38 @@ define(function(require) {
   ***  Domain layer data access methods
   ********************************************/
 
-
   //
   // Trope related Methods
   //
+
+  /**
+   * Get all tropes
+   * Get a list of trope ids and names. Used to display
+   * and link to all tropes.
+   * Currently returns:
+   *  - trope name
+   *  - trope id
+   *  - 5 adjectives associated with trope (adjs)
+   *  - trope gender
+   *  - trope image_url
+   * associated with that trope to be used for search.
+   *
+   * @return {Promise[Object]}  list of all tropes
+   */
+  DataManager.prototype.getTropes = function() {
+    var self = this;
+    var namespace = 'tropes_basic';
+
+    return new Promise(function(resolve, reject) {
+      if(_.isUndefined(self.cache[namespace])) {
+        self.getTrope("").then(function() {
+          resolve(_.values(self.cache[namespace]));
+        });
+      } else {
+        resolve(_.values(self.cache[namespace]));
+      }
+    });
+  };
 
   /**
    * Get basic trope information
@@ -204,6 +260,7 @@ define(function(require) {
     });
   };
 
+ 
   /**
    * Get a list of trope ids, typically used to display
    * some shorter list of tropes. Currently returns the top
@@ -227,7 +284,6 @@ define(function(require) {
       });
     });
   };
-
 
   //
   // Adjective related Methods
@@ -313,6 +369,30 @@ define(function(require) {
     });
   };
 
+   /**
+   * Get an array of films ids and names. Used to display
+   * and link to all films.
+   * Currently returns film name and id
+   * to be used with search
+   *
+   * @return {Promise[Object]} list of films with id and name attributes
+   */
+  DataManager.prototype.getFilms = function() {
+    var self = this;
+    var namespace = 'films';
+
+    return this._cacheFetch(namespace, 'filmAll', function(resolve, reject){
+      // Fetch and store the trope list in the cache.
+      return self._fetch('/films/film_list_all.json').then(function(filmList){
+
+        self._cacheSet(namespace, 'filmAll', filmList);
+
+        resolve(self._cacheGet(namespace, 'filmAll'));
+      }).catch(function(err){
+        reject(err);
+      });
+    });
+  };
 
   // Return an instance so that this module is effectively
   // a singleton providing a single source of truth.
