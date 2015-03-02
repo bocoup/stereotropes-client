@@ -7,48 +7,39 @@
     }
 
     circle {
-      fill: $dark-grey;
+      stroke: $dark-grey;
+      fill: white;
+    }
+
+    circle.selected {
+      fill: $highlight-col;
+      stroke: $highlight-col;
+    }
+  }
+
+  g.triangles {
+    .triangle {
+      stroke: none;
+      fill:  $silver-blue;
+      opacity: 0.25;
+    }
+
+    .triangle.selected {
+      fill: $silver-blue-dark;
     }
   }
 
   g.adjectives {
     font-family: $adjective-font;
+    font-variant:small-caps;
+    cursor: pointer;
+
     .hidden {
       display: none;
     }
 
-    .triangle {
-      stroke: none;
-      fill: $grey;
-      opacity: 0.25;
-    }
-  }
-}
-
-.trope-adjectives-timeline.gender-m {
-  g.axis {
-    circle {
-      fill: $silver-blue-dark;
-    }
-  }
-
-  g.adjectives {
-    .triangle:hover {
-      fill: $silver-blue-dark;
-    }
-  }
-}
-
-.trope-adjectives-timeline.gender-f {
-  g.axis {
-    circle {
-      fill: $silver-blue-dark;
-    }
-  }
-
-  g.adjectives {
-    .triangle:hover {
-      fill: $silver-blue-dark
+    .selected {
+      text-decoration: underline;
     }
   }
 }

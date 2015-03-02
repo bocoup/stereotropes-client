@@ -27,6 +27,25 @@ define(function(require) {
     };
   }
 
+  d3.selection.prototype.moveToFront = function() {
+    return this.each(function(){
+      this.parentNode.appendChild(this);
+    });
+  };
+
+  var jitter = (function() {
+      var map = []; //cache jitters if they are called
+      return function(scale, idx) {
+        if (typeof map[idx] !== "undefined") {
+          return map[idx];
+        } else {
+          var sign = Math.random() > 0.5 ? -1 : 1;
+          map[idx] = Math.random() * scale * sign;
+          return map[idx];
+        }
+      };
+    }());
+
   function draw(el, data) {
 
     var dataMetrics = processData(data);
@@ -69,8 +88,8 @@ define(function(require) {
 
     var entering_adjective_points = adjective_points.enter();
     entering_adjective_points.append('circle').attr({
-      cx : function(d) {
-        return scales.x(d[3]);
+      cx : function(d, i) {
+        return Math.min(Math.max(scales.x(d[3]) + jitter(radius, i), radius), width - radius);
       },
       cy: height / 4,
       r: radius
@@ -80,29 +99,37 @@ define(function(require) {
     var floors = 3;
     var currentFloor = 0;
     var textBoundingBoxes = [];
-    var textHeight = 20;
+    var textHeight = 25;
+    var paddingFromAxis = 10;
 
     var floorHeights = [];
     for (var i = 0; i < floors; i++) {
-      floorHeights.push(height/4 - ((i+1) * textHeight)); //above
-      floorHeights.push(height/4 + ((i+1) * textHeight) + 10); //below
+      floorHeights.push(height/4 - ((i+1) * textHeight) - paddingFromAxis); //above
+      floorHeights.push(height/4 + ((i+1) * textHeight) + 10 + paddingFromAxis); //below
     }
 
-    var adj_g = svg.append("g")
+
+    // triangle container
+    var adjective_triangles = svg.append("g")
+      .attr("class", "triangles");
+
+    // text label container
+    var adjectives_text = svg.append("g")
       .attr("class", "adjectives");
 
-    var adjective_text = adj_g.selectAll('text')
+    var adjective_text = adjectives_text.selectAll('text')
       .data(data.adjectives, function(d) { return d[0]; });
 
-    var entering_adjective_text = adjective_text.enter().append('g');
-    entering_adjective_text.each(function(d) {
+
+    var entering_adjective_text = adjective_text.enter().append('text');
+    entering_adjective_text.each(function(d, i) {
 
       // get initial position of text box
       var y = floorHeights[currentFloor];
-      var x = scales.x(d[3]);
+      var x = Math.min(Math.max(scales.x(d[3]) + jitter(radius, i), radius), width - radius);
 
-      var selection = d3.select(this).append('text');
-      selection.attr({ x : x, y : y}).text(d[0]);
+      var selection = d3.select(this);
+      selection.attr({ x : x, y : y }).text(d[0]);
 
       // check intersection and move the text box around if needbe
       var overlapping = true;
@@ -123,7 +150,7 @@ define(function(require) {
 
           currentFloor += 1;
 
-          if (currentFloor + 1 > floors * 2) {
+          if (currentFloor + 1 > (floors * 2)) {
             // if we can't fit it, we're just not going to render it...
             selection.classed("hidden", true);
             currentFloor = 0;
@@ -169,12 +196,45 @@ define(function(require) {
         { x : flip ? currentBBox.x + currentBBox.width : currentBBox.x, y : height/4 } // dot on horizontal line
       );
 
-      d3.select(this).insert("path", ":first-child")
+      adjective_triangles.insert("path", ":first-child")
+        .datum(d)
         .classed("triangle", true)
         .attr("d", pathString);
-
     });
 
+    // === highlight the triangle and word (using classnames.)
+    entering_adjective_text.on('mouseover', function(d) {
+      d3.select(this)
+        .classed('selected', true);
+
+
+      // find corresponding triangle
+      adjective_triangles.selectAll('path')
+        .data([d], function(d) { return d[0]; })
+        .classed('selected', true);
+
+      // find corresponding circle
+      axis_g.selectAll('circle')
+         .data([d], function(d) { return d[0]; })
+        .classed('selected', true)
+        .moveToFront();
+    });
+
+    entering_adjective_text.on('mouseout', function(d) {
+      d3.select(this)
+        .classed('selected', false);
+
+      // find corresponding triangle
+      adjective_triangles.selectAll('path')
+        .data([d], function(d) { return d[0]; })
+        .classed('selected', false);
+
+            // find corresponding circle
+      axis_g.selectAll('circle')
+         .data([d], function(d) { return d[0]; })
+        .classed('selected', false);
+
+    });
 
   }
 
