@@ -1,5 +1,7 @@
 define(function(require) {
 
+  var $ = require('jquery');
+
   var View = require('../../core/view');
   var template = require('tmpl!../adjectives/adjectives-page');
   var DataManager = require('../../data/data_manager');
@@ -23,14 +25,17 @@ define(function(require) {
 
       //Load data and render the visualization
       return DataManager.getAdjectiveNetwork().then(function(adjectiveData){
-        console.log('data is here', adjectiveData);
 
         var adjVis = new AdjectiveVis({
           data: adjectiveData,
-          container: self.$el.find('.adjectives-page').get(0)
+          container: self.$el.find('.adjectives-page .canvas').get(0)
         });
 
-        adjVis.update();
+        $(window).resize(function(){
+          adjVis.update();
+          adjVis.render();
+        });
+
         return adjVis.render();
       });
 

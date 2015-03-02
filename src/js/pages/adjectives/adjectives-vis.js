@@ -7,13 +7,16 @@ define(function(require) {
     this.data = options.data;
     this._container = options.container;
 
+    this.update();
     this.init();
   }
 
   AdjectiveVis.prototype.update = function() {
+    var self = this;
     this.container = d3.select(this._container);
 
-    this.width = 900;
+    var minWidth = 960;
+    this.width = _.max([parseInt(this.container.style('width'), 10), minWidth]);
     this.height = this.width;
 
     this.diameter = this.width;
@@ -21,7 +24,7 @@ define(function(require) {
 
     // The distance between the outside of the 'ring' and the edge of the svg container
     // this leaves space for the text and the bars.
-    this.outerSpacing = 200;
+    this.outerSpacing = 250;
     this.innerRadius = this.radius - this.outerSpacing;
 
     // This is the root of the adjective-adjective network (the nodes in the 'ring')
@@ -35,16 +38,42 @@ define(function(require) {
     var maxTropeCount = _.max(_.pluck(this.data.adj_adj_network.nodes, 'trope_count'));
     this.rectScale = d3.scale.linear()
       .domain([0, maxTropeCount])
-      .range([0, (this.outerSpacing / 4)]);
+      .range([0, (this.outerSpacing / 3)]);
+
+
+    // Prepare the node and link data.
+
+    // Find a given node by name in the adjective-adjective tree.
+    function findNode(root, name) {
+      return _.find(root.children, function(node){
+        return node.name === name;
+      });
+    }
+
+    var cluster = d3.layout.cluster()
+      .size([360, this.innerRadius])
+      .sort(null)
+      .value(function(d) { return d.size; });
+
+    this.nodes = cluster.nodes(self.adjAdjroot);
+    this.links = this.data.adj_adj_network.links.map(function(link){
+      var source = findNode(self.adjAdjroot, link.source);
+      var target = findNode(self.adjAdjroot, link.target);
+      return {
+        'source': source,
+        'target': target,
+        'weight': link.weight
+      };
+    });
+
+    this.links = this.links.filter(function(link) {
+      return link.weight > 10;
+    });
+
   };
 
   AdjectiveVis.prototype.init = function() {
-    this.container = d3.select(this._container);
-
-    this.width = 900;
-    this.height = this.width;
-
-    this.container.append('svg')
+    var svg = this.container.append('svg')
       .attr('height', this.height)
       .attr('width', this.width);
 
@@ -55,21 +84,27 @@ define(function(require) {
     //   .attr('height', '100%')
     //   .attr('fill', '#e1e1e1');
 
+    var g = svg.append("g")
+      .attr("class", "vis-group");
 
+    this.adjAdjLink = g.append("g");
+    this.adjAdjNode = g.append("g");
   };
 
   AdjectiveVis.prototype.render = function() {
+    this.container.select('svg')
+      .attr('height', this.height)
+      .attr('width', this.width);
+
+    this.container.select('g.vis-group')
+      .attr("transform", "translate(" + this.radius + "," + this.radius + ")");
+
     this.renderAdjAdjNetwork();
   };
 
 
   AdjectiveVis.prototype.renderAdjAdjNetwork = function() {
     var self = this;
-
-    var cluster = d3.layout.cluster()
-      .size([360, this.innerRadius])
-      .sort(null)
-      .value(function(d) { return d.size; });
 
     var bundle = d3.layout.bundle();
 
@@ -79,63 +114,52 @@ define(function(require) {
       .radius(function(d) { return d.y; })
       .angle(function(d) { return d.x / 180 * Math.PI; });
 
-    var svg = this.container.select('svg');
+    //Render Links
+    var link = this.adjAdjLink.selectAll(".link")
+        .data(bundle(this.links));
+
+    link.enter()
+      .append("path")
+      .attr("class", "link");
+
+    link.each(function(d) {
+        d.source = d[0];
+        d.target = d[d.length - 1];
+      })
+      .attr("d", line);
+
+    //Render Nodes
+    var node = this.adjAdjNode.selectAll(".node")
+      .data(this.nodes.filter(function(n) { return !n.children; }));
+
+    var nodeEnter = node.enter()
+      .append("g")
+      .attr("class", "node")
+      .on("mouseover", mouseovered)
+      .on("mouseout", mouseouted);
+
+    nodeEnter.append("rect")
+      .attr("class", "node-mouse");
+
+    nodeEnter.append("text")
+      .attr("class", "node-text");
+
+    nodeEnter.append("rect")
+      .attr("class", "node-rect");
+
+    nodeEnter.append("text")
+      .attr("class", "node-text count");
 
 
-    var g = svg.append("g")
-      .attr("transform", "translate(" + this.radius + "," + this.radius + ")");
-
-    var link = g.append("g").selectAll(".link");
-    var node = g.append("g").selectAll(".node");
-
-
-    // Find a given node by name in the adjective-adjective tree.
-    function findNode(root, name) {
-      return _.find(root.children, function(node){
-        return node.name === name;
+    // Overall group for the node elements
+    node
+      .attr("transform", function(d) {
+        return "rotate(" + (d.x - 90) + ")translate(" + (d.y + 8) + ",0)";
       });
-    }
 
-    var nodes = cluster.nodes(self.adjAdjroot);
-    var links = this.data.adj_adj_network.links.map(function(link){
-      var source = findNode(self.adjAdjroot, link.source);
-      var target = findNode(self.adjAdjroot, link.target);
-      return {
-        'source': source,
-        'target': target,
-        'weight': link.weight
-      };
-    });
 
-    links = links.filter(function(link) {
-      return link.weight > 10;
-    });
-
-    link = link
-        .data(bundle(links))
-      .enter().append("path")
-        .each(function(d) {
-          d.source = d[0];
-          d.target = d[d.length - 1];
-        })
-        .attr("class", "link")
-        .attr("d", line);
-
-    node = node
-      .data(nodes.filter(function(n) { return !n.children; }))
-      .enter()
-        .append("g")
-        .attr("class", "node")
-        .attr("transform", function(d) {
-          return "rotate(" + (d.x - 90) + ")translate(" + (d.y + 8) + ",0)";
-        })
-        .on("mouseover", mouseovered)
-        .on("mouseout", mouseouted);
-
-    // An invisible rect that is there to capture mouse
-    // events.
-    node.append("rect")
-      .attr("class", "node-mouse")
+    // An invisible rect that is there to capture mouse events.
+    node.selectAll('rect.node-mouse')
       .attr("width", "200px")
       .attr("height", function(d, i){
         d._rectHeight = 12;
@@ -149,9 +173,8 @@ define(function(require) {
       .attr('stroke', 'none');
 
 
-    // Append the adjective text itself.
-    node.append("text")
-      .attr("class", "node-text")
+    // The adjective text
+    node.selectAll('text.node-text')
       .attr("dy", ".31em")
       .attr("transform", function(d) {
           return (d.x < 180 ? "" : "rotate(180)");
@@ -160,10 +183,9 @@ define(function(require) {
       .text(function(d) { return d.name; });
 
 
-    // Append a bar indicating how many tropes this term appears
-    // in.
-    node.append("rect")
-      .attr("class", "node-rect")
+    // The adjective occurrence bar
+    var barOffset = 100;
+    node.selectAll('rect.node-rect')
       .attr("width", function(d, i){
         var w = self.rectScale(d.trope_count);
         d._rectWidth = w;
@@ -174,17 +196,15 @@ define(function(require) {
         return d._rectHeight;
       })
       .attr("x", function(d, i){
-        return 115;
+        return barOffset;
       })
       .attr("y", function(d){
         return -d._rectHeight/2;
       });
 
 
-    // Append the count labels for each term.
-    // These are hidden until mouseover (using css).
-    node.append("text")
-      .attr("class", "node-text count")
+    // The adjective occurrence count
+    node.selectAll("text.count")
       .attr("transform", function(d) {
           return (d.x < 180 ? "" : "rotate(180)");
       })
@@ -193,12 +213,13 @@ define(function(require) {
         var sign = d.x < 180 ? 1 : -1;
         var rect = d3.select(this)[0][0].previousSibling;
         var bb = rect.getBBox();
-        return (120 + bb.width) * sign;
+        return (barOffset + 5 + bb.width) * sign;
       })
       .style("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
       .text(function(d) { return d.trope_count; });
 
 
+    // Helper functions for interaction.
     function mouseovered(d) {
       node.each(function(n) { n.target = n.source = false; });
 
