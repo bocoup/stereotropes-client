@@ -12,8 +12,15 @@
   }
 
   g.adjectives {
+    font-family: $adjective-font;
     .hidden {
       display: none;
+    }
+
+    .triangle {
+      stroke: none;
+      fill: $grey;
+      opacity: 0.25;
     }
   }
 }
@@ -21,7 +28,13 @@
 .trope-adjectives-timeline.gender-m {
   g.axis {
     circle {
-      fill: $male-col-50;
+      fill: $silver-blue-dark;
+    }
+  }
+
+  g.adjectives {
+    .triangle:hover {
+      fill: $silver-blue-dark;
     }
   }
 }
@@ -29,7 +42,13 @@
 .trope-adjectives-timeline.gender-f {
   g.axis {
     circle {
-      fill: $female-col-50;
+      fill: $silver-blue-dark;
+    }
+  }
+
+  g.adjectives {
+    .triangle:hover {
+      fill: $silver-blue-dark
     }
   }
 }

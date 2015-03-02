@@ -13,6 +13,12 @@ define(function(require) {
       (r2.y + r2.height)< r1.y);
   }
 
+  function makeTriangle(p1, p2, p3) {
+    return "M" + p1.x + " " + p1.y +
+      " L " + p2.x + " " + p2.y +
+      " L " + p3.x + " " + p3.y + " Z";
+  }
+
   function processData(data) {
 
     var extent = d3.extent(data.adjectives, function(d) { return d[3]; });
@@ -88,21 +94,29 @@ define(function(require) {
     var adjective_text = adj_g.selectAll('text')
       .data(data.adjectives, function(d) { return d[0]; });
 
-    var entering_adjective_text = adjective_text.enter().append('text');
+    var entering_adjective_text = adjective_text.enter().append('g');
     entering_adjective_text.each(function(d) {
 
+      // get initial position of text box
       var y = floorHeights[currentFloor];
       var x = scales.x(d[3]);
 
-      var selection = d3.select(this);
-      selection.attr({
-        x : x, y: y
-      }).text(d[0]);
-      var currentBBox = this.getBBox();
+      var selection = d3.select(this).append('text');
+      selection.attr({ x : x, y : y}).text(d[0]);
 
-      // check intersection
+      // check intersection and move the text box around if needbe
       var overlapping = true;
       var count = textBoundingBoxes.length, counter=0;
+      var currentBBox = selection[0][0].getBBox();
+
+      // if the end of the text is outside the frame, we need to move it.
+      var flip = false;
+      if (currentBBox.x + currentBBox.width > width) {
+        selection.attr("x", x - currentBBox.width);
+        currentBBox = selection[0][0].getBBox();
+        flip = true;
+      }
+
       while(overlapping && counter < count) {
 
         if (overlap(textBoundingBoxes[counter], currentBBox)) {
@@ -135,13 +149,29 @@ define(function(require) {
         }
       }
 
-      currentBBox = this.getBBox();
-      textBoundingBoxes.push(this.getBBox());
+      currentBBox = selection[0][0].getBBox();
+      textBoundingBoxes.push(selection[0][0].getBBox());
 
-      // if the end of the text is outside the frame, we need to move it.
-      if (currentBBox.x + currentBBox.width > width) {
-        selection.style('text-anchor', 'end');
+      //===== add a triangle ======
+      // if we are above the line, then it should be from the bottom
+      // of the box, otherwise, it should be from the top.
+      var ty;
+      if (currentBBox.y > height / 4) {
+        // below
+        ty = currentBBox.y;
+      } else {
+        ty = currentBBox.y + currentBBox.height;
       }
+
+      var pathString = makeTriangle(
+        { x : currentBBox.x, y : ty}, // start of word
+        { x : currentBBox.x + currentBBox.width, y : ty}, // end of word
+        { x : flip ? currentBBox.x + currentBBox.width : currentBBox.x, y : height/4 } // dot on horizontal line
+      );
+
+      d3.select(this).insert("path", ":first-child")
+        .classed("triangle", true)
+        .attr("d", pathString);
 
     });
 
