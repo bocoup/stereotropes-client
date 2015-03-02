@@ -6,6 +6,7 @@ define(function(require) {
   function AdjectiveVis(options){
     this.data = options.data;
     this._container = options.container;
+    this.currentlySelectedAdj = null;
 
     this.update();
     this.init();
@@ -78,11 +79,12 @@ define(function(require) {
       .attr('width', this.width);
 
     // debug rect
-    // svg.append('rect')
-    //   .attr('class', 'background')
-    //   .attr('width', '100%')
-    //   .attr('height', '100%')
-    //   .attr('fill', '#e1e1e1');
+    this.bgRect = svg.append('rect')
+      .attr('class', 'background')
+      .attr('width', '100%')
+      .attr('height', '100%')
+      .attr('fill', 'white');
+      // .attr('fill', '#e1e1e1');
 
     var g = svg.append("g")
       .attr("class", "vis-group");
@@ -135,8 +137,9 @@ define(function(require) {
     var nodeEnter = node.enter()
       .append("g")
       .attr("class", "node")
-      .on("mouseover", mouseovered)
-      .on("mouseout", mouseouted);
+      .on("mouseover", mouseoverHelper)
+      .on("mouseout", mouseoutHelper)
+      .on("click", mouseclicked);
 
     nodeEnter.append("rect")
       .attr("class", "node-mouse");
@@ -220,6 +223,14 @@ define(function(require) {
 
 
     // Helper functions for interaction.
+    function mouseoverHelper(d) {
+      if(_.isNull(self.currentlySelectedAdj)){
+        mouseovered(d);
+      } else {
+        return;
+      }
+    }
+
     function mouseovered(d) {
       node.each(function(n) { n.target = n.source = false; });
 
@@ -240,17 +251,40 @@ define(function(require) {
       node.classed("active", function(n) { return n.name === d.name; });
     }
 
-    function mouseouted(d) {
+    function mouseoutHelper() {
+      if(_.isNull(self.currentlySelectedAdj)){
+        mouseouted();
+      } else {
+        return;
+      }
+    }
+
+    function mouseouted() {
       link
-          .classed("link-source", false)
-          .classed("link-target", false);
+        .classed("link-source", false)
+        .classed("link-target", false);
 
       node
-          .classed("node-target", false)
-          .classed("node-source", false);
+        .classed("node-target", false)
+        .classed("node-source", false);
 
       node.classed("active", false);
     }
+
+    function mouseclicked(d) {
+      self.currentlySelectedAdj = d;
+      mouseouted(d);
+      mouseovered(d);
+    }
+
+    this.bgRect
+      .on('click', clearAdjSelection);
+
+    function clearAdjSelection(){
+      self.currentlySelectedAdj = null;
+      mouseoutHelper();
+    }
+
   };
 
   return AdjectiveVis;
