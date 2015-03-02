@@ -1,0 +1,35 @@
+.trope-adjectives-timeline {
+
+  g.axis {
+    line {
+      stroke-width: 1px
+      stroke: $light-grey;
+    }
+
+    circle {
+      fill: $dark-grey;
+    }
+  }
+
+  g.adjectives {
+    .hidden {
+      display: none;
+    }
+  }
+}
+
+.trope-adjectives-timeline.gender-m {
+  g.axis {
+    circle {
+      fill: $male-col-50;
+    }
+  }
+}
+
+.trope-adjectives-timeline.gender-f {
+  g.axis {
+    circle {
+      fill: $female-col-50;
+    }
+  }
+}
