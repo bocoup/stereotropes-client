@@ -9,14 +9,17 @@ define(function(require) {
   // but we need it to be required to bring in the
   // typeahead jquery plugin - so ignore the line.
   var typeahead = require('typeahead'); // jshint ignore:line
-
   var dataManager = require('../data/data_manager');
-
-  var template = require('tmpl!../shared/search');
+  var templates = {
+    main : require('tmpl!../shared/search'),
+    films_header : require('tmpl!../shared/search-films-header'),
+    tropes_header : require('tmpl!../shared/search-tropes-header'),
+    tropes_suggestion : require('tmpl!../shared/search-tropes-suggestion')
+  };
 
   return View.extend({
 
-    template: template,
+    template: templates.main,
     events: {
       'focus .typeahead' : 'onFocus',
       'typeahead:selected .typeahead' : 'onSelected'
@@ -54,7 +57,10 @@ define(function(require) {
       films.initialize();
 
       var tropes = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+        datumTokenizer: function(datum) {
+          // adjs are already in an array - so just join with the name tokenizer
+          return Bloodhound.tokenizers.obj.whitespace('name')(datum).concat(datum.adjs);
+        },
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         local: tropesData
       });
@@ -71,7 +77,10 @@ define(function(require) {
         displayKey: 'name',
         source: tropes.ttAdapter(),
         templates: {
-          header: '<h3 class="search-name">Tropes</h3>'
+          header: templates.tropes_header(),
+          suggestion: function(trope) { 
+            return templates.tropes_suggestion(trope);
+          }
         }
       },
       {
@@ -79,7 +88,7 @@ define(function(require) {
         displayKey: 'name',
         source: films.ttAdapter(),
         templates: {
-          header: '<h3 class="search-name">Films</h3>'
+          header: templates.films_header()
         }
       });
     },
@@ -98,6 +107,17 @@ define(function(require) {
     onSelected: function(el, suggestion, source) {
       this.$el.find('.typeahead').blur();
       this.trigger('search:selected', {"id":suggestion.id, "type":source});
+    },
+    /**
+     * onFocus
+     *
+     * Called when typeahead input is selected.
+     * Clears any old result.
+     *
+     * @return {undefined}
+     */
+    onFocus: function() {
+      this.$el.find('.typeahead').typeahead('val','');
     }
   });
 });
