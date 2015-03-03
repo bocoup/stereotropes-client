@@ -51,7 +51,7 @@ define(function(require) {
     var dataMetrics = processData(data);
     var container = d3.select(el);
     var width = $(el).width();
-    var height = 600;
+    var height = 400;
     var radius = 3;
 
     // mark the element with its gender
@@ -238,7 +238,10 @@ define(function(require) {
 
   }
 
+  var template = require("tmpl!../../pages/trope/trope-adj-ll-scale");
+
   return View.extend({
+    template: template,
     initialize: function(options) {
       if (!options.trope_id) {
         throw new Error("Trope id required for rendering trope tile!");
@@ -251,7 +254,7 @@ define(function(require) {
       this.trope_id = options.trope_id;
     },
      _preDataRender: function() {
-      // this.$el.html(this.template(this.trope_data));
+      this.$el.html(this.template(this.trope_data));
       return this;
     },
     _render: function() {
@@ -261,7 +264,8 @@ define(function(require) {
       return dataManager.getTropeDetails(this.trope_id).then(function(trope_details) {
         self.trope_data = trope_details;
         self.trope_data.loading = false;
-        draw(self.$el[0], trope_details);
+        self.$el.html(self.template(self.trope_data));
+        draw(self.$el.find(".vis")[0], trope_details);
         return self;
       });
     }

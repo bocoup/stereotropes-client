@@ -1,45 +1,67 @@
 .trope-adjectives-timeline {
 
-  g.axis {
-    line {
-      stroke-width: 1px
-      stroke: $light-grey;
-    }
-
-    circle {
-      stroke: $dark-grey;
-      fill: white;
-    }
-
-    circle.selected {
-      fill: $highlight-col;
-      stroke: $highlight-col;
-    }
+  .instruction {
+    font-size: 0.8em;
+    display: inline-block;
+    background-color: $silver-blue-dark;
+    color: white;
+    padding: 2px;
+  }
+  .left {
+    float: left;
+  }
+  .right {
+    float: right;
   }
 
-  g.triangles {
-    .triangle {
-      stroke: none;
-      fill:  $silver-blue;
-      opacity: 0.25;
+  .vis {
+    margin-top: 10px;
+    display: inline-block;
+    g.axis {
+      line {
+        stroke-width: 1px
+        stroke: $light-grey;
+      }
+
+      circle {
+        stroke: $dark-grey;
+        fill: white;
+      }
+
+      circle.selected {
+        fill: $silver-blue-dark;
+        stroke: $silver-blue-dark;
+      }
     }
 
-    .triangle.selected {
-      fill: $silver-blue-dark;
-    }
-  }
+    g.triangles {
+      .triangle {
+        stroke: none;
+        fill:  $silver-blue;
+        opacity: 0.25;
+      }
 
-  g.adjectives {
-    font-family: $adjective-font;
-    font-variant:small-caps;
-    cursor: pointer;
-
-    .hidden {
-      display: none;
+      .triangle.selected {
+        fill: $silver-blue-dark;
+      }
     }
 
-    .selected {
-      text-decoration: underline;
+    g.adjectives {
+      font-family: $adjective-font;
+      font-variant:small-caps;
+      cursor: pointer;
+
+      text {
+        fill: $silver-blue-dark;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .selected {
+        text-decoration: underline;
+      }
     }
   }
 }

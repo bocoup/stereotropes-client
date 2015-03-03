@@ -1,0 +1,22 @@
+<% if (loading) { %>
+  <h3>Loading adjectives...</h3>
+<% } else { %>
+  <div class="pure-u-1-1">
+    <h3>Adjectives used to describe '<%= name %>':</h3>
+    <p class="pure-u-16-24">
+      We extracted adjectives from the description of this trope and compared
+      them to the adjectives in other tropes. This allowed us to determine just how "unique"
+      these adjectives were to this trope versus the other ones in our dataset. Tropes
+      closer to the left are "more unique" than those on the right.
+    </p>
+  </div>
+    <div class="instruction left">
+      &#8592; More unique to this trope
+    </div>
+    <div class="instruction right">
+      Less unique to this trope &#8594;
+    </div>
+    <div class="vis pure-u-1-1">
+  </div>
+<% } %>
+
