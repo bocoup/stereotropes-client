@@ -21,10 +21,10 @@ define(function(require) {
       // bind to winow resize end
       window.addEventListener("resize", _.debounce(function() {
         var timelineContainer = self.$el.find('.trope-timeline-container');
-        var options = {
-          width : timelineContainer.width()
-        };
-        self.views['timeline'].update(options);
+        var adjectiveContainer = self.$el.find('.trope-adjectives-timeline');
+
+        self.views['timeline'].update({ width : timelineContainer.width() });
+        self.views['adjs'].update({ width: adjectiveContainer.width() });
       }, 150));
     },
 
@@ -57,6 +57,7 @@ define(function(require) {
       this.views['tile'] = thumbnailView;
       this.views['details'] = detailView;
       this.views['timeline'] = timelineView;
+      this.views['adjs'] = adjLine;
 
       return Promise.join(
         thumbnailView.render(),
