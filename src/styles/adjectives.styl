@@ -4,7 +4,7 @@
     width: 100%;
   }
 
-  .node {
+  .node, .tropeNode {
     cursor: pointer;
   }
 
@@ -72,6 +72,36 @@
     stroke-width: 3px;
     stroke: $highlight-col;
     stroke: $silver-blue-dark;
+  }
+
+  // Trope network
+  .trope-node-label {
+    font-family: $trope-font;
+    font-weight: 600;
+    font-style: italic;
+    font-size: 14px;
+    fill: $silver-blue-dark;
+    text-transform: capitalize;
+    // font-variant: small-caps;
+
+  }
+
+  .trope-node-bg {
+    stroke: $silver-blue-dark;
+    stroke-width: 0.5;
+
+    &.male {
+      fill: $male-col-25;
+    }
+
+    &.female {
+      fill: $female-col-25;
+    }
+
+    .trope-node-bg:hover {
+      fill: $highlight-col !important;
+    }
+
   }
 
 

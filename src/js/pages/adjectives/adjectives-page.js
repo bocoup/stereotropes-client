@@ -36,7 +36,8 @@ define(function(require) {
           adjVis.render();
         });
 
-        return adjVis.render();
+        window.adjVis = adjVis;
+        // return adjVis.render();
       });
 
     }

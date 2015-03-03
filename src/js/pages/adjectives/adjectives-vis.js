@@ -2,15 +2,42 @@ define(function(require) {
 
   var _ = require('lodash');
   var d3 = require('d3');
+  var dataManager = require('../../data/data_manager');
+  var tropeBlurbTmpl = require('tmpl!../adjectives/trope-blurb');
 
   function AdjectiveVis(options){
+    var self = this;
     this.data = options.data;
     this._container = options.container;
     this.currentlySelectedAdj = null;
+    this.currentlySelectedTrope = null;
+
+    this.associatedTropes = [];
+
 
     this.update();
-    this.init();
+
+    // Prime the trope info cache for quick access later
+    dataManager.getTrope("").then(function(){
+      self.init();
+      self.render();
+    });
+
+    // TODO: consider whether this should live outside this component
+    // for now i'm putting the logic to update the blurb here to test
+    // it out.
+    this.originalBlurb = d3.select('.blurb').html();
+    console.log(this.originalBlurb);
   }
+
+  AdjectiveVis.prototype.getTropes = function(adjective) {
+    var tropes = this.adjToTrope[adjective];
+    if(_.isUndefined(tropes)){
+      return [];
+    } else {
+      return tropes;
+    }
+  };
 
   AdjectiveVis.prototype.update = function() {
     var self = this;
@@ -71,6 +98,18 @@ define(function(require) {
       return link.weight > 10;
     });
 
+    // Prepare adj to trope data
+
+    this.adjToTrope = _.reduce(this.data.trope_adj_network.links, function(memo,link){
+      if(_.isUndefined(memo[link.target])){
+        memo[link.target] = [];
+      }
+      memo[link.target].push(link.source);
+      return memo;
+    }, {});
+
+
+
   };
 
   AdjectiveVis.prototype.init = function() {
@@ -102,6 +141,8 @@ define(function(require) {
       .attr("transform", "translate(" + this.radius + "," + this.radius + ")");
 
     this.renderAdjAdjNetwork();
+    this.renderLinkedTropes();
+    this.showTropeDetails();
   };
 
 
@@ -273,6 +314,7 @@ define(function(require) {
 
     function mouseclicked(d) {
       self.currentlySelectedAdj = d;
+      self.render();
       mouseouted(d);
       mouseovered(d);
     }
@@ -283,8 +325,177 @@ define(function(require) {
     function clearAdjSelection(){
       self.currentlySelectedAdj = null;
       mouseoutHelper();
+      self.render();
     }
 
+  };
+
+
+  AdjectiveVis.prototype.renderLinkedTropes = function() {
+    var self = this;
+
+    var maxFullSizeNodes = 65;
+
+    if(_.isNull(this.currentlySelectedAdj)){
+      this.associatedTropes = [];
+    } else {
+      var newTropes = this.getTropes(this.currentlySelectedAdj.name);
+      var oldTropes = _.pluck(this.associatedTropes, "name");
+
+      var toRemove = [];
+      _.each(this.associatedTropes, function(trope){
+        if(!_.include(newTropes, trope.name)){
+          toRemove.push(trope);
+        }
+      });
+
+      _.each(newTropes, function(tropeName){
+        if(!_.include(oldTropes, tropeName)){
+          self.associatedTropes.push({
+            width: 85,
+            height: 20,
+            name: tropeName,
+            x: -(Math.random() * 100) + (Math.random() * 100) + self.width / 2,
+            y: -(Math.random() * 100) + (Math.random() * 100) + self.height / 2
+          });
+        }
+      });
+
+      toRemove = _.pluck(toRemove, "name");
+      this.associatedTropes = _.reject(this.associatedTropes, function(trope){
+        return _.include(toRemove, trope.name);
+      });
+
+    }
+
+    var data = this.associatedTropes;
+    data.unshift({
+      name: "",
+      radius: 0,
+      fixed: true,
+      x: this.width / 2 - 80,
+      y: this.height / 2 - 20
+    });
+
+    this.force = d3.layout.force()
+      .gravity(0.55)
+      // .linkDistance(100)
+      // .charge(-2000)
+      .charge(function(d, i) {
+        if (i === 0) {
+          return 0;
+        }
+
+        if(data.length > maxFullSizeNodes) {
+          return -200;
+        } else {
+          return -600;
+        }
+      })
+      .size([this.width, this.height]);
+
+    this.force.nodes(data);
+    this.force.start();
+
+    var svg = this.container.select('svg');
+
+    var nodes = svg.selectAll("g.tropeNode")
+        .data(data.slice(1), function(t) { return t.name; });
+
+    var nodeEnter = nodes.enter();
+
+    var node = nodeEnter
+      .append("g")
+      .attr("class", "tropeNode")
+      .style('opacity', 1)
+      .on("mouseover", tropeMouseoverHelper)
+      .on("mouseout", tropeMouseoutHelper)
+      .on("click", tropeMouseclicked);
+
+    node.append("rect")
+      .attr("class", function(d, i) {
+        // TEMPORARY. Replace with a call in the constructor
+        // to getTropes so we can call this sync.
+        var info = dataManager.cache['tropes_basic'][d.name];
+        return "trope-node-bg " + (info.gender === 'm' ? 'male' : 'female');
+      });
+
+
+    node.append("text")
+      .attr("class", "trope-node-label")
+      .attr("dy", "14px")
+      .attr("dx", "5px")
+      .style("text-anchor", "start");
+
+
+    // Update the nodes
+    nodes.selectAll('rect.trope-node-bg')
+      .attr("width", function(d) {
+        if(data.length > maxFullSizeNodes) {
+          return 20;
+        }
+        return d.width;
+      })
+      .attr("height", function(d) {
+        return d.height;
+      });
+
+    nodes.selectAll('text.trope-node-label')
+      .text(function(d) {
+        // TEMPORARY. Replace with a call in the constructor
+        // to getTropes so we can call this sync.
+        var name = dataManager.cache['tropes_basic'][d.name].name.toLowerCase();
+        if(name.length > 10) {
+          name = name.substring(0, 8) + '…';
+        }
+
+        if(data.length > maxFullSizeNodes) {
+          name = name[0];
+        }
+
+        return name;
+      });
+
+
+    // Fade out expired nodes.
+    nodes.exit()
+      .transition()
+        .duration(500)
+        .style('opacity', 0)
+        .remove();
+
+
+    this.force.on("tick", function(e) {
+      nodes
+          .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+    });
+
+
+    function tropeMouseoverHelper(d){
+      self.currentlySelectedTrope = d;
+      self.render();
+    }
+
+    function tropeMouseoutHelper(d){
+      self.currentlySelectedTrope = null;
+      self.render();
+    }
+
+    function tropeMouseclicked(){
+
+    }
+
+  };
+
+  AdjectiveVis.prototype.showTropeDetails = function() {
+    if(_.isNull(this.currentlySelectedTrope)){
+      d3.select('.blurb').html(this.originalBlurb);
+    } else {
+      dataManager.getTropeDetails(this.currentlySelectedTrope.name).then(function(details){
+        var html = tropeBlurbTmpl(details);
+        d3.select('.blurb').html(html);
+      });
+    }
   };
 
   return AdjectiveVis;
