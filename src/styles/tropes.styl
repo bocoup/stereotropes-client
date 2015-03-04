@@ -1,0 +1,96 @@
+.trope-page {
+  .trope-tile-container {
+    width: 160px;
+    float: left;
+  }
+
+  .trope-detail-container {
+    margin-left: 200px
+    padding-right: 40px;
+    .details {
+      height: 225px;
+
+      div.description.short {
+        height: 188px;
+        display: -webkit-box;
+        text-overflow: ellipsis;
+        overflow-y:hidden;
+
+         margin: 0 auto;
+        -webkit-line-clamp: 8;
+        -webkit-box-orient: vertical;
+        text-overflow: -o-ellipsis-lastline; /* Opera just does this, I guess? */
+      }
+
+      .more {
+        margin-top: 15px;
+        float:right;
+      }
+    }
+  }
+
+  .trope-timeline-container {
+    h4 {
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    .vis {
+
+      .axis {
+        shape-rendering: crispEdges;
+      }
+
+      .x.axis line {
+        stroke: none;
+      }
+
+      .x.axis path {
+        fill: none;
+      }
+
+      .x.axis .tick line {
+        stroke: #fff
+      }
+
+      .marker line {
+        stroke-width: 2.5
+      }
+
+      .max_line text {
+        text-anchor: end;
+        font-size: 9pt;
+      }
+
+    }
+
+    aside {
+      padding-top: 10px
+    }
+  }
+
+  .trope-timeline-container.gender-f .vis {
+    path.area {
+      fill: $female-col-25;
+    }
+    .marker line {
+      stroke: $female-col;
+    }
+    .max_line text {
+      fill: $female-col;
+    }
+  }
+
+  .trope-timeline-container.gender-m .vis {
+    path.area {
+      fill: $male-col-25;
+    }
+    .marker line {
+      stroke: $male-col;
+    }
+    .max_line text {
+      fill: $male-col;
+    }
+  }
+
+}

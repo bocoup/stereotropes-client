@@ -29,6 +29,11 @@ a:active {
   color: $dark-grey;
 }
 
+aside {
+  font-size: 0.8em;
+  color: $grey;
+}
+
 .secondary {
   color: $grey
 }
@@ -50,8 +55,11 @@ a:active {
 
 // Top level nav
 
-nav {
+#top-bar {
+  padding-bottom 20px;
+}
 
+nav {
   ul {
     display:inline;
     padding: 0 0 8px 0;
@@ -62,6 +70,7 @@ nav {
     display:inline;
     font-size: 1.5em;
     font-weight: 500;
+    line-height: 1.6em;
     padding-right: 15px;
 
     .inactive {
@@ -73,4 +82,17 @@ nav {
     text-decoration: none;
   }
 
+}
+
+// footer
+#footer {
+  position: fixed
+  bottom: 0px
+  left: 0px
+  right: 0px
+  height: 30px
+  background-color: white
+  padding-top: 5px
+  text-align:center
+  border-top: 1px solid #eaeaea
 }

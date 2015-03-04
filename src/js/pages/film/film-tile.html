@@ -1,0 +1,11 @@
+<% if (loading) { %>
+  <div class="loading">
+    Loading...
+  </div>
+<% } else { %>
+  <div class="image">
+    <% if (typeof poster_url !== "undefined") { %>
+      <div style="background-image: url(<%= url_root + poster_url %>);"></div>
+    <% } %>
+  </div>
+<% } %>
