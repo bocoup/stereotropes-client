@@ -2,7 +2,6 @@ define(function(require) {
   var Promise = require('bluebird');
   var d3 = require("d3");
   require("./d3.text");
-  require("./get_metrics");
   var View = require("../../core/view");
   var dataManager = require('../../data/data_manager');
 
