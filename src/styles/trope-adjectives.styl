@@ -54,9 +54,21 @@
       }
     }
 
+    g.beams {
+      path.gender-m {
+        fill: $male-col
+        opacity: 0.25
+      }
+      path.gender-f {
+        fill: $female-col
+        opacity: 0.25
+      }
+    }
+
     g.adjectives {
       font-family: $adjective-font;
       font-variant:small-caps;
+
       cursor: pointer;
 
       text {
@@ -69,7 +81,34 @@
 
       .selected {
         text-decoration: underline;
+        font-weight: bold;
+        font-size: 1.1em;
       }
+    }
+
+    g.tropes {
+
+      g {
+        cursor: pointer;
+        rect {
+          fill: none;
+        }
+      }
+
+      g.selected {
+        text {
+          fill: white;
+        }
+        rect.gender-f {
+          fill : $female-col;
+        }
+
+        rect.gender-m {
+          fill : $male-col;
+        }
+      }
+
+
     }
   }
 }

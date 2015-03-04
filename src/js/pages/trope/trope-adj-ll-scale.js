@@ -335,49 +335,169 @@ define(function(require) {
         dictMap[trope.id] = trope;
       });
 
-      var tropeSelection = bases.tropes.selectAll('text')
+      var tropeSelection = bases.tropes.selectAll('g')
         .data(subset, function(d) { return d.tropeId; });
 
       // make new nodes if we need them
-      tropeSelection.enter().append('text');
+      tropeSelection.enter().append('g');
 
-      var currentColumn = 0, inColumn = 0;
 
       // position new and existing nodes:
-      tropeSelection.attr({
-        x : function(d, i) {
-          if (inColumn >= tropesPerList) {
-            inColumn = 0;
-            currentColumn++;
-          }
-          inColumn++;
-          return currentColumn * columnWidth;
-        },
+      var currentColumn = 0, inColumn = 0;
+      tropeSelection.each(function(d, i) {
 
-        y : function(d, i) {
-          return textElHeight * (i % (tropesPerList));
+        var rect = d3.select(this).select('rect');
+        if (rect.empty()) {
+          rect = d3.select(this).append('rect');
         }
-      }).text(function(d) {
-        return dictMap[d.tropeId].name;
-      }).attr("class", function(d) {
-        return "gender-" + dictMap[d.tropeId].gender + " trope-name";
-      }).style("width", columnWidth).each(function(d, i) {
 
-        var bbox = this.getBBox();
+        var textNodes = d3.select(this).select('text');
+        if (textNodes.empty()) {
+          textNodes = d3.select(this).append('text');
+        }
+
+        // == compute X position based on the column we are in:
+        if (inColumn >= tropesPerList) {
+          inColumn = 0;
+          currentColumn++;
+        }
+        inColumn++;
+        var textX = currentColumn * columnWidth;
+
+        // == compute Y position based on the index of the item %
+        // the total items we expect
+        var textY = textElHeight * (i % (tropesPerList));
+
+        textNodes.attr({
+          x : textX + (currentColumn === 0 ? 4 : 0),
+          y : textY
+        }).text(function() {
+          return dictMap[d.tropeId].name;
+        })
+        .style("width", columnWidth)
+        .classed("trope-name", true);
+
+        // possibly shorten the text once its been placed.
+        var bbox = textNodes[0][0].getBBox();
         if (bbox.width > columnWidth) {
 
           var name = dictMap[d.tropeId].name;
           var charsWidth = bbox.width / name.length;
 
-          var newlencount = (bbox.width / charsWidth) - charsWidth;
+          var newlencount = (bbox.width / charsWidth) - (2*charsWidth);
           var newname = name.substring(0, newlencount) + '...';
 
-          d3.select(this).text(newname);
+          textNodes.text(newname);
         }
+
+        // position the rect now that we hve the bounding box
+        var boxPadding = 2;
+        rect.attr("class", "gender-" + dictMap[d.tropeId].gender)
+          .attr({
+            x : textX - boxPadding,
+            y : textY + boxPadding - bbox.height,
+            width: bbox.width + (boxPadding*2) + 4,
+            height : bbox.height + (boxPadding*2)
+          });
       });
 
+      // mark the groups selected or deselected on mouse over
+      tropeSelection.on('mouseover', function(d) {
+        var selection = d3.select(this);
+        var selectionBBox = selection[0][0].getBBox();
+
+        // adjust selectionBBox to transform...
+        selectionBBox.y += height/2 + 10;
+
+        selection.classed('selected', true);
+
+        // find the appropriate triangles and highlight them
+        var adjectives = bases.adjectives_text.selectAll('text')
+          .filter(function(dd) {
+            return d.adjs.indexOf(dd[0]) > -1;
+          });
+
+        adjectives.classed("selected", true);
+
+        // find triangles
+        var triangles = bases.adjective_triangles.selectAll('path')
+          .filter(function(dd) {
+            return d.adjs.indexOf(dd[0]) > -1;
+          });
+
+        triangles.classed("selected", true);
+
+        triangles.each(function(dd) {
+          var triangle = d3.select(this);
+          var triangleBBox = triangle[0][0].getBBox();
+
+          // is this above or below the fold?
+          var above = true;
+          if (triangleBBox.y >= height / 4) {
+            above = false;
+          }
+
+          // make the connector beam...
+          var topY = (above ? triangleBBox.y : (triangleBBox.y + triangleBBox.height + 18)); // text height
+          // var bottomPoint = Math.random() > 0.5 ?
+
+          var points = [
+            { x : triangleBBox.x + triangleBBox.width, y: topY }, // top right
+            { x : triangleBBox.x, y : topY }, // top left
+            { x : selectionBBox.x, y : selectionBBox.y }, // bottom left
+            { x : selectionBBox.x + selectionBBox.width, y : selectionBBox.y } // bottom right
+          ];
+          var pathString = makePath(points);
+
+          bases.connector_beams.append("path")
+            .attr("d", pathString)
+            .classed("gender-" + dictMap[d.tropeId].gender, true);
+        });
+
+      });
+
+      tropeSelection.on('click', function(d) {
+        // NAVIGATE YOSELF, todo.
+      });
+
+      tropeSelection.on('mouseout', function(d) {
+        var selection = d3.select(this);
+        selection.classed('selected', false);
+
+        // remove connector beams
+        bases.connector_beams.selectAll('path').remove();
+
+        // find the appropriate triangles and highlight them
+        var adjectives = bases.adjectives_text.selectAll('text')
+          .filter(function(dd) {
+            return d.adjs.indexOf(dd[0]) > -1;
+          });
+
+        adjectives.classed("selected", false);
+
+        var triangles = bases.adjective_triangles.selectAll('path')
+          .filter(function(dd) {
+            return d.adjs.indexOf(dd[0]) > -1;
+          });
+
+        triangles.classed("selected", false);
+
+      });
+
+      // on exit remove the nodes...
       tropeSelection.exit().remove();
     });
+  }
+
+  function makePath(points) {
+    var path = "M ";
+    for(var i = 0; i < points.length; i++) {
+      path += points[i].x + " " + points[i].y;
+      if (i + 1 < points.length) {
+        path += " L ";
+      }
+    }
+    return path + " Z";
   }
 
   function processData(data) {
@@ -420,6 +540,10 @@ define(function(require) {
     // axis base
     bases.axis_g = svg.append("g")
       .attr("class", "axis");
+
+    // beams
+    bases.connector_beams = svg.append("g")
+      .attr("class", "beams");
 
     // triangle container
     bases.adjective_triangles = svg.append("g")
