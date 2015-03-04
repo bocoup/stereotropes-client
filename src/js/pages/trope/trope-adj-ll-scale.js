@@ -3,6 +3,7 @@ define(function(require) {
   var View = require('../../core/view');
   var dataManager = require('../../data/data_manager');
   var $ = require('jquery');
+  var _ = require('lodash');
 
   /**
    * Checks to see if two rectangles overlap
@@ -166,6 +167,13 @@ define(function(require) {
   var currentFloor = 0;
 
   /**
+   * Current trope id, to compute uniqueness of adjectives
+   * @private
+   * @type {String}
+   */
+  var trope_id;
+
+  /**
    * Gets called for each adjective selection on enter to position
    * the adjectives or move them to their respective position
    * @private
@@ -264,6 +272,12 @@ define(function(require) {
           .transition()
           .delay(Math.random() * 400)
             .style('opacity', 0.15);
+
+        // add a uniqueness marker if this adjective doesn't appear in other tropes
+        if (d[4].length === 1 && d[4][0] === trope_id) {
+          triangle.classed("unique", true);
+        }
+
       };
     }());
 
@@ -278,7 +292,18 @@ define(function(require) {
     currentFloor = 0;
   };
 
+  function processData(data) {
+    // only get adjectives that have positive ll scores
+    var adjs = _.filter(data.adjectives, function(d) {
+      return d[2] > 0;
+    });
+
+    data.adjectives = adjs;
+  }
+
   function draw(el, data) {
+
+    processData(data);
 
     var container = d3.select(el);
     width = $(el).width();
@@ -289,6 +314,8 @@ define(function(require) {
     } else {
       container.classed('gender-f', true);
     }
+
+    trope_id = data.id;
 
     svg = container.append('svg')
       .attr({ width: width, height: height });
