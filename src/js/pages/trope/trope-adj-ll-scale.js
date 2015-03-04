@@ -25,7 +25,27 @@ define(function(require) {
    * @param  {Object} p3 Point with x,y coordinates
    * @return {string} triangle string
    */
-  function _makeTriangle(p1, p2, p3) {
+  function _makeTriangle(currentBBox, flip) {
+
+    var ty;
+    if (currentBBox.y > height / 4) {
+      // below
+      ty = currentBBox.y;
+    } else {
+      ty = currentBBox.y + currentBBox.height;
+    }
+
+    // add variance relative to connecting point
+    var triangleWidth = currentBBox.width;
+    var varianceMax = triangleWidth * 0.30; // max horizontal movement
+    var totalMovement = 0; //varianceMax * Math.random(); // the amount of that movement
+
+    var startX = Math.max(currentBBox.x - totalMovement, 0);
+
+    var p1 = { x : startX, y : ty }; // start of word
+    var p2 = { x : startX + currentBBox.width, y : ty}; // end of word
+    var p3 = { x : flip ? currentBBox.x + currentBBox.width : currentBBox.x, y : height/4 }; // dot on horizontal line
+
     return "M" + p1.x + " " + p1.y +
       " L " + p2.x + " " + p2.y +
       " L " + p3.x + " " + p3.y + " Z";
@@ -90,7 +110,7 @@ define(function(require) {
   function _getX(d, i) {
     return Math.min(
       Math.max(
-        scales.x(d[3]) + _jitter(radius, i),
+        scales.x(d[3]) + _jitter(radius * 2, i),
         radius),
       width - radius);
   }
@@ -176,9 +196,12 @@ define(function(require) {
         var count = textBoundingBoxes.length, counter=0;
         var currentBBox = selection[0][0].getBBox();
 
-        // if the end of the text is outside the frame, we need to move it.
+        // if the end of the text is outside the frame, we need to move it OR
+        // If a potential flip will keep the adjective inside the frame, give a 50%
+        // chance to a flip.
         var flip = false;
-        if (currentBBox.x + currentBBox.width > width) {
+        if (currentBBox.x + currentBBox.width > width ||
+          (x - currentBBox.width > 0 && Math.random() > 0.5)) {
           selection.attr("x", x - currentBBox.width);
           currentBBox = selection[0][0].getBBox();
           flip = true;
@@ -217,7 +240,7 @@ define(function(require) {
           } else {
             counter++;
           }
-        }
+        } // end while
 
         currentBBox = selection[0][0].getBBox();
         textBoundingBoxes.push(selection[0][0].getBBox());
@@ -225,20 +248,8 @@ define(function(require) {
         //===== add a triangle ======
         // if we are above the line, then it should be from the bottom
         // of the box, otherwise, it should be from the top.
-        var ty;
-        if (currentBBox.y > height / 4) {
-          // below
-          ty = currentBBox.y;
-        } else {
-          ty = currentBBox.y + currentBBox.height;
-        }
 
-        var pathString = _makeTriangle(
-          { x : currentBBox.x, y : ty }, // start of word
-          { x : currentBBox.x + currentBBox.width, y : ty}, // end of word
-          { x : flip ? currentBBox.x + currentBBox.width : currentBBox.x, y : height/4 } // dot on horizontal line
-        );
-
+        var pathString = _makeTriangle(currentBBox, flip);
         var triangle = bases.adjective_triangles.selectAll("path")
           .data([d], function(d) { return d[0]; });
 
@@ -252,7 +263,7 @@ define(function(require) {
           .style('opacity', 0)
           .transition()
           .delay(Math.random() * 400)
-            .style('opacity', 0.25);
+            .style('opacity', 0.15);
       };
     }());
 
