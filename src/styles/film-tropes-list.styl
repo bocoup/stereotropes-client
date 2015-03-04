@@ -1,0 +1,43 @@
+
+.film-page {
+.film-tropes-list-container {
+  .vis .gender {
+    text.highlight {
+      fill: #fff;
+      }
+    }
+  .vis .underbox.gender-f {
+    fill: $female-col;
+  }
+  .vis .underbox.gender-m {
+    fill: $male-col;
+  }
+  .vis .gender-f {
+    text {
+      fill: $female-col-50;
+      text-anchor: end;
+      }
+    rect.highlight {
+      background-color: $female-col;
+      }
+  }
+  .vis .gender-m {
+    text {
+      fill: $male-col-50;
+      text-anchor: start;
+      }
+    }
+  }
+
+  .vis .middle-panel {
+    text {
+      font-size: 14px;
+      }
+    rect.gender-m {
+      fill: $male-col-50;
+    }
+    rect.gender-f {
+      fill: $female-col-50;
+    }
+  }
+}
