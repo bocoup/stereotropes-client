@@ -1,0 +1,29 @@
+.film-page {
+  .film-tile-container {
+    width: 160px;
+    float: left;
+  }
+
+  .film-detail-container {
+    margin-left: 200px
+    padding-right: 40px;
+    .details {
+
+      .description {
+        display: -webkit-box;
+        text-overflow: ellipsis;
+        overflow-y:hidden;
+
+         margin: 0 auto;
+        -webkit-line-clamp: 8;
+        -webkit-box-orient: vertical;
+        text-overflow: -o-ellipsis-lastline; /* Opera just does this, I guess? */
+      }
+
+      .more {
+        margin-top: 15px;
+        float:right;
+      }
+    }
+  }
+}
