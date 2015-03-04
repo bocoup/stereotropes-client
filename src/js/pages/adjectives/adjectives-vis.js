@@ -159,7 +159,9 @@ define(function(require) {
 
     //Render Links
     var link = this.adjAdjLink.selectAll(".link")
-        .data(bundle(this.links));
+        .data(bundle(this.links), function(link) {
+          return _.pluck(link, "name").join("");
+        });
 
     link.enter()
       .append("path")
