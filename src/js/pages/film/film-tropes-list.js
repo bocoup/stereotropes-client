@@ -2,6 +2,7 @@ define(function(require) {
   var Promise = require('bluebird');
   var d3 = require("d3");
   require("./d3.text");
+  require("./get_metrics");
   var View = require("../../core/view");
   var dataManager = require('../../data/data_manager');
 
@@ -44,19 +45,23 @@ define(function(require) {
     function update() {
       var genders = g.selectAll(".gender").data(data);
       genders.enter().append("g")
-        .attr("class", function(d) { return "gender gender-" + d.key; })
-        .attr("transform", function(d,i) {
-          var shiftDown = (height - (textHeight * d.value.length)) / 2;
-          return "translate(" + positions[d.key] + "," + shiftDown + ")";
-        });
+        .attr("class", function(d) { return "gender gender-" + d.key; });
 
+      // well, do dumb stuff with parent data because transforms arent taken into account
+      // for getBBox()
       var tropes = genders.selectAll(".trope").data(function(d) { return d.value; } );
-      var tropesE = tropes.enter()
-        .append("g")
-        .attr("class", "trope");
+      var tropesE = tropes.enter();
       tropesE.append("text")
-        .attr("transform", function(d,i) { 
-          return "translate(" + 0 + "," + i * textHeight+ ")";
+        .attr("class", "trope-name")
+        // .attr("transform", function(d,i) { 
+        //   return "translate(" + 0 + "," + i * textHeight+ ")";
+        // })
+        .attr("x", function(d,i) {
+          return positions[this.parentNode.__data__.key];
+        })
+        .attr("y", function(d,i) { 
+          var shiftDown = (height - (textHeight * this.parentNode.__data__.value.length)) / 2;
+          return shiftDown + (i * textHeight);
         })
         .text(function(d) { return d.details.name; })
         .on("mouseover", mouseover)
@@ -64,44 +69,84 @@ define(function(require) {
     }
 
     function mouseover(d,i) {
+      var gender = d.details.gender;
       var text = d3.select(this);
       text.classed('highlight', true);
-      // var bbox = text.node().getBBox();
-      var bbox = this.parentNode.getBBox();
-      
+
+      var bbox = text.node().getBBox();
+     
+      // add box under words
+      // TODO: move out magic numbers
       d3.select(text.node().parentNode)
-        .insert("rect", "text")
+        .insert("rect", ".trope-name")
         .attr("x", bbox.x - 4)
         .attr("y", bbox.y)
         .attr("width", bbox.width + 8)
         .attr("height", bbox.height)
-        .attr("class", "underbox gender-" + d.details.gender);
+        .attr("class", "underbox gender-" + gender);
 
       var textX = positions.middle - (textWrap.bounds().width / 2);
       var panel = g.selectAll('.middle-panel').data([d]);
       var panelE = panel.enter().append("g")
-        .attr("class", "middle-panel")
-        .attr("transform", "translate(" + textX + "," + 0 + ")");
+        .attr("class", "middle-panel");
+        // .attr("transform", "translate(" + textX + "," + 0 + ")");
 
-      panelE.append("rect");
-      panelE.append("text")
-        .attr("text-anchor", "start");
-      panel.select("text").text(d.role)
+      panelE.append("rect")
+        .attr("class", "background");
+      panelE.append("text");
+
+      textWrap.bounds({width: width / 3, height: height, x:textX, y:0}).padding(6);
+      panel.select("text")
+        .attr("text-anchor", "start")
+        .text(d.role)
         .call(textWrap);
   
-      bbox = panel.select("text").node().getBBox();
-      panel.select("rect")
-        .attr("class", "gender-" + d.details.gender)
-        .attr("x", bbox.x - 8)
-        .attr("y", bbox.y - 4)
-        .attr("width", bbox.width + 16)
-        .attr("height", bbox.height + 8);
+      var panelBBox = panel.select("text").node().getBBox();
+      // TODO: move out magic numbers
+      panel.select(".background")
+        .classed("gender-" + gender, true)
+        .attr("x", panelBBox.x - 8)
+        .attr("y", panelBBox.y - 4)
+        .attr("width", panelBBox.width + 16)
+        .attr("height", panelBBox.height + 8);
+
+      var beamPath = getBeamPath(g.select(".underbox").node().getBBox(),
+                        panel.select(".background").node().getBBox());
+
+      g.append("path")
+        .attr("class", "beam gender-" + gender)
+        .attr("d", beamPath);
       
+    }
+
+    function getBeamPath(startRect, endRect) {
+      console.log(startRect);
+      console.log(endRect);
+      var p1 = {x: startRect.x, y: startRect.y};
+      var p2 = {x: p1.x, y: startRect.y + startRect.height};
+      var p3 = {x: endRect.x + endRect.width, y: endRect.y + endRect.height};
+      var p4 = {x: p3.x, y: endRect.y};
+      if (startRect.x < endRect.x) {
+        p1.x = startRect.x + startRect.width;
+        p2.x = p1.x;
+        p3.x = endRect.x;
+        p4.x = p3.x;
+      }
+      var path = "M" + p1.x + " " + p1.y;
+      path += " L" + p2.x + " " + p2.y;
+      path += " L" + p3.x + " " + p3.y;
+      path += " L" + p4.x + " " + p4.y;
+      path += " Z";
+
+      return path;
     }
 
     function mouseout(d,i) {
       d3.select(this).classed('highlight', false);
+      // maybe just make it disappear?
       d3.select(this.parentNode).select(".underbox").remove();
+      g.selectAll('.middle-panel').remove();
+      g.select(".beam").remove();
     }
 
     function setupScales(data) {
