@@ -31,8 +31,7 @@ define(function(require) {
 
       var tropesListView = new TropesListView({ 
         film_id : this.options.film_id,
-        width : tropesListContainer.width(),
-        height : 600
+        width : tropesListContainer.width()
       });
 
       this.views['tile'] = thumbnailView;

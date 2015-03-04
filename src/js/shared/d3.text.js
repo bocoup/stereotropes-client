@@ -38,7 +38,7 @@ d3.svg.textWrap = function() {
         // text_y = text_selection.attr("y") || 0,
         line_dy,
         test_tspan;
-        
+
     // only wrap if it actually overflows                              
     if (text_node_width > bounds.width) {
 
@@ -58,7 +58,7 @@ d3.svg.textWrap = function() {
       // use a dummy tspan to check computed length for each
       // additional word and built an array of lines that fit
       test_tspan = text_selection.append('tspan');
-      for (var i = 0; i < words.length; i++) {
+      for (var i = 0; i < words.length + 1; i++) {
         word = words[i];
         line_previous = line_next;
         line.push(word);
@@ -68,12 +68,13 @@ d3.svg.textWrap = function() {
           lines.push(line_previous);
           line = [word];
           line_next = word;
-        } else if (i === words.length) {
+        } else if (i === words.length ) {
           lines.push(line_next);
         }
         test_tspan.text('');
       }
       test_tspan.remove();
+
       
       // append each line as a tspan
       for (var j = 0; j < lines.length; j++) {
@@ -86,13 +87,13 @@ d3.svg.textWrap = function() {
           text_selection.append('tspan')
             .text(lines[j])
             .attr('x', bounds.x)
-            .attr('y', line_height * (j + 1) - bounds.y_offset + bounds.padding);
+            .attr('y', bounds.y + (line_height * (j + 1) - bounds.y_offset + bounds.padding));
         }
       }
       
     } else {
       text_selection.attr("x", bounds.x);
-      text_selection.attr("y", line_height - bounds.y_offset + bounds.padding);
+      text_selection.attr("y", bounds.y + (line_height - bounds.y_offset + bounds.padding));
     }
 
   };

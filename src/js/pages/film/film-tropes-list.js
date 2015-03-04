@@ -1,41 +1,64 @@
 define(function(require) {
   var Promise = require('bluebird');
   var d3 = require("d3");
-  require("./d3.text");
+  require("../../shared/d3.text");
   var View = require("../../core/view");
   var dataManager = require('../../data/data_manager');
 
-  var margin = {top:20, left:10, bottom:20, right:10};
-  var positions = {};
-
-  var textWrap = d3.svg.textWrap();
-
+  /**
+   * tropeList - 
+   *
+   * @return {chart}
+   */
   var tropeList = function() {
+    // default height/width - will
+    // get passed in or auto calculated
     var height = 600;
-    var width = 600;
+    var width = 600;  
+
+    // minimum size the 
+    // visualization can be
     var minHeight = 240;
-    var textHeight = 30;
+    // space alloted for words 
+    // in trope lists
+    var textHeight = 20;
+    // padding around 
+    // hightlight boxes
+    var boxPadding = 4;
+
+    // Similar to margins - but work inside the SVG
+    var padding = {top:20, left:10, bottom:20, right:10};
+
+    var textWrap = d3.svg.textWrap();
+
+    // Spacing for columns.
+    // Initialized later
+    var positions = {f : 0, middle : 0, m : 0};
     var data = [];
     var g = null;
 
-    // var yScale = d3.scale.ordinal();
-    var xScale = d3.scale.ordinal();
-
+    /**
+     * chart
+     *
+     * @param selection
+     * @return {undefined}
+     */
     var chart = function(selection) {
       selection.each(function(rawData) {
+        console.log(rawData);
         data = processData(rawData);
-        setupScales(data);
+        console.log(data);
+        setHeight(data);
+        updatePositions();
 
         var svg = d3.select(this).selectAll("svg").data([data]);
         svg.enter().append("svg").append("g");
-
-        console.log(data);
 
         svg.attr("width", width);
         svg.attr("height", height);
 
         g = svg.select("g")
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+          .attr("transform", "translate(" + padding.left + "," + padding.top + ")");
 
         update();
       });
@@ -46,19 +69,24 @@ define(function(require) {
       genders.enter().append("g")
         .attr("class", function(d) { return "gender gender-" + d.key; });
 
-      // well, do dumb stuff with parent data because transforms arent taken into account
-      // for getBBox()
       var tropes = genders.selectAll(".trope").data(function(d) { return d.value; } );
+
+      // http://www.w3.org/TR/SVGTiny12/svgudom.html#svg__SVGLocatable
+      // dont use transformation if you want to cross groups 
+      // and use getBBox()
       var tropesE = tropes.enter();
       tropesE.append("text")
         .attr("class", "trope-name")
-        // .attr("transform", function(d,i) { 
-        //   return "translate(" + 0 + "," + i * textHeight+ ")";
-        // })
         .attr("x", function(d,i) {
+          // positions are based on parent key values
+          // I could also use the trope's gender directly
+          // but I don't like that as much
           return positions[this.parentNode.__data__.key];
         })
         .attr("y", function(d,i) { 
+          // shiftDown is used for the case of the smaller list
+          // of tropes so that it is centered with respect to the
+          // larger list
           var shiftDown = (height - (textHeight * this.parentNode.__data__.value.length)) / 2;
           return shiftDown + (i * textHeight);
         })
@@ -78,40 +106,42 @@ define(function(require) {
       // TODO: move out magic numbers
       d3.select(text.node().parentNode)
         .insert("rect", ".trope-name")
-        .attr("x", bbox.x - 4)
+        .attr("x", bbox.x - boxPadding)
         .attr("y", bbox.y)
-        .attr("width", bbox.width + 8)
+        .attr("width", bbox.width + boxPadding * 2)
         .attr("height", bbox.height)
         .attr("class", "underbox gender-" + gender);
 
-      var textX = positions.middle - (textWrap.bounds().width / 2);
       var panel = g.selectAll('.middle-panel').data([d]);
       var panelE = panel.enter().append("g")
         .attr("class", "middle-panel");
-        // .attr("transform", "translate(" + textX + "," + 0 + ")");
 
       panelE.append("rect")
         .attr("class", "background");
       panelE.append("text");
 
-      textWrap.bounds({width: width / 3, height: height, x:textX, y:0}).padding(6);
+      // recalculate to get textX location
+      var textX = positions.middle - (textWrap.bounds().width / 2);
+      var textOffset = (gender === 'f') ? -200 : 200;
+      var textY = Math.max(0, (textHeight * i) + textOffset);
+      textY = Math.min(textY, height);
+      textWrap.bounds({width: width / 3, height: height, x:textX, y:textY}).padding(6);
       panel.select("text")
         .attr("text-anchor", "start")
-        .text(d.role)
+        .text(d.roles.join("\n"))
         .call(textWrap);
   
       var panelBBox = panel.select("text").node().getBBox();
       // TODO: move out magic numbers
       panel.select(".background")
         .classed("gender-" + gender, true)
-        .attr("x", panelBBox.x - 8)
-        .attr("y", panelBBox.y - 4)
-        .attr("width", panelBBox.width + 16)
-        .attr("height", panelBBox.height + 8);
+        .attr("x", panelBBox.x - boxPadding * 2)
+        .attr("y", panelBBox.y - boxPadding)
+        .attr("width", panelBBox.width + boxPadding * 4)
+        .attr("height", panelBBox.height + boxPadding * 2);
 
       var beamPath = getBeamPath(g.select(".underbox").node().getBBox(),
                         panel.select(".background").node().getBBox());
-
       g.append("path")
         .attr("class", "beam gender-" + gender)
         .attr("d", beamPath);
@@ -119,8 +149,6 @@ define(function(require) {
     }
 
     function getBeamPath(startRect, endRect) {
-      console.log(startRect);
-      console.log(endRect);
       var p1 = {x: startRect.x, y: startRect.y};
       var p2 = {x: p1.x, y: startRect.y + startRect.height};
       var p3 = {x: endRect.x + endRect.width, y: endRect.y + endRect.height};
@@ -148,33 +176,30 @@ define(function(require) {
       g.select(".beam").remove();
     }
 
-    function setupScales(data) {
-      xScale.domain([0,0.5,1])
-        .rangeRoundPoints([0, width], 2);
-
+    function updatePositions() {
       positions = {
         f : width / 4,
         middle : (width / 2),
         m : (width / 2) + (width / 4)
       };
-      var maxLength = d3.max(data, function(d) { return d.value.length; });
-      height = Math.max(((maxLength * textHeight) + (margin.top + margin.bottom)), minHeight);
-      textWrap.bounds({width: width / 3, height: height, x:0,y:0}).padding(6);
 
+      textWrap.bounds({width: width / 3, height: height, x:0,y:0}).padding(6);
+    }
+
+    function setHeight(data) {
+      var maxCount = d3.max(data, function(d) { return d.value.length; });
+      var columnHeight = (maxCount * textHeight) + (padding.top + padding.bottom);
+      height = Math.max(columnHeight, minHeight);
     }
 
     function processData(rawData) {
       var data = [];
-      if(rawData.roles) {
-        rawData.roles.f = rawData.roles.f || [];
-        rawData.roles.m = rawData.roles.m || [];
-        data = d3.entries(rawData.roles);
-        // ensure female is always first
-        data.sort(function(a,b) {
-          return (a.key === "f") ? -1 : 1;
-        });
-      }
-
+      // ensure both groups are present
+      data = d3.entries(rawData);
+      // ensure female is always first
+      data.sort(function(a,b) {
+        return (a.key === "f") ? -1 : 1;
+      });
       return data;
     }
 
@@ -182,7 +207,7 @@ define(function(require) {
       if (!arguments.length) {
         return height;
       }
-      height = h; //- (margin.top + margin.bottom);
+      height = h;
       return this;
     };
 
@@ -190,7 +215,7 @@ define(function(require) {
       if (!arguments.length) {
         return width;
       }
-      width = w; // - (margin.left + margin.right);
+      width = w;
       return this;
     };
 
@@ -219,6 +244,24 @@ define(function(require) {
       this.$el.html(this.template());
       return this;
     },
+    collapseRoles: function(rawRoles) {
+      console.log(rawRoles);
+      var roles = {'f':[],'m':[]};
+      d3.keys(rawRoles).forEach(function(g) {
+        var tropeNest = d3.nest()
+          .key(function(d) { return d.id; })
+          .entries(rawRoles[g]);
+        tropeNest.forEach(function(d) {
+          var trope = {"id":d.key, roles:[]};
+          d.values.forEach(function(v) {
+            trope.roles.push(v.role);
+          });
+          roles[g].push(trope);
+        });
+
+      });
+      return roles;
+    },
     getRoleDetails: function(roles) {
       var details = [];
       // get details for all roles in the film
@@ -242,18 +285,18 @@ define(function(require) {
       var self = this;
       self._preDataRender();
       var list = tropeList();
-      list.width(self.options.width)
-        .height(self.options.height);
+      list.width(self.options.width);
+
       return dataManager.getFilmDetails(this.film_id).then(function(film_details) {
 
-        var roleDetails = self.getRoleDetails(film_details.roles);
-
-        return Promise.all(roleDetails).then(function(roleDetails) {
-          self.addRoleDetails(film_details.roles, roleDetails);
+        var roles = self.collapseRoles(film_details.roles);
+        var roleDetailPromises = self.getRoleDetails(roles);
+        return Promise.all(roleDetailPromises).then(function(roleDetails) {
+          self.addRoleDetails(roles, roleDetails);
 
           self.$el.html(self.template(film_details));
           self.chart = d3.select(self.$el.find('.vis')[0]);
-          plotData(self.chart, film_details, list);
+          plotData(self.chart, roles, list);
           return self;
         });
 
