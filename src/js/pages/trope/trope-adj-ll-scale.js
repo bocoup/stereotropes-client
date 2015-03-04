@@ -37,11 +37,11 @@ define(function(require) {
     }
 
     // add variance relative to connecting point
-    var triangleWidth = currentBBox.width;
-    var varianceMax = triangleWidth * 0.30; // max horizontal movement
-    var totalMovement = 0; //varianceMax * Math.random(); // the amount of that movement
+    // var triangleWidth = currentBBox.width;
+    // var varianceMax = triangleWidth * 0.30; // max horizontal movement
+    // var totalMovement = 0; //varianceMax * Math.random(); // the amount of that movement
 
-    var startX = Math.max(currentBBox.x - totalMovement, 0);
+    var startX = currentBBox.x;
 
     var p1 = { x : startX, y : ty }; // start of word
     var p2 = { x : startX + currentBBox.width, y : ty}; // end of word
@@ -171,7 +171,7 @@ define(function(require) {
    * @private
    * @type {String}
    */
-  var trope_id;
+  var current_trope_id;
 
   /**
    * Gets called for each adjective selection on enter to position
@@ -182,8 +182,8 @@ define(function(require) {
    */
   var _adjectivesOnEnter = (function () {
       var floors = 3;
-      var textHeight = 25;
-      var paddingFromAxis = 10;
+      var textHeight = 22;
+      var paddingFromAxis = 5;
 
       var floorHeights = [];
       for (var i = 0; i < floors; i++) {
@@ -274,7 +274,7 @@ define(function(require) {
             .style('opacity', 0.15);
 
         // add a uniqueness marker if this adjective doesn't appear in other tropes
-        if (d[4].length === 1 && d[4][0] === trope_id) {
+        if (d[4].length === 1 && d[4][0] === current_trope_id) {
           triangle.classed("unique", true);
         }
 
@@ -285,12 +285,100 @@ define(function(require) {
    * Cleares cached variables after placing adjectives so that future updates
    * can recompute positions with empty arrays.
    * @private
-   * @return {[type]}
    */
   var _onEndAdjectivePlacement = function() {
     textBoundingBoxes = [];
     currentFloor = 0;
   };
+
+  /**
+   * Draws the trope list on the bottom of the adjectives line
+   * @private
+   * @param  {Object} data
+   */
+  function _drawTropes(data) {
+    var columnWidth = 200; // min column width
+    var columns = Math.floor(width / columnWidth); // how many can we fit?
+    columnWidth = width / columns; // actual column width
+
+    // gather trope list
+    var textElHeight = 25;
+    var tropesPerList = Math.floor((height / 2) / textElHeight);
+    var totalTropes = columns * tropesPerList;
+    var tropesList = {};
+
+    // build trope map
+    for (var i = 0; i < data.adjectives.length; i++) {
+      for (var t = 0; t < data.adjectives[i][4].length; t++) {
+        var adj = data.adjectives[i][0];
+        var tropeId = data.adjectives[i][4][t];
+        if (tropeId !== current_trope_id) {
+          if (tropesList[tropeId]) {
+            tropesList[tropeId].adjs.push(adj); // save adjective as related
+            tropesList[tropeId].count++;
+          } else {
+            tropesList[tropeId] = { tropeId: tropeId, adjs : [adj], count: 1 };
+          }
+        }
+      }
+    }
+
+    // get trope values and get top N by count
+    var tl = _.values(tropesList);
+    tl = _.sortBy(tropesList, function(d) { return -d.count; });
+    var subset = tl.slice(0, totalTropes);
+
+    // get all the trope dictionary data
+    var dictMap = {};
+    dataManager.getTropes(_.pluck(subset, "tropeId")).then(function(dict) {
+      _.each(dict, function(trope) {
+        dictMap[trope.id] = trope;
+      });
+
+      var tropeSelection = bases.tropes.selectAll('text')
+        .data(subset, function(d) { return d.tropeId; });
+
+      // make new nodes if we need them
+      tropeSelection.enter().append('text');
+
+      var currentColumn = 0, inColumn = 0;
+
+      // position new and existing nodes:
+      tropeSelection.attr({
+        x : function(d, i) {
+          if (inColumn >= tropesPerList) {
+            inColumn = 0;
+            currentColumn++;
+          }
+          inColumn++;
+          return currentColumn * columnWidth;
+        },
+
+        y : function(d, i) {
+          return textElHeight * (i % (tropesPerList));
+        }
+      }).text(function(d) {
+        return dictMap[d.tropeId].name;
+      }).attr("class", function(d) {
+        return "gender-" + dictMap[d.tropeId].gender + " trope-name";
+      }).style("width", columnWidth).each(function(d, i) {
+
+        var bbox = this.getBBox();
+        if (bbox.width > columnWidth) {
+
+          var name = dictMap[d.tropeId].name;
+          var charsWidth = bbox.width / name.length;
+
+          var newlencount = (bbox.width / charsWidth) - charsWidth;
+          var newname = name.substring(0, newlencount) + '...';
+
+          d3.select(this).text(newname);
+        }
+      });
+
+      tropeSelection.exit().remove();
+    });
+  }
 
   function processData(data) {
     // only get adjectives that have positive ll scores
@@ -300,6 +388,7 @@ define(function(require) {
 
     data.adjectives = adjs;
   }
+
 
   function draw(el, data) {
 
@@ -315,7 +404,7 @@ define(function(require) {
       container.classed('gender-f', true);
     }
 
-    trope_id = data.id;
+    current_trope_id = data.id;
 
     svg = container.append('svg')
       .attr({ width: width, height: height });
@@ -339,6 +428,11 @@ define(function(require) {
     // text label container
     bases.adjectives_text = svg.append("g")
       .attr("class", "adjectives");
+
+    // trope container
+    bases.tropes = svg.append("g")
+      .attr("class", "tropes")
+      .attr("transform", "translate(0," + ((height / 2) + 10) + ")");
 
     // ====== axis: =====
     _drawAxis(data);
@@ -386,6 +480,9 @@ define(function(require) {
         .classed('selected', false);
 
     });
+
+    // ======= tropes =======
+    _drawTropes(data);
   }
 
   /**
@@ -410,6 +507,9 @@ define(function(require) {
           return d[0];
         }).each(_adjectivesOnEnter);
       _onEndAdjectivePlacement();
+
+      // update trope list
+      _drawTropes(data);
     }
   }
 
