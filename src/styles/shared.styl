@@ -96,3 +96,34 @@ nav {
   text-align:center
   border-top: 1px solid #eaeaea
 }
+
+
+//
+// Mixins. These are styles expected to be mixed into
+// some existing css, not directly applying globally.
+//
+
+// Trope tiles
+trope-details(){
+  .details {
+    height: 225px;
+
+    div.description.short {
+      height: 188px;
+      display: -webkit-box;
+      text-overflow: ellipsis;
+      overflow-y:hidden;
+
+       margin: 0 auto;
+      -webkit-line-clamp: 8;
+      -webkit-box-orient: vertical;
+      text-overflow: -o-ellipsis-lastline; /* Opera just does this, I guess? */
+    }
+
+    .more {
+      margin-top: 15px;
+      float:right;
+    }
+  }
+}
+

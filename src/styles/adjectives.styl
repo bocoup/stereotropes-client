@@ -97,11 +97,23 @@
     &.female {
       fill: $female-col-25;
     }
+  }
 
-    .trope-node-bg:hover {
-      fill: $highlight-col !important;
+  .tropeNode.active {
+    .trope-node-bg {
+      fill: $highlight-col;
+      stroke: none;
     }
 
+    .trope-node-label {
+      fill: white;
+    }
+  }
+
+  // Trope info display
+
+  .blurb {
+    trope-details()
   }
 
 
