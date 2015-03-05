@@ -1,49 +1,50 @@
 
 .film-page {
 .film-tropes-list-container {
-  .vis .gender {
-    text.highlight {
-      fill: #fff;
+  .vis {
+    .gender {
+      text.highlight {
+        fill: #fff;
       }
     }
-  .vis .underbox.gender-f {
-    fill: $female-col;
-  }
-  .vis .underbox.gender-m {
-    fill: $male-col;
-  }
-  .vis .beam.gender-f {
-    fill: $female-col-25;
-  }
-  .vis .beam.gender-m {
-    fill: $male-col-25;
-  }
-  .vis .gender-f {
-    text {
-      fill: $female-col-50;
-      text-anchor: end;
+    .underbox.gender-f {
+      fill: $female-col;
+    }
+    .underbox.gender-m {
+      fill: $male-col;
+    }
+    .beam.gender-f {
+      fill: $female-col-25;
+    }
+    .beam.gender-m {
+      fill: $male-col-25;
+    }
+    .gender-f {
+      text {
+        fill: $female-col-50;
+        text-anchor: end;
+        }
+      rect.highlight {
+        background-color: $female-col;
       }
-    rect.highlight {
-      background-color: $female-col;
+    }
+    .gender-m {
+      text {
+        fill: $male-col-50;
+        text-anchor: start;
       }
-  }
-  .vis .gender-m {
-    text {
-      fill: $male-col-50;
-      text-anchor: start;
+    }
+    .middle-panel {
+      text {
+        font-size: 14px;
+      }
+      .background.gender-m {
+        fill: $male-col-50;
+      }
+      .background.gender-f {
+        fill: $female-col-50;
       }
     }
   }
-
-  .vis .middle-panel {
-    text {
-      font-size: 14px;
-      }
-    .background.gender-m {
-      fill: $male-col-50;
-    }
-    .background.gender-f {
-      fill: $female-col-50;
-    }
-  }
+}
 }
