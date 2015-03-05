@@ -17,8 +17,9 @@ define(function(require) {
 
     template: template,
 
-    initialize: function(options) {
-
+    initialize: function(options, params) {
+      this.options = options;
+      this.params = params;
     },
 
     _render: function() {
@@ -37,11 +38,20 @@ define(function(require) {
 
         var adjVis = new AdjectiveVis({
           data: adjectiveData,
-          container: self.$el.find('.adjectives-page .canvas').get(0)
+          container: self.$el.find('.adjectives-page .canvas').get(0),
+          selections: self.params
         });
 
         adjVis.on('tropeSelected', function(tropeId){
           self.showTropeDetails(tropeId);
+        });
+
+        adjVis.on('adjectiveClicked', function(adjectiveId){
+          //TODO update URL
+        });
+
+        adjVis.on('tropeClicked', function(tropeId){
+          //TODO update URL
         });
 
         $(window).resize(function(){

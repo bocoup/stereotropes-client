@@ -26,6 +26,7 @@ define(function(require) {
     var self = this;
 
     this.data = options.data;
+    this.urlSelections = options.selections || {};
     this._container = options.container;
 
     // Holders for currenly selected adjectives and tropes
@@ -33,6 +34,7 @@ define(function(require) {
     // mouseover interaction.
     this.currentlySelectedAdj = null;
     this.currentlySelectedTrope = null;
+
 
     // The tropes associated with the currently selected adjectives.
     this.associatedTropes = [];
@@ -172,8 +174,11 @@ define(function(require) {
     this.container.select('g.vis-group')
       .attr("transform", "translate(" + this.radius + "," + this.radius + ")");
 
-    this.renderAdjAdjNetwork();
-    this.renderLinkedTropes();
+
+    // Note: this.urlSelections will be modified once the state specified by them
+    // has been restored.
+    this.renderAdjAdjNetwork(this.urlSelections.adjectives);
+    this.renderLinkedTropes(this.urlSelections.tropes);
   };
 
 
@@ -187,7 +192,7 @@ define(function(require) {
    * under an invisible root node.
    *
    */
-  AdjectiveVis.prototype.renderAdjAdjNetwork = function() {
+  AdjectiveVis.prototype.renderAdjAdjNetwork = function(selectedAdj) {
     var self = this;
 
     var bundle = d3.layout.bundle();
@@ -379,6 +384,7 @@ define(function(require) {
       mouseovered(d);
       self.currentlySelectedAdj = d;
       self.render();
+      self.trigger('adjectiveClicked', d.name);
     }
 
 
@@ -390,6 +396,25 @@ define(function(require) {
       mouseouted();
       self.trigger('tropeSelected', null);
       self.render();
+    }
+
+    if (selectedAdj) {
+      //Find the node for this adjective and 'click' it.
+      node.each(function(d, i){
+        if ((d.name) === selectedAdj) {
+          // Call mouseclick in a setTimeout so that we
+          // will not be in an infinite loop. The function
+          // queueing aspect of setTimeout is what we are particuarly
+          // interested rather than the specific timeout.
+          //
+          // We also clear the trope url selection once the
+          // requested state has been restored.
+          setTimeout(function(){
+            self.urlSelections.adjectives = undefined;
+            mouseclicked(d);
+          }, 20);
+        }
+      });
     }
 
   };
@@ -418,7 +443,7 @@ define(function(require) {
    *
    * These are rendered using a force directed layout.
    */
-  AdjectiveVis.prototype.renderLinkedTropes = function() {
+  AdjectiveVis.prototype.renderLinkedTropes = function(selectedTrope) {
     var self = this;
 
     // This is the maximum number of nodes at which we will
@@ -506,8 +531,9 @@ define(function(require) {
 
     var svg = this.container.select('svg');
 
+    data = data.slice(1);
     var nodes = svg.selectAll("g.tropeNode")
-        .data(data.slice(1), function(t) { return t.name; });
+        .data(data, function(t) { return t.name; });
 
 
     // Append the nodes in the force layout.
@@ -609,7 +635,31 @@ define(function(require) {
     function tropeMouseclicked(d){
       self.currentlySelectedTrope = d;
       self.trigger('tropeSelected', d.name);
+      self.trigger('tropeClicked', d.name);
       self.render();
+    }
+
+    if (selectedTrope) {
+      //Find the node for this trope and 'click' it.
+      nodes.each(function(d, i){
+        if ((d.name) === selectedTrope) {
+          // Call mouseclick in a setTimeout so that we
+          // will not be in an infinite loop. The function
+          // queueing aspect of setTimeout is what we are particuarly
+          // interested rather than the specific timeout.
+          //
+          // We also clear the trope url selection once the
+          // requested state has been restored.
+          //
+          // Its particularly important to do that here because
+          // the trope nodes need to be rendered and that will not
+          // happen until the adjective is selected.
+          setTimeout(function(){
+            self.urlSelections.tropes = undefined;
+            tropeMouseclicked(d);
+          }, 20);
+        }
+      });
     }
 
   };
