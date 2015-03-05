@@ -1,13 +1,12 @@
 define(function(require) {
 
   var Backbone = require('backbone');
-  var Util = require('../core/util');
+  var QueryData = require('../core/query-data');
 
   var Layout = require('../core/layout');
   var layout = new Layout({
     el: "#main"
   });
-
 
   var Router = Backbone.Router.extend({
 
@@ -28,7 +27,7 @@ define(function(require) {
      */
     execute: function(callback, args) {
       // extract params
-      var params = Util.decodeQueryParams();
+      var params = QueryData.get();
       args.pop(); // remove the null at the end.
       args.push(params);
       if (callback) {
