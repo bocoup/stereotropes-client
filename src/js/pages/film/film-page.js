@@ -1,6 +1,7 @@
 define(function(require) {
 
   var View = require('../../core/view');
+  var _  = require("lodash");
   var template = require('tmpl!../film/film-page');
   var ThumbnailView = require('../../pages/film/film-tile');
   var DetailView = require('../../pages/film/film-detail-header');
@@ -12,8 +13,13 @@ define(function(require) {
     template: template,
 
     initialize: function(options) {
+      var self = this;
       this.options = options;
       this.views = {};
+      window.addEventListener("resize", _.debounce(function() {
+        var tropesListContainer = self.$el.find('.film-tropes-list-container');
+        self.views['tropes'].resize({width: tropesListContainer.width()});
+      }, 150));
     },
 
     _render: function() {
