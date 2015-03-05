@@ -1,0 +1,120 @@
+.adjectives-page {
+
+  .canvas {
+    width: 100%;
+  }
+
+  .node, .tropeNode {
+    cursor: pointer;
+  }
+
+  .node-text {
+    font-family: $adjective-font;
+    font-weight: 400;
+    font-size: 20px;
+    fill: $silver-blue-dark;
+    font-variant:small-caps;
+
+    &.count {
+      font-size: 14px;
+      fill: white;
+    }
+  }
+
+  .node.active {
+
+    .node-text {
+      fill: $highlight-col;
+      text-decoration:underline;
+      font-weight: 800;
+
+      &.count {
+        fill: $highlight-col;
+        text-decoration: none;
+      }
+    }
+
+    .node-rect {
+      fill: $highlight-col;
+      stroke: $highlight-col;
+    }
+  }
+
+  .node-rect {
+    stroke: $silver-blue;
+    fill: none;
+  }
+
+  .node-target, .node-source {
+    fill: black;
+    font-weight: 600;
+    text-decoration:underline;
+  }
+
+
+  .link {
+    stroke: $silver-blue;
+    stroke-width: 1px;
+    stroke-opacity: 0.25;
+    fill: none;
+    pointer-events: none;
+  }
+
+  .link-source {
+    stroke-opacity: 0.75;
+    stroke-width: 3px;
+    stroke: $highlight-col;
+    stroke: $silver-blue-dark;
+  }
+
+  .link-target {
+    stroke-opacity: 0.75;
+    stroke-width: 3px;
+    stroke: $highlight-col;
+    stroke: $silver-blue-dark;
+  }
+
+  // Trope network
+  .trope-node-label {
+    font-family: $trope-font;
+    font-weight: 600;
+    font-style: italic;
+    font-size: 14px;
+    fill: $silver-blue-dark;
+    text-transform: capitalize;
+    // font-variant: small-caps;
+
+  }
+
+  .trope-node-bg {
+    stroke: $silver-blue-dark;
+    stroke-width: 0.5;
+
+    &.male {
+      fill: $male-col-25;
+    }
+
+    &.female {
+      fill: $female-col-25;
+    }
+  }
+
+  .tropeNode.active {
+    .trope-node-bg {
+      fill: $highlight-col;
+      stroke: none;
+    }
+
+    .trope-node-label {
+      fill: white;
+    }
+  }
+
+  // Trope info display
+
+  .blurb {
+    trope-details()
+  }
+
+
+}
