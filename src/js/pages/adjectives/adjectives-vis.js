@@ -74,7 +74,7 @@ define(function(require) {
     var self = this;
     this.container = d3.select(this._container);
 
-    var minWidth = 960;
+    var minWidth = 760;
     this.width = _.max([parseInt(this.container.style('width'), 10), minWidth]);
     this.height = this.width;
 
