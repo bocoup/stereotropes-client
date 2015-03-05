@@ -380,7 +380,11 @@ define(function(require) {
       mouseouted();
       self.currentlySelectedAdj = null;
       mouseovered(d);
+
       self.currentlySelectedAdj = d;
+      self.currentlySelectedTrope = null;
+      self.trigger('tropeSelected', null);
+
       self.render();
       self.trigger('adjectiveClicked', d.name);
     }
