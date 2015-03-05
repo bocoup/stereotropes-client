@@ -47,15 +47,13 @@ define(function(require) {
 
 
     self.update();
-    self.init();
+    self.initialRender();
 
     dataManager.getTropes().then(function(tropes){
       self.tropeInfo = _.reduce(tropes, function(memo, ti){
         memo[ti.id] = ti;
         return memo;
       }, {});
-
-      self.render();
     });
 
     // Add event support to this object so that we can alert
@@ -138,7 +136,7 @@ define(function(require) {
    * only once. Adds basic elements to the container.
    *
    */
-  AdjectiveVis.prototype.init = function() {
+  AdjectiveVis.prototype.initialRender = function() {
     var svg = this.container.append('svg')
       .attr('height', this.height)
       .attr('width', this.width);
