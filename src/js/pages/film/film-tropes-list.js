@@ -73,6 +73,7 @@ define(function(require) {
       var details = {};
       d3.keys(roles).forEach(function(g) {
         roles[g].forEach(function(trope) {
+          // TODO: log in persistent storage (like GA) when errors occur
           details[trope.id] = dataManager.getTropeDetails(trope.id)
             .catch(function(e) {console.log(e.responseText); return undefined;});
         });
@@ -96,18 +97,13 @@ define(function(require) {
         var i = roles[g].length;
         while(i--) {
           roles[g][i].details = roleMap[roles[g][i].id];
+          // remove if there aren't any details
+          // for this role
           if(!roles[g][i].details) {
             roles[g].splice(i,1);
           }
         }
-        // roles[g].forEach(function(trope,i) {
-        //   // add details to the trope from the map
-        //   if(!trope.details) {
-        //     delete roles[g][i];
-        //   }
-        // });
       });
-      console.log(roles);
       return roles;
     },
     /**
