@@ -3,6 +3,7 @@ define(function(require) {
   var View = require('../../core/view');
   var _  = require("lodash");
   var template = require('tmpl!../film/film-page');
+  var dataManager = require('../../data/data_manager');
   var ThumbnailView = require('../../pages/film/film-tile');
   var DetailView = require('../../pages/film/film-detail-header');
   var TropesListView = require('../../pages/film/film-tropes-list');
@@ -44,11 +45,17 @@ define(function(require) {
       this.views['details'] = detailView;
       this.views['tropes'] = tropesListView;
 
-      return Promise.join(thumbnailView.render(), detailView.render(), tropesListView.render(), function(t_view, h_view, t_l_view) {
-        self.$el.find('.film-tile-container').append(t_view.$el);
-        self.$el.find('.film-detail-container').append(h_view.$el);
-        self.$el.find('.film-tropes-list-container').append(t_l_view.$el);
-        return self;
+      return dataManager.getFilmDetails(this.options.film_id).then(function(film_details) {
+          return Promise.join(thumbnailView.render(), detailView.render(), tropesListView.render(), function(t_view, h_view, t_l_view) {
+            self.$el.find('.film-tile-container').append(t_view.$el);
+            self.$el.find('.film-detail-container').append(h_view.$el);
+            self.$el.find('.film-tropes-list-container').append(t_l_view.$el);
+            return self;
+          });
+      }).catch(function() {
+        var errorTemplate = require('tmpl!../film/error');
+        self.$el.html(errorTemplate());
+
       });
     }
   });
