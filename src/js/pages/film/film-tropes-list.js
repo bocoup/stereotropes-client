@@ -8,6 +8,8 @@ define(function(require) {
 
   var template = require("tmpl!../../pages/film/film-tropes-list");
 
+  var genderBarTemplate = require("tmpl!../../shared/gender-split-bar");
+
   /**
    * Defines a view that wraps the above visualization
    * @param  {Options} options Requires: width, film_id
@@ -65,13 +67,18 @@ define(function(require) {
      * all roles in movie
      *
      * @param roles
-     * @return {array} - of promises
+     * @return {object} - of promises keyed by their id's
      */
     getRoleDetails: function(roles) {
-      var details = [];
+      var details = {};
       d3.keys(roles).forEach(function(g) {
         roles[g].forEach(function(trope) {
-          details.push(dataManager.getTropeDetails(trope.id));
+          // TODO: log in persistent storage (like GA) when errors occur
+          details[trope.id] = dataManager.getTropeDetails(trope.id)
+            .catch(function(e) {
+              console.log(e.responseText); 
+              return undefined;
+            });
         });
       });
       return details;
@@ -86,17 +93,22 @@ define(function(require) {
      * @param roleDetails
      * @return {array}
      */
-    addRoleDetails: function(roles, roleDetails) {
-      // turn roleDetails into a map
-      var roleMap = d3.map(roleDetails, function(d) { return d.id; });
-
+    addRoleDetails: function(roles, roleMap) {
       // iterate through role genders
-      d3.keys(roles).forEach(function(g) {
+      d3.keys(roles).forEach(function(gender) {
         // iterate over the tropes in each role
-        roles[g].forEach(function(trope) {
-          // add details to the trope from the map
-          trope.details = roleMap.get(trope.id);
-        });
+        var i = roles[gender].length;
+        // reversed order of iteration to remove
+        // invalid roles using splice. 
+        // http://stackoverflow.com/questions/9882284/looping-through-array-and-removing-items-without-breaking-for-loop
+        while(i--) {
+          roles[gender][i].details = roleMap[roles[gender][i].id];
+          // remove if there aren't any details
+          // for this role
+          if(!roles[gender][i].details) {
+            roles[gender].splice(i,1);
+          }
+        }
       });
       return roles;
     },
@@ -136,16 +148,22 @@ define(function(require) {
         // now grab all their details. getRoleDetails returns
         // an array of promises that we wait for to fulfill
         var roleDetailPromises = self.getRoleDetails(roles);
-        return Promise.all(roleDetailPromises).then(function(roleDetails) {
+        return Promise.props(roleDetailPromises).then(function(roleDetails) {
+
           // now we have all the details, we need to 
-          // merge them back with the roles. 
-          // TODO: is there a way to use promises and keep
-          // them in an object - so we don't have to 
-          // redo the mapping?
+          // merge them back with the roles.
           self.addRoleDetails(roles, roleDetails);
 
-          self.$el.html(self.template(film_details));
-          // display this visual! 
+          // pass in counts to gender split to proportion them by gender
+          var sum = d3.sum(d3.values(roles), function(v) { return v.length; });
+          var percents = {};
+          d3.entries(roles).forEach(function(e) { 
+            percents[e.key]  = Math.round((e.value.length / sum) * 100.0); 
+          });
+
+          self.$el.find(".gender-split-bar-container")
+            .html(genderBarTemplate({"percents":percents}));
+          // display the trope list visual! 
           var vis = d3.select(self.$el.find('.vis')[0]);
           vis.datum(roles)
             .call(self.list);
