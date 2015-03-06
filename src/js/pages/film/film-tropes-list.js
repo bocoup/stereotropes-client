@@ -75,7 +75,10 @@ define(function(require) {
         roles[g].forEach(function(trope) {
           // TODO: log in persistent storage (like GA) when errors occur
           details[trope.id] = dataManager.getTropeDetails(trope.id)
-            .catch(function(e) {console.log(e.responseText); return undefined;});
+            .catch(function(e) {
+              console.log(e.responseText); 
+              return undefined;
+            });
         });
       });
       return details;
@@ -92,15 +95,18 @@ define(function(require) {
      */
     addRoleDetails: function(roles, roleMap) {
       // iterate through role genders
-      d3.keys(roles).forEach(function(g) {
+      d3.keys(roles).forEach(function(gender) {
         // iterate over the tropes in each role
-        var i = roles[g].length;
+        var i = roles[gender].length;
+        // reversed order of iteration to remove
+        // invalid roles using splice. 
+        // http://stackoverflow.com/questions/9882284/looping-through-array-and-removing-items-without-breaking-for-loop
         while(i--) {
-          roles[g][i].details = roleMap[roles[g][i].id];
+          roles[gender][i].details = roleMap[roles[gender][i].id];
           // remove if there aren't any details
           // for this role
-          if(!roles[g][i].details) {
-            roles[g].splice(i,1);
+          if(!roles[gender][i].details) {
+            roles[gender].splice(i,1);
           }
         }
       });
