@@ -8,6 +8,8 @@ define(function(require) {
 
   var template = require("tmpl!../../pages/film/film-tropes-list");
 
+  var genderBarTemplate = require("tmpl!../../shared/gender-split-bar");
+
   /**
    * Defines a view that wraps the above visualization
    * @param  {Options} options Requires: width, film_id
@@ -144,7 +146,9 @@ define(function(require) {
           // redo the mapping?
           self.addRoleDetails(roles, roleDetails);
 
-          self.$el.html(self.template(film_details));
+          // pass in counts to gender split to proportion them by gender
+          var counts = {"counts": {"f": roles.f.length, "m": roles.m.length}};
+          self.$el.find(".gender-split-bar-container").html(genderBarTemplate(counts));
           // display this visual! 
           var vis = d3.select(self.$el.find('.vis')[0]);
           vis.datum(roles)
