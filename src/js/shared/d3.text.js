@@ -93,7 +93,7 @@ d3.svg.textWrap = function() {
       
     } else {
       text_selection.attr("x", bounds.x);
-      text_selection.attr("y", bounds.y + (line_height - bounds.y_offset + bounds.padding));
+      text_selection.attr("y", bounds.y + (bounds.y_offset + bounds.padding));
     }
 
   };
