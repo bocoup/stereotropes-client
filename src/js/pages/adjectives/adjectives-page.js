@@ -10,8 +10,11 @@ define(function(require) {
 
   var AdjectiveVis = require('./adjectives-vis');
 
-  var TropeTile = require('../trope/trope-tile.js');
+  var TropeTile = require('../trope/trope-tile');
   var TropeDetails = require('../trope/trope-detail-header');
+
+
+
 
   return View.extend({
 
