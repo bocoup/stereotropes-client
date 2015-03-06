@@ -3,12 +3,6 @@
 <% percents.f = 50.0; %>
 <% percents.m = 50.0; %>
 <% } %>
-<% // try to use counts if availible. %>
-<% if (typeof counts !== 'undefined') { %>
-<% var total = counts.f + counts.m; %>
-<% percents.f = (counts.f / total) * 100.0; %>
-<% percents.m = (counts.m / total) * 100.0; %>
-<% } %>
 <div class="gender-split-bar">
   <div class="gender gender-f" style="width:<%= percents.f %>%;"></div>
   <div class="gender gender-m" style="width:<%= 100 - percents.f %>%;"></div>

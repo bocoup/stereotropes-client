@@ -52,7 +52,8 @@ define(function(require) {
             self.$el.find('.film-tropes-list-container').append(t_l_view.$el);
             return self;
           });
-      }).catch(function() {
+      }).catch(function(e) {
+        console.log(e.message);
         var errorTemplate = require('tmpl!../film/error');
         self.$el.html(errorTemplate());
 
