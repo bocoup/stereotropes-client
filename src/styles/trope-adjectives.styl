@@ -44,14 +44,6 @@
       .triangle.selected {
         fill: $silver-blue-dark;
       }
-
-      .triangle.unique {
-        fill: $highlight-col
-      }
-
-      .triangle.selected.unique {
-        fill: #B03030;
-      }
     }
 
     g.beams {
@@ -117,6 +109,32 @@
       }
 
 
+    }
+  }
+
+  .vis.gender-f {
+    g.triangles {
+
+      .triangle.unique {
+        fill: $female-col-50
+      }
+
+      .triangle.selected.unique {
+        fill: $female-col
+      }
+    }
+  }
+
+  .vis.gender-m {
+    g.triangles {
+
+      .triangle.unique {
+        fill: $male-col-50
+      }
+
+      .triangle.selected.unique {
+        fill: $male-col
+      }
     }
   }
 }
