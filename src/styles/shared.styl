@@ -53,8 +53,11 @@ aside {
   font-weight: 300;
 }
 
-// Top level nav
+.main {
+  padding-bottom: 30px;
+}
 
+// Top level nav
 #top-bar {
   padding-bottom 20px;
 }
@@ -96,3 +99,52 @@ nav {
   text-align:center
   border-top: 1px solid #eaeaea
 }
+
+
+//
+// Mixins. These are styles expected to be mixed into
+// some existing css, not directly applying globally.
+//
+
+// Trope tiles
+trope-details(){
+  .details {
+    height: 225px;
+
+    div.description.short {
+      height: 188px;
+      display: -webkit-box;
+      text-overflow: ellipsis;
+      overflow-y:hidden;
+
+       margin: 0 auto;
+      -webkit-line-clamp: 8;
+      -webkit-box-orient: vertical;
+      text-overflow: -o-ellipsis-lastline; /* Opera just does this, I guess? */
+    }
+
+    .more {
+      margin-top: 15px;
+      float:right;
+    }
+  }
+}
+
+.gender-split-bar {
+  padding-top:10px;
+  padding-bottom:10px;
+  height: 4px;
+  width: 100%;
+  .gender {
+    height: 100%;
+  }
+  .gender-f {
+    background-color:$female-col-75;
+    float:left;
+  }
+  .gender-m {
+    background-color:$male-col-75;
+    float:right;
+  }
+}
+

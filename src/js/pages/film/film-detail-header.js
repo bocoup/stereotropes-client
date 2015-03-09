@@ -30,7 +30,6 @@ define(function(require) {
       this._preDataRender();
 
       return dataManager.getFilmDetails(this.film_id).then(function(film_details) {
-        console.log(film_details);
         self.film_data = film_details;
         self.film_data.loading = false;
         self.$el.html(self.template(self.film_data));

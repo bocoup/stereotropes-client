@@ -1,0 +1,9 @@
+<% if (typeof percents === 'undefined') { %>
+<% var percents = {}; %>
+<% percents.f = 50.0; %>
+<% percents.m = 50.0; %>
+<% } %>
+<div class="gender-split-bar">
+  <div class="gender gender-f" style="width:<%= percents.f %>%;"></div>
+  <div class="gender gender-m" style="width:<%= 100 - percents.f %>%;"></div>
+</div>
