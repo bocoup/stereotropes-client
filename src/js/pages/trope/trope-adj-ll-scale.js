@@ -411,13 +411,19 @@ define(function(require) {
 
         selection.classed('selected', true);
 
+        // deselect all adjectives
+        bases.adjectives_text.selectAll('text')
+          .classed("deselected", true);
+
         // find the appropriate triangles and highlight them
         var adjectives = bases.adjectives_text.selectAll('text')
           .filter(function(dd) {
             return d.adjs.indexOf(dd[0]) > -1;
           });
 
-        adjectives.classed("selected", true);
+        adjectives
+          .classed("selected", true) // selected
+          .classed("deselected", false); // and not deselected...
 
         // find triangles
         var triangles = bases.adjective_triangles.selectAll('path')
@@ -466,6 +472,11 @@ define(function(require) {
 
         // remove connector beams
         bases.connector_beams.selectAll('path').remove();
+
+        // find all adjectives and remove the deselect label
+        // from all of them.
+        bases.adjectives_text.selectAll('text')
+          .classed("deselected", false);
 
         // find the appropriate triangles and highlight them
         var adjectives = bases.adjectives_text.selectAll('text')
@@ -572,9 +583,14 @@ define(function(require) {
     // === events:
     entering_adjective_text.on('mouseover', function(d) {
 
+      // deselect all adjectives
+      bases.adjectives_text.selectAll('text')
+        .classed('deselected', true);
+
       // mark current label as selected
       d3.select(this)
-        .classed('selected', true);
+        .classed('selected', true)
+        .classed('deselected', false);
 
       // find corresponding triangle, mark it as selected
       bases.adjective_triangles.selectAll('path')
@@ -589,6 +605,10 @@ define(function(require) {
     });
 
     entering_adjective_text.on('mouseout', function(d) {
+      // remove deselect label from all labels
+      bases.adjectives_text.selectAll('text')
+        .classed('deselected', false);
+
       // deselect current label
       d3.select(this)
         .classed('selected', false);

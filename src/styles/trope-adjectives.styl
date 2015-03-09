@@ -73,16 +73,24 @@
 
       text {
         fill: $silver-blue-dark;
+        transition: fill 0.25s ease;
       }
+
 
       .hidden {
         display: none;
+      }
+
+      .deselected {
+        transition: fill 0.25s ease;
+        fill : $grey;
       }
 
       .selected {
         text-decoration: underline;
         font-weight: bold;
         font-size: 1.1em;
+        transition: font-size 0.25s ease;
       }
     }
 
