@@ -78,7 +78,11 @@ define(function(require) {
           var el = $('.blurb');
 
           self.tile = new TropeTile({ trope_id : tropeId });
-          self.tropeDesc = new TropeDetails({ trope_id : tropeId });
+          self.tropeDesc = new TropeDetails({
+            trope_id : tropeId,
+            trope_url : '/tropes/' + tropeId,
+            same_tab : true
+          });
 
           // var pp = self.tile.render();
           // console.log('trope details promise', pp)
