@@ -396,7 +396,7 @@ define(function(require) {
       self.currentlySelectedAdj = null;
       self.currentlySelectedTrope = null;
       mouseouted();
-      self.trigger('tropeSelected', null);
+      self.trigger('selectionCleared');
       self.render();
     }
 
