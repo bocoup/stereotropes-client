@@ -53,8 +53,11 @@ aside {
   font-weight: 300;
 }
 
-// Top level nav
+.main {
+  padding-bottom: 30px;
+}
 
+// Top level nav
 #top-bar {
   padding-bottom 20px;
 }
@@ -124,6 +127,24 @@ trope-details(){
       margin-top: 15px;
       float:right;
     }
+  }
+}
+
+.gender-split-bar {
+  padding-top:10px;
+  padding-bottom:10px;
+  height: 4px;
+  width: 100%;
+  .gender {
+    height: 100%;
+  }
+  .gender-f {
+    background-color:$female-col-75;
+    float:left;
+  }
+  .gender-m {
+    background-color:$male-col-75;
+    float:right;
   }
 }
 
