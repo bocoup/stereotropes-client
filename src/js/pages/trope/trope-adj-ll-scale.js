@@ -5,6 +5,7 @@ define(function(require) {
   var $ = require('jquery');
   var _ = require('lodash');
 
+  var dictMap = {};
   /**
    * Checks to see if two rectangles overlap
    * @param  {Object} r1 Rectangle with x,y,width and height properties
@@ -329,7 +330,6 @@ define(function(require) {
     var subset = tl.slice(0, totalTropes);
 
     // get all the trope dictionary data
-    var dictMap = {};
     dataManager.getTropes(_.pluck(subset, "tropeId")).then(function(dict) {
       _.each(dict, function(trope) {
         dictMap[trope.id] = trope;
@@ -594,6 +594,7 @@ define(function(require) {
 
       // find corresponding triangle, mark it as selected
       bases.adjective_triangles.selectAll('path')
+      var triangle = bases.adjective_triangles.selectAll('path')
         .data([d], function(d) { return d[0]; })
         .classed('selected', true);
 
@@ -602,6 +603,45 @@ define(function(require) {
          .data([d], function(d) { return d[0]; })
         .classed('selected', true)
         .moveToFront();
+
+      // find corresponding tropes
+      // console.log(d);
+      var tropes = bases.tropes.selectAll('g').filter(function(dd) {
+        return d[4].indexOf(dd.tropeId) > -1;
+      });
+
+      var triangleBBox = triangle.node().getBBox();
+
+      // is this above or below the fold?
+      var above = true;
+      if (triangleBBox.y >= height / 4) {
+        above = false;
+      }
+
+      // make the connector beam...
+      var topY = (above ? triangleBBox.y : (triangleBBox.y + triangleBBox.height + 18)); // text height
+
+      tropes.each(function(dd) {
+
+        // mark as selected
+        var selection = d3.select(this);
+        var selectionBBox = selection.node().getBBox();
+
+        selection.classed('selected', true);
+
+        var points = [
+          { x : triangleBBox.x + triangleBBox.width, y: topY }, // top right
+          { x : triangleBBox.x, y : topY }, // top left
+          { x : selectionBBox.x, y : selectionBBox.y + height / 2 + 10 }, // bottom left
+          { x : selectionBBox.x + selectionBBox.width, y : selectionBBox.y + height / 2 + 10} // bottom right
+        ];
+        var pathString = makePath(points);
+
+        bases.connector_beams.append("path")
+            .attr("d", pathString)
+            .classed("gender-" + dictMap[dd.tropeId].gender, true);
+      });
+
     });
 
     entering_adjective_text.on('mouseout', function(d) {
@@ -622,6 +662,22 @@ define(function(require) {
       bases.axis_g.selectAll('circle')
          .data([d], function(d) { return d[0]; })
         .classed('selected', false);
+
+      // find corresponding tropes
+      // console.log(d);
+      var tropes = bases.tropes.selectAll('g').filter(function(dd) {
+        return d[4].indexOf(dd.tropeId) > -1;
+      });
+
+      // remove all markings from tropes.
+      tropes.each(function(dd) {
+        // mark as selected
+        var selection = d3.select(this);
+        selection.classed('selected', false);
+      });
+
+      // remove all beams.
+      bases.connector_beams.selectAll("path").remove();
 
     });
 
