@@ -476,14 +476,26 @@ define(function(require) {
 
       // We set the initial position of new nodes to random spots
       // in a smallish window around the center of the vis.
+      // We also try to bias the initial position of the trope based on
+      // its associated gender.
       _.each(newTropes, function(tropeName){
         if(!_.include(oldTropes, tropeName)){
+
+          var x,y;
+          var trope = self.tropeInfo[tropeName];
+          if (trope.gender === 'm') {
+            x = this.width/2 + 50 - (Math.random() * 25) + (Math.random() * 25);
+          } else {
+            x = this.width/2 - 50 - (Math.random() * 25) + (Math.random() * 25);
+          }
+          y = -(Math.random() * 75) + (Math.random() * 75) + self.height / 2;
+
           self.associatedTropes.push({
             width: nodeWidth,
             height: nodeHeight,
             name: tropeName,
-            x: -(Math.random() * 100) + (Math.random() * 100) + self.width / 2,
-            y: -(Math.random() * 100) + (Math.random() * 100) + self.height / 2
+            x: x,
+            y: y
           });
         }
       });
@@ -495,36 +507,57 @@ define(function(require) {
 
     }
 
-    // I don't think this is working, but it is an attempt to better
-    // control where the nodes center around. So ignore it for now.
-    // TODO: Fix
     var data = this.associatedTropes;
-    data.unshift({
-      name: "",
-      radius: 0,
-      fixed: true,
-      x: this.width / 2 - 80,
-      y: this.height / 2 - 20
-    });
 
-    // The force layout, these parameters
-    // will need to be tweaked, so still a WIP.
     this.force = d3.layout.force()
-      .gravity(0.55)
-      // .linkDistance(100)
-      // .charge(-2000)
+      .gravity(0.4)
+      .alpha(0.015)
       .charge(function(d, i) {
-        if (i === 0) {
-          return 0;
-        }
-
         if(data.length > maxFullSizeNodes) {
-          return -200;
+          return -500;
         } else {
-          return -600;
+          return -2000;
         }
       })
       .size([this.width, this.height]);
+
+
+    var centerOffsetX = nodeWidth;
+    if(data.length > maxFullSizeNodes) {
+      centerOffsetX = nodeWidthSmall;
+    }
+    centerOffsetX = centerOffsetX / 2;
+
+    var centers = {
+      'm': {x: this.width/2 + 50 - centerOffsetX, y: this.height / 2},
+      'f': {x: this.width/2 - 50 - centerOffsetX, y: this.height / 2}
+    };
+
+
+    this.force.on("tick", function(e) {
+      // Stop updating the force layout at low values of alpha
+      // this helps is 'settle' faster.
+      if(e.alpha < 0.01) {
+        return;
+      }
+
+      nodes.attr("transform", function(d) {
+        var trope = self.tropeInfo[d.name];
+        var target = centers[trope.gender];
+
+        var damper = 1.9;
+
+        var dx = d.x + (target.x - d.x) * (damper) * e.alpha;
+        var dy = d.y + (target.y - d.y) * (damper) * e.alpha;
+
+        // Store the new dx and dy on the x and y attributes so that
+        // the force layout can continue to update them.
+        d.x = dx;
+        d.y = dy;
+
+        return "translate(" + dx + "," + dy + ")";
+      });
+    });
 
 
     // Start the force layout alg and then render the nodes.
@@ -533,9 +566,8 @@ define(function(require) {
 
     var svg = this.container.select('svg');
 
-    data = data.slice(1);
     var nodes = svg.selectAll("g.tropeNode")
-        .data(data, function(t) { return t.name; });
+      .data(data, function(t) { return t.name; });
 
 
     // Append the nodes in the force layout.
@@ -605,12 +637,6 @@ define(function(require) {
         .remove();
 
 
-    this.force.on("tick", function(e) {
-      nodes.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
-    });
-
-
-
     //
     // On mouse interactions with tropes we primarily trigger events for
     // external handling.
@@ -619,7 +645,7 @@ define(function(require) {
     function tropeMouseoverHelper(d){
       if(_.isNull(self.currentlySelectedTrope)){
         self.trigger('tropeSelected', d.name);
-        self.render();
+        this.parentNode.appendChild(this);
       } else {
         return;
       }
@@ -628,7 +654,6 @@ define(function(require) {
     function tropeMouseoutHelper(d){
       if(_.isNull(self.currentlySelectedTrope)){
         self.trigger('tropeSelected', null);
-        self.render();
       } else {
         return;
       }
@@ -638,7 +663,10 @@ define(function(require) {
       self.currentlySelectedTrope = d;
       self.trigger('tropeSelected', d.name);
       self.trigger('tropeClicked', d.name);
-      self.render();
+      nodes.classed('active', function(d){
+        return d === self.currentlySelectedTrope;
+      });
+      this.parentNode.appendChild(this);
     }
 
     if (selectedTrope) {
