@@ -89,7 +89,7 @@ define(function(require) {
 
     // The distance between the outside of the 'ring' and the edge of the svg container
     // this leaves space for the text and the bars.
-    this.outerSpacing = 250;
+    this.outerSpacing = 280;
     this.innerRadius = this.radius - this.outerSpacing;
 
     // This is the root of the adjective-adjective network (the nodes in the 'ring')
@@ -103,7 +103,7 @@ define(function(require) {
     var maxTropeCount = _.max(_.pluck(this.data.adj_adj_network.nodes, 'trope_count'));
     this.rectScale = d3.scale.linear()
       .domain([0, maxTropeCount])
-      .range([0, (this.outerSpacing / 3)]);
+      .range([0, (this.outerSpacing / 4)]);
 
 
     // Prepare the node and link data.
@@ -155,7 +155,7 @@ define(function(require) {
       .attr('width', '100%')
       .attr('height', '100%')
       .attr('fill', 'white');
-      // .attr('fill', '#e1e1e1');
+      // .attr('fill', '#d1d1d1');
 
     var g = svg.append("g")
       .attr("class", "vis-group");
@@ -180,7 +180,7 @@ define(function(require) {
       .attr('width', this.width);
 
     this.container.select('g.vis-group')
-      .attr("transform", "translate(" + this.radius + "," + this.radius + ")");
+      .attr("transform", "translate(" + this.radius + "," + (this.radius - (this.outerSpacing / 4)) + ")");
 
 
     // Note: this.urlSelections will be modified once the state specified by them
@@ -393,7 +393,7 @@ define(function(require) {
 
       self.currentlySelectedAdj = d;
       self.currentlySelectedTrope = null;
-      self.trigger('tropeSelected', null);
+      self.trigger('tropeClicked', null);
 
       self.render();
       self.trigger('adjectiveClicked', d.name);
@@ -541,8 +541,8 @@ define(function(require) {
     centerOffsetX = centerOffsetX / 2;
 
     var centers = {
-      'm': {x: this.width/2 + 50 - centerOffsetX, y: this.height / 2},
-      'f': {x: this.width/2 - 50 - centerOffsetX, y: this.height / 2}
+      'm': {x: this.width/2 + 50 - centerOffsetX, y: this.height / 2 - this.outerSpacing / 4},
+      'f': {x: this.width/2 - 50 - centerOffsetX, y: this.height / 2 - this.outerSpacing / 4}
     };
 
 

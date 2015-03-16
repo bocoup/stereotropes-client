@@ -43,7 +43,12 @@ define(function(require) {
         });
 
         adjVis.on('tropeClicked', function(tropeId){
-          QueryParams.set('tropes', tropeId);
+          if(tropeId) {
+            QueryParams.set('tropes', tropeId);
+          } else {
+            QueryParams.remove('tropes');
+          }
+
         });
 
         adjVis.on('selectionCleared', function(tropeId){
