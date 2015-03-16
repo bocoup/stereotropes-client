@@ -1,11 +1,14 @@
 define(function(require) {
   var d3 = require('d3');
   var View = require('../../core/view');
+  var Backbone = require('backbone');
   var dataManager = require('../../data/data_manager');
   var $ = require('jquery');
   var _ = require('lodash');
 
   var dictMap = {};
+  var dispatch = d3.dispatch("tropeSelected");
+
   /**
    * Checks to see if two rectangles overlap
    * @param  {Object} r1 Rectangle with x,y,width and height properties
@@ -463,7 +466,7 @@ define(function(require) {
       });
 
       tropeSelection.on('click', function(d) {
-        // NAVIGATE YOSELF, todo.
+        dispatch.tropeSelected(d.tropeId);
       });
 
       tropeSelection.on('mouseout', function(d) {
@@ -593,7 +596,6 @@ define(function(require) {
         .classed('deselected', false);
 
       // find corresponding triangle, mark it as selected
-      bases.adjective_triangles.selectAll('path')
       var triangle = bases.adjective_triangles.selectAll('path')
         .data([d], function(d) { return d[0]; })
         .classed('selected', true);
@@ -752,6 +754,11 @@ define(function(require) {
         self.trope_data.loading = false;
         self.$el.html(self.template(self.trope_data));
         draw(self.$el.find(".vis")[0], trope_details);
+
+        dispatch.on('tropeSelected', function(id) {
+          Backbone.history.navigate('/tropes/' + id, { trigger: true });
+        });
+
         return self;
       });
     }
