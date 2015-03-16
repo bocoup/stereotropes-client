@@ -7,21 +7,20 @@ define(function(require) {
   var View = require('../../core/view');
   var template = require('tmpl!../adjectives/adjectives-page');
   var DataManager = require('../../data/data_manager');
+  var QueryParams = require("../../core/query-data");
 
   var AdjectiveVis = require('./adjectives-vis');
 
   var TropeTile = require('../trope/trope-tile');
   var TropeDetails = require('../trope/trope-detail-header');
 
-
-
-
   return View.extend({
 
     template: template,
 
-    initialize: function(options) {
-
+    initialize: function(options, params) {
+      this.options = options;
+      this.params = params;
     },
 
     _render: function() {
@@ -38,13 +37,33 @@ define(function(require) {
       //Load data and render the visualization
       return DataManager.getAdjectiveNetwork().then(function(adjectiveData){
 
+        var urlSelections = {
+          'tropes': QueryParams.get('tropes'),
+          'adjectives': QueryParams.get('adjectives'),
+        };
+
         var adjVis = new AdjectiveVis({
           data: adjectiveData,
-          container: self.$el.find('.adjectives-page .canvas').get(0)
+          container: self.$el.find('.adjectives-page .canvas').get(0),
+          selections: urlSelections
         });
 
         adjVis.on('tropeSelected', function(tropeId){
           self.showTropeDetails(tropeId);
+        });
+
+        adjVis.on('adjectiveClicked', function(adjectiveId){
+          QueryParams.set('adjectives', adjectiveId);
+        });
+
+        adjVis.on('tropeClicked', function(tropeId){
+          QueryParams.set('tropes', tropeId);
+        });
+
+        adjVis.on('selectionCleared', function(tropeId){
+          self.showTropeDetails(null);
+          QueryParams.remove('tropes');
+          QueryParams.remove('adjectives');
         });
 
         $(window).resize(function(){

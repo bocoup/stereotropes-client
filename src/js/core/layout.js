@@ -37,10 +37,10 @@ define(function(require) {
       }
     }),
 
-    _renderNewPage: Promise.method(function(name, options) {
+    _renderNewPage: Promise.method(function(name, options, params) {
       this.currentPage = name;
       if (!this.pages[this.currentPage]) {
-        this.pages[this.currentPage] = new PageConstructors[name](options);
+        this.pages[this.currentPage] = new PageConstructors[name](options, params);
       }
       return this.pages[this.currentPage].render();
     }),
@@ -59,7 +59,7 @@ define(function(require) {
       options.el = this.contentElement;
       var self = this;
       return this._destroyCurrentPage().then(function() {
-        return self._renderNewPage(name, options);
+        return self._renderNewPage(name, options, params);
       });
     }),
 

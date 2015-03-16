@@ -31,7 +31,12 @@ define(function(require){
     for (var key in params) {
       str.push(key + "=" + params[key]);
     }
-    return "?"+str.join("&");
+    if(str.length > 0){
+      return "?"+str.join("&");
+    } else {
+      return "";
+    }
+
   };
 
   /**
@@ -43,10 +48,12 @@ define(function(require){
   var _updateUrl = function(params) {
     // build query string
     var queryString = _encodeQueryParams(params);
+    // Append it to the current path
+    var url = window.location.pathname + queryString;
 
     // update url without navigating
     Backbone.history.navigate(
-      queryString, { replace: true }
+      url, { replace: true }
     );
   };
 
