@@ -5,12 +5,11 @@
   width: 240px;
   height: 26px;
   padding: 5px 12px;
-  font-size: 1.2em;
-  line-height: 1.2em;
-  border: 2px solid #ddd;
-  -webkit-border-radius: 8px;
-  -moz-border-radius: 8px;
-  border-radius: 8px;
+
+  // font-size: 1.2em;
+  // line-height: 1.2em;
+
+  border: 1px solid $light-grey;
   outline: none;
 }
 
@@ -19,13 +18,14 @@
 }
 
 .typeahead:focus {
-  border: 2px solid #0097cf;
+  border-color: $silver-blue;
 }
 
 .tt-query {
-  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
-  -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
-  box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+  // What does this section style?
+  // -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+  // -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+  // box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
 }
 
 .tt-hint {
@@ -34,35 +34,33 @@
 
 .tt-dropdown-menu {
   text-align: left;
-  width: 280px;
-  margin-top: 12px;
+  width: 264px;
+  margin-top: 0px;
   padding: 8px 0;
   background-color: #fff;
-  border: 1px solid #ccc;
-  border: 1px solid rgba(0,0,0,0.2);
-  -webkit-border-radius: 8px;
-  -moz-border-radius: 8px;
-  border-radius: 8px;
-  -webkit-box-shadow: 0 5px 10px rgba(0,0,0,0.2);
-  -moz-box-shadow: 0 5px 10px rgba(0,0,0,0.2);
-  box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+
+  border-bottom: 1px solid $silver-blue;
+  border-left: 1px solid $silver-blue;
+  border-right: 1px solid $silver-blue;
+
+  font-weight: 400;
 }
 
 .tt-dropdown-menu .search-name {
   margin: 0 20px 5px 20px;
   padding: 3px 0;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid $silver-blue-dark;
+  text-transform: uppercase;
+  font-weight: 200;
+  color: $highlight-col;
 }
 
 .tt-suggestion {
-  padding: 3px 20px;
-  font-size: 18px;
-  line-height: 24px;
+  padding: 3px 20px 15px;
 }
 
 .tt-suggestion.tt-cursor {
-  color: #fff;
-  background-color: #0097cf;
+  background-color: $silver-blue;
 }
 
 .tt-suggestion p {
@@ -70,7 +68,9 @@
 }
 
 .tt-suggestion-detail {
-  font-size: 0.7em;
+  font-size: 12px;
+  line-height: 1.4em;
   font-style: italic;
+  font-weight: 200;
 }
 
