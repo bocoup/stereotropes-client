@@ -3,7 +3,13 @@ define(function(require) {
   var Backbone = require('backbone');
   var _ = require('lodash');
   var d3 = require('d3');
+  var Promise = require('bluebird');
+  var $ = require('jquery');
+
   var dataManager = require('../../data/data_manager');
+
+  var TropeTile = require('../trope/trope-tile');
+  var TropeDetails = require('../trope/trope-detail-header');
 
 
   /**
@@ -156,6 +162,10 @@ define(function(require) {
 
     this.adjAdjLink = g.append("g");
     this.adjAdjNode = g.append("g");
+
+
+    this.detailsContainer = this.container.append('div')
+      .attr('id', 'details-container');
   };
 
 
@@ -387,6 +397,8 @@ define(function(require) {
 
       self.render();
       self.trigger('adjectiveClicked', d.name);
+
+      self.hideTropeDetails();
     }
 
 
@@ -398,6 +410,7 @@ define(function(require) {
       mouseouted();
       self.trigger('selectionCleared');
       self.render();
+      self.hideTropeDetails();
     }
 
     if (selectedAdj) {
@@ -645,6 +658,7 @@ define(function(require) {
       if(_.isNull(self.currentlySelectedTrope)){
         self.trigger('tropeSelected', d.name);
         this.parentNode.appendChild(this);
+        self.showTropeDetails(this, d);
       } else {
         return;
       }
@@ -653,19 +667,32 @@ define(function(require) {
     function tropeMouseoutHelper(d){
       if(_.isNull(self.currentlySelectedTrope)){
         self.trigger('tropeSelected', null);
+        self.hideTropeDetails();
       } else {
         return;
       }
     }
 
     function tropeMouseclicked(d){
-      self.currentlySelectedTrope = d;
-      self.trigger('tropeSelected', d.name);
-      self.trigger('tropeClicked', d.name);
-      nodes.classed('active', function(d){
-        return d === self.currentlySelectedTrope;
-      });
-      this.parentNode.appendChild(this);
+      if(self.currentlySelectedTrope === d) {
+        self.currentlySelectedTrope = null;
+        self.trigger('tropeSelected', null);
+        nodes.classed('active', function(d){
+          return d === self.currentlySelectedTrope;
+        });
+        self.hideTropeDetails();
+      } else {
+        self.currentlySelectedTrope = d;
+        self.trigger('tropeSelected', d.name);
+        self.trigger('tropeClicked', d.name);
+        nodes.classed('active', function(d){
+          return d === self.currentlySelectedTrope;
+        });
+        this.parentNode.appendChild(this);
+
+        self.showTropeDetails(this, d);
+      }
+
     }
 
     if (selectedTrope) {
@@ -683,14 +710,79 @@ define(function(require) {
           // Its particularly important to do that here because
           // the trope nodes need to be rendered and that will not
           // happen until the adjective is selected.
+          var node = this;
           setTimeout(function(){
             self.urlSelections.tropes = undefined;
-            tropeMouseclicked(d);
-          }, 20);
+            tropeMouseclicked.bind(node)(d);
+          }, 1400);
         }
       });
     }
 
+  };
+
+
+  /**
+   * Hide the trope details overlay.
+   */
+  AdjectiveVis.prototype.hideTropeDetails = function(){
+    var el = $('#details-container');
+    el.hide();
+  };
+
+
+  /**
+   * Displays a trope details overlay.
+   *
+   * Positioned near the node for that trope. Only one can be shown at
+   * a time as we reuse the same container.
+   *
+   * @param  {[type]} tropeNode the svg node for the trop
+   * @param  {[type]} tropeData the data associated with that node
+   */
+  AdjectiveVis.prototype.showTropeDetails = function(tropeNode, tropeData) {
+    var self = this;
+
+    var pos = $(tropeNode).offset();
+
+      var tropeId = tropeData.name;
+      dataManager.getTropeDetails(tropeId).then(function(details){
+        var el = $('#details-container');
+
+        var width = 400;
+        var height = 250;
+        var left = pos.left;
+        var top = pos.top;
+
+        if(left + width > $(window).width()) {
+          var nodeWidth = parseInt($(tropeNode).find('.trope-node-bg').attr('width'), 10);
+          left -= (width - nodeWidth);
+        }
+
+        if(top + 25 + height > $(window).height()) {
+          top -= (height + 5);
+        } else {
+          top += 25;
+        }
+
+        el.css({left: left, top: top, width: width, height: height});
+
+        self.tile = new TropeTile({ trope_id : tropeId });
+        self.tropeDesc = new TropeDetails({
+          trope_id : tropeId,
+          trope_url : '/tropes/' + tropeId,
+          same_tab : true
+        });
+
+        Promise.settle([self.tile.render(), self.tropeDesc.render()]).then(function(){
+          el.empty();
+          el.append(self.tile.$el);
+          el.append(self.tropeDesc.$el);
+
+          el.show();
+        });
+
+      });
   };
 
 

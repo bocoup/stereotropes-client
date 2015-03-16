@@ -131,6 +131,54 @@ trope-details(){
   }
 }
 
+
+trope-tile(tileWidth, tileHeight) {
+  .trope-tile {
+    min-width: unit(tileWidth, 'px');
+    height: unit(tileHeight, 'px');
+    display: inline-block;
+    position: relative;
+
+    .image {
+
+      div {
+        background-position: 50% 0%;
+        background-size: cover;
+
+        height: unit(tileHeight, 'px');
+        position: relative;
+        transition: ease 750ms background-position;
+        width: 100%;
+      }
+
+      div:hover {
+        background-position: 50% 100%;
+      }
+    }
+
+    .name {
+      position: absolute;
+      top: 70%;
+      left: 5%;
+      padding: 3px;
+      color: white;
+    }
+
+
+    &.gender-m {
+      .name {
+        background-color: $male-col;
+      }
+    }
+
+    &.gender-f {
+      .name {
+        background-color: $female-col;
+      }
+    }
+  }
+}
+
 .gender-split-bar {
   padding-top:10px;
   padding-bottom:10px;
