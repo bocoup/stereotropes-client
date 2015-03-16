@@ -511,7 +511,6 @@ define(function(require) {
 
     this.force = d3.layout.force()
       .gravity(0.4)
-      .alpha(0.015)
       .charge(function(d, i) {
         if(data.length > maxFullSizeNodes) {
           return -500;
@@ -537,7 +536,7 @@ define(function(require) {
     this.force.on("tick", function(e) {
       // Stop updating the force layout at low values of alpha
       // this helps is 'settle' faster.
-      if(e.alpha < 0.01) {
+      if(e.alpha < 0.06) {
         return;
       }
 
