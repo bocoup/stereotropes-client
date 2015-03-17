@@ -192,7 +192,7 @@ define(function(require) {
    *  - trope gender
    *  - trope image_url
    * associated with that trope to be used for search.
-   * @param {Array} filter List of tropeIds to return data for specifically
+   * @param {Promise[Array]} filter List of tropeIds to return data for specifically
    * @return {Promise[Object]}  list of all tropes
    */
   DataManager.prototype.getTropes = function(filter) {
@@ -215,10 +215,14 @@ define(function(require) {
 
       if(_.isUndefined(self.cache[namespace])) {
         self.getTrope("").then(function() {
-          getValues(resolve);
+          getValues(resolve).catch(function(err) {
+            reject(err);
+          });
         });
       } else {
-        getValues(resolve);
+        getValues(resolve).catch(function(err) {
+          reject(err);
+        });
       }
     });
   };
