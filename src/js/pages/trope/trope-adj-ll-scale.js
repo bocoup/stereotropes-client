@@ -1,4 +1,18 @@
 define(function(require) {
+
+
+  /**
+   * The main visualization for the trope page, rendering triangles
+   * along an x axis using their log likelyhood score.
+   *
+   * It also renders tropes that share some of these adjectives.
+   *
+   * When selecting an adjective, the user sees all the tropes that share it.
+   *
+   * When selecting a trope, the user sees all the adjective used in it that
+   * are common to the trope on the page.
+   */
+
   var d3 = require('d3');
   var View = require('../../core/view');
   var Backbone = require('backbone');
