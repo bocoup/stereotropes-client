@@ -192,20 +192,37 @@ define(function(require) {
    *  - trope gender
    *  - trope image_url
    * associated with that trope to be used for search.
-   *
+   * @param {Promise[Array]} filter List of tropeIds to return data for specifically
    * @return {Promise[Object]}  list of all tropes
    */
-  DataManager.prototype.getTropes = function() {
+  DataManager.prototype.getTropes = function(filter) {
     var self = this;
     var namespace = 'tropes_basic';
+    var values;
+
+    var getValues = function(resolve) {
+
+      values = _.values(self.cache[namespace]);
+      if (typeof filter !== "undefined") {
+        values = _.filter(values, function(trope) {
+          return filter.indexOf(trope.id) > -1;
+        });
+      }
+      resolve(values);
+    };
 
     return new Promise(function(resolve, reject) {
+
       if(_.isUndefined(self.cache[namespace])) {
         self.getTrope("").then(function() {
-          resolve(_.values(self.cache[namespace]));
+          getValues(resolve).catch(function(err) {
+            reject(err);
+          });
         });
       } else {
-        resolve(_.values(self.cache[namespace]));
+        getValues(resolve).catch(function(err) {
+          reject(err);
+        });
       }
     });
   };
@@ -260,7 +277,7 @@ define(function(require) {
     });
   };
 
- 
+
   /**
    * Get a list of trope ids, typically used to display
    * some shorter list of tropes. Currently returns the top
