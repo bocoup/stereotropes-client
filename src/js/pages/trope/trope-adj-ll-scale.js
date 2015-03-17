@@ -14,13 +14,28 @@ define(function(require) {
    */
 
   var d3 = require('d3');
+  require('../../shared/d3.moveToFront');
+
   var View = require('../../core/view');
   var Backbone = require('backbone');
   var dataManager = require('../../data/data_manager');
   var $ = require('jquery');
   var _ = require('lodash');
+  var Promise = require('bluebird');
 
-  var dictMap = {};
+  /**
+   * Trope dictionary, mapping tropeId -> trope metadata.
+   * @private
+   * @type {Object}
+   */
+  var tropeDictMap = {};
+
+  /**
+   * Event bus for view/chart coordination for events that need to
+   * pass outside this scope.
+   * @private
+   * @type {d3.dispatch}
+   */
   var dispatch = d3.dispatch("tropeSelected");
 
   /**
@@ -39,10 +54,9 @@ define(function(require) {
   /**
    * Builds a triangle path string
    * @private
-   * @param  {Object} p1 Point with x,y coordinates
-   * @param  {Object} p2 Point with x,y coordinates
-   * @param  {Object} p3 Point with x,y coordinates
-   * @return {string} triangle string
+   * @param  {Object} currentBBox Current bounding box
+   * @param {boolean} flip Boolean to indicate whether the triangle is below or above.
+   * @return {string} triangle path string
    */
   function _makeTriangle(currentBBox, flip) {
 
@@ -53,11 +67,6 @@ define(function(require) {
     } else {
       ty = currentBBox.y + currentBBox.height;
     }
-
-    // add variance relative to connecting point
-    // var triangleWidth = currentBBox.width;
-    // var varianceMax = triangleWidth * 0.30; // max horizontal movement
-    // var totalMovement = 0; //varianceMax * Math.random(); // the amount of that movement
 
     var startX = currentBBox.x;
 
@@ -71,15 +80,22 @@ define(function(require) {
   }
 
   /**
-   * Moves a d3 selection to the top of its parent container.
-   * Useful to unhide things.
-   * @return {d3.selection}
+   * Call back used to catch end of full transition cycle.
+   * From: https://groups.google.com/forum/#!msg/d3-js/WC_7Xi6VV50/j1HK0vIWI-EJ
+   * @private
+   * @param  {d3.selection}   transition Transition selection
+   * @param  {Function} callback   Callback function
    */
-  d3.selection.prototype.moveToFront = function() {
-    return this.each(function(){
-      this.parentNode.appendChild(this);
-    });
-  };
+  function _endall(transition, callback) {
+    var n = 0;
+    transition
+        .each(function() { ++n; })
+        .each("end", function() {
+          if (!--n) {
+            callback.apply(this, arguments);
+          }
+        });
+  }
 
   /**
    * Introduces a cached jitter for a position. Takes a
@@ -289,7 +305,7 @@ define(function(require) {
           .style('opacity', 0)
           .transition()
           .delay(Math.random() * 400)
-            .style('opacity', 0.15);
+            .style('opacity', 0.25);
 
         // add a uniqueness marker if this adjective doesn't appear in other tropes
         if (d[4].length === 1 && d[4][0] === current_trope_id) {
@@ -310,6 +326,49 @@ define(function(require) {
   };
 
   /**
+   * Gets a subset of tropes to be rendered below the adjective log
+   * likelyhood line
+   * @private
+   * @param  {Array} data        data
+   * @param  {number} totalTropes Total number of tropes to retrieve
+   * @return {Promise}
+   */
+  function _getTropeSubset(data, totalTropes) {
+    var tropeMap = {};
+
+    // build trope map
+    for (var i = 0; i < data.adjectives.length; i++) {
+      for (var t = 0; t < data.adjectives[i][4].length; t++) {
+        var adj = data.adjectives[i][0];
+        var tropeId = data.adjectives[i][4][t];
+        if (tropeId !== current_trope_id) {
+          if (tropeMap[tropeId]) {
+            tropeMap[tropeId].adjs.push(adj); // save adjective as related
+            tropeMap[tropeId].count++;
+          } else {
+            tropeMap[tropeId] = { tropeId: tropeId, adjs : [adj], count: 1 };
+          }
+        }
+      }
+    }
+
+    // get trope values and get top N by count
+    var tl = _.values(tropeMap);
+    tl = _.sortBy(tropeMap, function(d) { return -d.count; });
+    var subset = tl.slice(0, totalTropes);
+
+    // get all the trope dictionary data
+    return new Promise(function(resolve, reject) {
+       dataManager.getTropes(_.pluck(subset, "tropeId")).then(function(dict) {
+        _.each(dict, function(trope) {
+          tropeDictMap[trope.id] = trope;
+        });
+        resolve(subset);
+      });
+     });
+  }
+
+  /**
    * Draws the trope list on the bottom of the adjectives line
    * @private
    * @param  {Object} data
@@ -321,43 +380,17 @@ define(function(require) {
 
     // gather trope list
     var textElHeight = 25;
-    var tropesPerList = Math.floor((height / 2) / textElHeight);
+    var tropesPerList = Math.floor(((height / 2) - 20) / textElHeight);
     var totalTropes = columns * tropesPerList;
-    var tropesList = {};
 
-    // build trope map
-    for (var i = 0; i < data.adjectives.length; i++) {
-      for (var t = 0; t < data.adjectives[i][4].length; t++) {
-        var adj = data.adjectives[i][0];
-        var tropeId = data.adjectives[i][4][t];
-        if (tropeId !== current_trope_id) {
-          if (tropesList[tropeId]) {
-            tropesList[tropeId].adjs.push(adj); // save adjective as related
-            tropesList[tropeId].count++;
-          } else {
-            tropesList[tropeId] = { tropeId: tropeId, adjs : [adj], count: 1 };
-          }
-        }
-      }
-    }
-
-    // get trope values and get top N by count
-    var tl = _.values(tropesList);
-    tl = _.sortBy(tropesList, function(d) { return -d.count; });
-    var subset = tl.slice(0, totalTropes);
-
-    // get all the trope dictionary data
-    dataManager.getTropes(_.pluck(subset, "tropeId")).then(function(dict) {
-      _.each(dict, function(trope) {
-        dictMap[trope.id] = trope;
-      });
+    // get a subset of the tropes we're going to display
+    _getTropeSubset(data, totalTropes).then(function(subset) {
 
       var tropeSelection = bases.tropes.selectAll('g')
         .data(subset, function(d) { return d.tropeId; });
 
       // make new nodes if we need them
       tropeSelection.enter().append('g');
-
 
       // position new and existing nodes:
       var currentColumn = 0, inColumn = 0;
@@ -389,7 +422,7 @@ define(function(require) {
           x : textX + (currentColumn === 0 ? 4 : 0),
           y : textY
         }).text(function() {
-          return dictMap[d.tropeId].name;
+          return tropeDictMap[d.tropeId].name;
         })
         .style("width", columnWidth)
         .classed("trope-name", true);
@@ -398,7 +431,7 @@ define(function(require) {
         var bbox = textNodes[0][0].getBBox();
         if (bbox.width > columnWidth) {
 
-          var name = dictMap[d.tropeId].name;
+          var name = tropeDictMap[d.tropeId].name;
           var charsWidth = bbox.width / name.length;
 
           var newlencount = (bbox.width / charsWidth) - (2*charsWidth);
@@ -409,7 +442,7 @@ define(function(require) {
 
         // position the rect now that we hve the bounding box
         var boxPadding = 2;
-        rect.attr("class", "gender-" + dictMap[d.tropeId].gender)
+        rect.attr("class", "gender-" + tropeDictMap[d.tropeId].gender)
           .attr({
             x : textX - boxPadding,
             y : textY + boxPadding - bbox.height,
@@ -424,7 +457,7 @@ define(function(require) {
         var selectionBBox = selection[0][0].getBBox();
 
         // adjust selectionBBox to transform...
-        selectionBBox.y += height/2 + 10;
+        selectionBBox.y += height/2 + 30;
 
         selection.classed('selected', true);
 
@@ -462,7 +495,6 @@ define(function(require) {
 
           // make the connector beam...
           var topY = (above ? triangleBBox.y : (triangleBBox.y + triangleBBox.height + 18)); // text height
-          // var bottomPoint = Math.random() > 0.5 ?
 
           var points = [
             { x : triangleBBox.x + triangleBBox.width, y: topY }, // top right
@@ -470,11 +502,11 @@ define(function(require) {
             { x : selectionBBox.x, y : selectionBBox.y }, // bottom left
             { x : selectionBBox.x + selectionBBox.width, y : selectionBBox.y } // bottom right
           ];
-          var pathString = makePath(points);
+          var pathString = _makePath(points);
 
           bases.connector_beams.append("path")
             .attr("d", pathString)
-            .classed("gender-" + dictMap[d.tropeId].gender, true);
+            .classed("gender-" + tropeDictMap[d.tropeId].gender, true);
         });
 
       });
@@ -517,7 +549,13 @@ define(function(require) {
     });
   }
 
-  function makePath(points) {
+  /**
+   * Makes a path out of points that have x & y coordinates.
+   * @private
+   * @param  {[Object]} points Point array
+   * @return {String}       Resulting path
+   */
+  function _makePath(points) {
     var path = "M ";
     for(var i = 0; i < points.length; i++) {
       path += points[i].x + " " + points[i].y;
@@ -528,7 +566,13 @@ define(function(require) {
     return path + " Z";
   }
 
-  function processData(data) {
+  /**
+   * Removes adjectives that have a negative log liklihood score
+   * @private
+   * @param  {[Object]} data data
+   * @return {[Object]}      data with filtered adjective list.
+   */
+  function _processData(data) {
     // only get adjectives that have positive ll scores
     var adjs = _.filter(data.adjectives, function(d) {
       return d[2] > 0;
@@ -538,9 +582,14 @@ define(function(require) {
   }
 
 
+  /**
+   * Main draw routune
+   * @param  {Object} el   DOM node
+   * @param  {[Object]} data Trope data to render
+   */
   function draw(el, data) {
 
-    processData(data);
+    _processData(data);
 
     var container = d3.select(el);
     width = $(el).width();
@@ -581,10 +630,18 @@ define(function(require) {
     bases.adjectives_text = svg.append("g")
       .attr("class", "adjectives");
 
+    // trope section label
+    bases.axis_g.append("text")
+      .classed("label", true)
+      .text("Tropes that share some of the above adjectives:")
+      .attr({
+        x : 0, y : height / 2
+      });
+
     // trope container
     bases.tropes = svg.append("g")
       .attr("class", "tropes")
-      .attr("transform", "translate(0," + ((height / 2) + 10) + ")");
+      .attr("transform", "translate(0," + ((height / 2) + 30) + ")");
 
     // ====== axis: =====
     _drawAxis(data);
@@ -648,14 +705,14 @@ define(function(require) {
         var points = [
           { x : triangleBBox.x + triangleBBox.width, y: topY }, // top right
           { x : triangleBBox.x, y : topY }, // top left
-          { x : selectionBBox.x, y : selectionBBox.y + height / 2 + 10 }, // bottom left
-          { x : selectionBBox.x + selectionBBox.width, y : selectionBBox.y + height / 2 + 10} // bottom right
+          { x : selectionBBox.x, y : selectionBBox.y + height / 2 + 30 }, // bottom left
+          { x : selectionBBox.x + selectionBBox.width, y : selectionBBox.y + height / 2 + 30} // bottom right
         ];
-        var pathString = makePath(points);
+        var pathString = _makePath(points);
 
         bases.connector_beams.append("path")
             .attr("d", pathString)
-            .classed("gender-" + dictMap[dd.tropeId].gender, true);
+            .classed("gender-" + tropeDictMap[dd.tropeId].gender, true);
       });
 
     });
@@ -702,7 +759,7 @@ define(function(require) {
   }
 
   /**
-   * Updates the timeline.
+   * Updates the log likelihood adjective chart.
    * @param  {Object} options Should set new width
    * @return {[type]}
    */
