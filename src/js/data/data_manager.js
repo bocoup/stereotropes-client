@@ -200,7 +200,7 @@ define(function(require) {
     var namespace = 'tropes_basic';
     var values;
 
-    var getValues = function(resolve) {
+    var getValues = function(resolve, reject) {
 
       values = _.values(self.cache[namespace]);
       if (typeof filter !== "undefined") {
@@ -215,14 +215,12 @@ define(function(require) {
 
       if(_.isUndefined(self.cache[namespace])) {
         self.getTrope("").then(function() {
-          getValues(resolve).catch(function(err) {
-            reject(err);
-          });
-        });
-      } else {
-        getValues(resolve).catch(function(err) {
+          getValues(resolve);
+        }).catch(function(err) {
           reject(err);
         });
+      } else {
+        getValues(resolve);
       }
     });
   };
