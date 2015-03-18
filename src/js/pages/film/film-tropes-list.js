@@ -1,5 +1,6 @@
 define(function(require) {
   var Promise = require('bluebird');
+  var Backbone = require('backbone');
   var d3 = require("d3");
   require("../../shared/d3.text");
   var View = require("../../core/view");
@@ -167,6 +168,10 @@ define(function(require) {
           var vis = d3.select(self.$el.find('.vis')[0]);
           vis.datum(roles)
             .call(self.list);
+
+          self.list.on("tropeSelected", function(id) {
+            Backbone.history.navigate('/tropes/' + id, { trigger: true });
+          });
 
           return self;
         });

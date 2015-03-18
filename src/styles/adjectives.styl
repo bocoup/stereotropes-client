@@ -112,9 +112,29 @@
 
   // Trope info display
 
-  .blurb {
-    trope-details()
-  }
+  #details-container {
+    position: absolute;
+    background-color: rgba(255,255,255, 0.85)
 
+    trope-details();
+    trope-tile(100, 100);
+
+    .details {
+      padding:10px;
+      font-size:75%;
+      width: 65%;
+      display: inline-block;
+    }
+
+    .trope-tile {
+      padding:10px;
+      display: inline-block;
+      float:left;
+      .name {
+        font-size:75%;
+        left: 12%
+      }
+    }
+  }
 
 }
