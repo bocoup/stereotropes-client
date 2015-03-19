@@ -3,9 +3,14 @@
     Loading...
   </div>
 <% } else { %>
-  <div class="image">
+  <div class="image" data-id="<%= id %>">
     <% if (typeof poster_url !== "undefined") { %>
       <div style="background-image: url(<%= url_root + poster_url %>);"></div>
+    <% } else { %>
+      <div class="box"></div>
+      <% if (typeof name !== "undefined") { %>
+        <p class="title"><%= name %></p>
+      <% } %>
     <% } %>
   </div>
 <% } %>
