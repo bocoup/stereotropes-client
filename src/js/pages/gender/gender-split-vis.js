@@ -47,6 +47,9 @@ define(function(require) {
     this.height = 700;
 
 
+    // If an adjective has a count greater than this then its text will always show in the vis
+    this.alwaysShowTermThreshold = 25;
+
     var minOccurrences = 10;
 
     this.femaleAdj = _.filter(this.data['female'], function(adj) {
@@ -81,9 +84,19 @@ define(function(require) {
       })))
       .range([12, 32]);
 
+
+    this.quadtreeFactory = d3.geom.quadtree()
+      .extent([[-10, -10], [this.width + 10, this.height + 10]])
+      .x(function(d) {
+        return d.x;
+      })
+      .y(function(d) {
+        return d.y;
+      });
   };
 
   GenderSplitVis.prototype.initialRender = function() {
+    var self = this;
     var svg = this.container.append('svg')
       .attr('height', this.height)
       .attr('width', this.width);
@@ -127,6 +140,14 @@ define(function(require) {
     this.maleAdjGroup = g.append("g")
       .attr('class', 'male-adjs');
 
+
+    // Mouse handler
+    //
+    svg.on('mousemove', function(){
+      var coord = d3.mouse(this);
+      // console.log("mousemove", d3.mouse(this));
+      self.showNearbyNodes(coord[0], coord[1]);
+    });
   };
 
 
@@ -139,6 +160,8 @@ define(function(require) {
 
     this.renderAxesAndTitles();
     this.renderAdjectives(this.adjectives);
+
+    this.quadtree = this.quadtreeFactory(this.boundingBoxes);
   };
 
   GenderSplitVis.prototype.renderAxesAndTitles = function() {
@@ -206,7 +229,7 @@ define(function(require) {
       .attr("class", "node-text")
       .attr('text-anchor', 'middle')
       .attr('opacity', function(d) {
-        if(d.count > 20) {
+        if(d.count > self.alwaysShowTermThreshold) {
           return 1;
         } else {
           return 0;
@@ -282,8 +305,21 @@ define(function(require) {
           x: x,
           y: y,
           width: width + hPadding,
-          height: height + vPadding
+          height: height + vPadding,
+          data: d,
+          node: this
         }, self.boundingBoxes);
+
+        // Clamp y values to the bounding box of the chart
+        // this also makes sure the quadTree wont throw exceptions
+        // on traversal.
+        if (pos.y > self.height) {
+          pos.y = self.height - 10;
+        }
+
+        if (pos.y < 0) {
+          pos.y = 10;
+        }
 
         self.boundingBoxes.push(pos);
 
@@ -315,6 +351,45 @@ define(function(require) {
       })
       .attr('opacity', 0.35)
       .attr('stroke', 'none');
+  };
+
+
+  GenderSplitVis.prototype.showNearbyNodes = function(mouseX, mouseY) {
+    var self = this;
+
+    // We need to fadeOut all the nodes
+    var allText = this.container.select('svg').selectAll('text.node-text').filter(function(d, i){
+      return d.count < self.alwaysShowTermThreshold;
+    });
+
+    allText
+      .transition()
+      .duration(50)
+      .attr('opacity', 0);
+
+    function search(quadtree, x0, y0, x3, y3) {
+      // var selected = [];
+      quadtree.visit(function(node, x1, y1, x2, y2) {
+        var p = node.point;
+        if (p) {
+          p.scanned = true;
+          p.selected = (p.x >= x0) && (p.x < x3) && (p.y >= y0) && (p.y < y3);
+
+          var textNode = d3.select(p.node).selectAll('text.node-text');
+          if (p.selected) {
+            // selected.push(p.node);
+            textNode
+              .transition()
+              .duration(50)
+              .attr('opacity', 1);
+          }
+        }
+        return x1 >= x3 || y1 >= y3 || x2 < x0 || y2 < y0;
+      });
+    }
+
+    var boxSize = 100;
+    search(this.quadtree, mouseX - boxSize, mouseY - boxSize, mouseX + boxSize, mouseY + boxSize);
   };
 
   return GenderSplitVis;
