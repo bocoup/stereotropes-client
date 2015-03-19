@@ -30,6 +30,7 @@ define(function(require) {
             self.$el.find('.film-tiles-container').append(tile.$el);
             }
           });
+          return self;
         });
       });
     }
