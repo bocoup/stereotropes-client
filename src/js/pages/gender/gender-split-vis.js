@@ -1,0 +1,322 @@
+define(function(require) {
+
+  var Backbone = require('backbone');
+  var _ = require('lodash');
+  var d3 = require('d3');
+
+
+  function GenderSplitVis(options) {
+    var self = this;
+
+    this.data = options.data;
+
+    // Convert the female scores to negative values for the
+    // scale we will use later which runs from -1 to 1.
+    _.each(this.data['female'], function(adj) {
+      adj.log_likelihood_norm = -adj.log_likelihood_norm;
+      adj.gender = 'female';
+    });
+
+    _.each(this.data['male'], function(adj) {
+      adj.gender = 'male';
+    });
+
+    this.urlSelections = options.selections || {};
+    this._container = options.container;
+
+    // Holders for currenly selected adjectives and tropes
+    // to allow us to have locked selections, as well as
+    // mouseover interaction.
+    this.currentlySelectedAdj = null;
+
+
+    self.update();
+    self.initialRender();
+
+    // Add event support to this object so that we can alert
+    // external components of when a trope is selected.
+    _.extend(this, Backbone.Events);
+  }
+
+  GenderSplitVis.prototype.update = function() {
+    // var self = this;
+    this.container = d3.select(this._container);
+
+    var minWidth = 500;
+    this.width = _.max([parseInt(this.container.style('width'), 10), minWidth]);
+    this.height = 700;
+
+
+    var minOccurrences = 10;
+
+    this.femaleAdj = _.filter(this.data['female'], function(adj) {
+      return adj.count >= minOccurrences;
+    });
+    this.maleAdj = _.filter(this.data['male'], function(adj) {
+      return adj.count >= minOccurrences;
+    });
+
+    this.femaleAdj = _.sortBy(this.femaleAdj, function(adj){
+      return -adj.count;
+    });
+
+    this.maleAdj = _.sortBy(this.maleAdj, function(adj){
+      return -adj.count;
+    });
+
+    // console.log('data', this.maleAdj)
+    this.adjectives = this.femaleAdj.concat(this.maleAdj);
+
+    //Set up scales
+
+    var exp = 0.5;
+    this.x  = d3.scale.pow()
+      .exponent(exp)
+      .domain([-1, 0, 1])
+      .range([50, this.width / 2, this.width - 50]);
+
+    this.fontSize = d3.scale.linear()
+      .domain(d3.extent(_.map(this.femaleAdj.concat(this.maleAdj), function(d){
+        return d.count;
+      })))
+      .range([12, 32]);
+
+  };
+
+  GenderSplitVis.prototype.initialRender = function() {
+    var svg = this.container.append('svg')
+      .attr('height', this.height)
+      .attr('width', this.width);
+
+    // debug rect
+    this.bgRect = svg.append('rect')
+      .attr('class', 'background')
+      .attr('width', '100%')
+      .attr('height', '100%')
+      .attr('fill', 'white');
+      // .attr('fill', '#e1e1e1');
+
+    var g = svg.append("g")
+      .attr("class", "vis-group");
+
+    g.append("line")
+      .attr('class', 'female-line-top');
+
+    g.append("line")
+      .attr('class', 'male-line-top');
+
+    g.append("line")
+      .attr('class', 'female-line-bottom');
+
+    g.append("line")
+      .attr('class', 'male-line-bottom');
+
+    g.append('text')
+      .attr('class', 'female-section-label')
+      .text('More Feminine');
+
+    g.append('text')
+      .attr('class', 'male-section-label')
+      .text('More Masculine');
+
+    this.adjectivesGroup = g.append("g")
+      .attr('class', 'adjectives-group');
+
+    this.femaleAdjGroup = g.append("g")
+      .attr('class', 'female-adjs');
+    this.maleAdjGroup = g.append("g")
+      .attr('class', 'male-adjs');
+
+  };
+
+
+  GenderSplitVis.prototype.render = function() {
+    this.boundingBoxes = [];
+
+    this.container.select('svg')
+      .attr('height', this.height)
+      .attr('width', this.width);
+
+    this.renderAxesAndTitles();
+    this.renderAdjectives(this.adjectives);
+  };
+
+  GenderSplitVis.prototype.renderAxesAndTitles = function() {
+    this.container.select('line.female-line-top')
+      .attr('x1', 0)
+      .attr('y1', 0)
+      .attr('x2', this.width / 2)
+      .attr('y2', 0);
+
+    this.container.select('line.male-line-top')
+      .attr('x1', this.width / 2)
+      .attr('y1', 0)
+      .attr('x2', this.width)
+      .attr('y2', 0);
+
+    this.container.select('line.female-line-bottom')
+      .attr('x1', 0)
+      .attr('y1', this.height)
+      .attr('x2', this.width / 2)
+      .attr('y2', this.height);
+
+    this.container.select('line.male-line-bottom')
+      .attr('x1', this.width / 2)
+      .attr('y1', this.height)
+      .attr('x2', this.width)
+      .attr('y2', this.height);
+
+    this.container.select('text.female-section-label')
+      .attr('x', 0)
+      .attr('y', 30)
+      .attr('text-anchor', 'start');
+
+    this.container.select('text.male-section-label')
+      .attr('x', this.width - 5)
+      .attr('y', 30)
+      .attr('text-anchor', 'end');
+
+
+  };
+
+  GenderSplitVis.prototype.renderAdjectives = function(data) {
+    var self = this;
+
+    var adjective = this.adjectivesGroup.selectAll('.adjective')
+      .data(data, function(d) { return d.id; });
+
+    var adjectiveEnter = adjective.enter()
+      .append('g')
+      .attr('class', function(d){
+        return 'adjective ' + d.gender;
+      })
+      .attr('transform', function(d) {
+        var x = d.gender === 'female' ? -50 : self.width + 50;
+        var y = Math.random() * self.height;
+
+        return "translate(" + x + "," + y + ")";
+      });
+
+    adjectiveEnter.append("rect")
+      .attr("class", function(d){
+        return "node-bg " + d.gender;
+      });
+
+    adjectiveEnter.append("text")
+      .attr("class", "node-text")
+      .attr('text-anchor', 'middle')
+      .attr('opacity', function(d) {
+        if(d.count > 20) {
+          return 1;
+        } else {
+          return 0;
+        }
+      })
+      .text(function(d) { return d.id; });
+
+
+    adjective.selectAll('text.node-text')
+      .style('font-size', function(d, i) {
+        return self.fontSize(d.count);
+      });
+
+
+    var direction = 0;
+    function getNextFreeSpace(bb, allBoundingBoxes) {
+      var potential = _.extend({}, bb);
+
+      var sx1 = potential.x;
+      var sy1 = potential.y;
+      var sx2 = potential.x + potential.width;
+      var sy2 = potential.y + potential.height;
+
+      // If a collision is detected while we are looping through
+      // we will continue checking against the rest of the bounding
+      // boxes in case the
+      var reLoop = false;
+
+      for (var i = 0; i < allBoundingBoxes.length; i++) {
+        var target = allBoundingBoxes[i];
+
+        var tx1 = target.x;
+        var ty1 = target.y;
+        var tx2 = target.x + target.width;
+        var ty2 = target.y + target.height;
+
+        var intersects = (sx1 < tx2 && sx2 > tx1 && sy1 < ty2 && sy2 > ty1);
+        if (intersects) {
+          reLoop = true;
+          var sign = direction % 2 === 0 ? -1 : 1;
+          potential.y += potential.height * sign;
+          sy1 = potential.y;
+          sy2 = potential.y + potential.height;
+        }
+
+        if(i === allBoundingBoxes.length - 1 && reLoop ){
+          i = 0;
+          reLoop = false;
+        }
+      }
+
+      direction += 1;
+      return potential;
+    }
+
+    var transitionDuration = 200;
+
+    adjective
+      .transition()
+      .duration(transitionDuration)
+      .attr('transform', function(d) {
+        var vPadding = 2;
+        var hPadding = 5;
+        var bb = d3.select(this).select('text.node-text').node().getBBox();
+
+        var x = self.x(d.log_likelihood_norm);
+        var y = (self.height / 2);
+
+        var width = bb.width;
+        var height = bb.height;
+
+        var pos = getNextFreeSpace({
+          x: x,
+          y: y,
+          width: width + hPadding,
+          height: height + vPadding
+        }, self.boundingBoxes);
+
+        self.boundingBoxes.push(pos);
+
+        return "translate(" + pos.x + "," + pos.y + ")";
+      });
+
+    adjective.selectAll('rect.node-bg')
+      .transition()
+      .duration(transitionDuration)
+      .attr("height", function(d, i){
+        var rect = d3.select(this)[0][0].nextSibling;
+        var bb = rect.getBBox();
+        return bb.height / 2;
+      })
+      .attr("width", function(d, i){
+        var rect = d3.select(this)[0][0].nextSibling;
+        var bb = rect.getBBox();
+        return bb.width + 10;
+      })
+      .attr("x", function(d, i){
+        var rect = d3.select(this)[0][0].nextSibling;
+        var bb = rect.getBBox();
+        return -bb.width/2;
+      })
+      .attr("y", function(d, i){
+        var rect = d3.select(this)[0][0].nextSibling;
+        var bb = rect.getBBox();
+        return -bb.height / 4;
+      })
+      .attr('opacity', 0.35)
+      .attr('stroke', 'none');
+  };
+
+  return GenderSplitVis;
+
+});
