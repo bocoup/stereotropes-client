@@ -1,0 +1,20 @@
+<div>
+  <div class="blurb">
+    the term <strong><em><%= id %></em></strong> appears a total of <%= count %> times in
+    <%= percents.f %>% of female tropes and <%= percents.m %>% of male
+    tropes including:
+  </div>
+  <div class="lists">
+    <ul class="female">
+      <% _.each(tropes.female, function(trope) { %>
+        <li><a href=<%= '/tropes/' + trope.id %>><%= trope.name %></a></li>
+      <% }); %>
+    </ul>
+    <ul class="male">
+      <% _.each(tropes.male, function(trope) { %>
+        <li><a href=<%= '/tropes/' + trope.id %>><%= trope.name %></a></li>
+      <% }); %>
+    </ul>
+  </div>
+
+</div>

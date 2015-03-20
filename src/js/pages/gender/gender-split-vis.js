@@ -3,12 +3,17 @@ define(function(require) {
   var Backbone = require('backbone');
   var _ = require('lodash');
   var d3 = require('d3');
+  var $ = require('jquery');
 
+  var DataManager = require('../../data/data_manager');
+
+  var adjectiveDetailsTemplate = require("tmpl!../../pages/gender/adjective-details");
+  var splitBarTemplate = require("tmpl!../../shared/gender-split-bar");
 
   function GenderSplitVis(options) {
     var self = this;
 
-    this.data = options.data;
+    this.data = _.clone(options.data, true);
 
     // Convert the female scores to negative values for the
     // scale we will use later which runs from -1 to 1.
@@ -48,7 +53,7 @@ define(function(require) {
 
 
     // If an adjective has a count greater than this then its text will always show in the vis
-    this.alwaysShowTermThreshold = 25;
+    this.alwaysShowTermThreshold = 30;
 
     var minOccurrences = 10;
 
@@ -67,8 +72,9 @@ define(function(require) {
       return -adj.count;
     });
 
-    // console.log('data', this.maleAdj)
+
     this.adjectives = this.femaleAdj.concat(this.maleAdj);
+
 
     //Set up scales
 
@@ -141,11 +147,13 @@ define(function(require) {
       .attr('class', 'male-adjs');
 
 
+    this.detailsContainer = this.container.append('div')
+      .attr('id', 'details-container');
+
     // Mouse handler
     //
     svg.on('mousemove', function(){
       var coord = d3.mouse(this);
-      // console.log("mousemove", d3.mouse(this));
       self.showNearbyNodes(coord[0], coord[1]);
     });
   };
@@ -218,7 +226,10 @@ define(function(require) {
         var y = Math.random() * self.height;
 
         return "translate(" + x + "," + y + ")";
-      });
+      })
+      .on('mouseover', mouseovered)
+      .on('mouseout', mouseouted)
+      .on('click', mouseclicked);
 
     adjectiveEnter.append("rect")
       .attr("class", function(d){
@@ -329,37 +340,123 @@ define(function(require) {
     adjective.selectAll('rect.node-bg')
       .transition()
       .duration(transitionDuration)
-      .attr("height", function(d, i){
-        var rect = d3.select(this)[0][0].nextSibling;
-        var bb = rect.getBBox();
-        return bb.height / 2;
-      })
-      .attr("width", function(d, i){
-        var rect = d3.select(this)[0][0].nextSibling;
-        var bb = rect.getBBox();
-        return bb.width + 10;
-      })
-      .attr("x", function(d, i){
-        var rect = d3.select(this)[0][0].nextSibling;
-        var bb = rect.getBBox();
-        return -bb.width/2;
-      })
-      .attr("y", function(d, i){
-        var rect = d3.select(this)[0][0].nextSibling;
-        var bb = rect.getBBox();
-        return -bb.height / 4;
-      })
-      .attr('opacity', 0.35)
-      .attr('stroke', 'none');
+      .call(positionAdjectiveBackground);
+
+      function positionAdjectiveBackground(d, i, highlight) {
+        this.attr("x", function(d, i){
+          var text = this.nextSibling;
+          var bb = text.getBBox();
+          if (d === self.currentlySelectedAdj || highlight) {
+            return -(bb.width/2) - 6;
+          } else {
+            return -bb.width/2;
+          }
+        })
+        .attr("y", function(d, i){
+          var text = this.nextSibling;
+          var bb = text.getBBox();
+          if (d === self.currentlySelectedAdj || highlight) {
+            return -bb.height;
+          } else {
+            return -bb.height / 4;
+          }
+
+        })
+        .attr("height", function(d, i){
+          var text = this.nextSibling;
+          var bb = text.getBBox();
+          if (d === self.currentlySelectedAdj || highlight) {
+            return bb.height + 8;
+          } else {
+            return bb.height / 2;
+          }
+        })
+        .attr("width", function(d, i){
+          var text = this.nextSibling;
+          var bb = text.getBBox();
+          if (d === self.currentlySelectedAdj || highlight) {
+            return bb.width + 12;
+          } else {
+            return bb.width + 10;
+          }
+        })
+        .attr('opacity', 0.35)
+        .attr('stroke', 'none');
+      }
+
+
+      //Mouse Handlers
+
+      // Handle mouseover
+      //
+      // To support locked selections, it will check if there is a selected
+      // adjective before adjusting what should be highlighted.
+      function mouseovered(d) {
+        if(_.isNull(self.currentlySelectedAdj)){
+          self.container.select('svg').selectAll('g.adjective').classed('active', false);
+          d3.select(this).classed('active', true);
+          this.parentNode.appendChild(this);
+        } else {
+          return;
+        }
+      }
+
+
+      // Handle mouseout
+      //
+      // To support locked selections, it will check if there is a selected
+      // adjective before adjusting what should be unhighlighted.
+      function mouseouted() {
+        if(_.isNull(self.currentlySelectedAdj)){
+          d3.select(this).classed('active', false);
+        } else {
+          return;
+        }
+      }
+
+      // Handle clicking on adjectives. Basically uses the mouseout and mouseover
+      // functions to lock a selection and highlight it.
+      function mouseclicked(d) {
+        if(self.currentlySelectedAdj === d){
+          self.currentlySelectedAdj = null;
+          mouseouted.bind(this)();
+          self.hideAdjectiveDetailOverlay();
+        } else {
+          mouseouted.bind(this)();
+          self.currentlySelectedAdj = null;
+          mouseovered.bind(this)(d);
+          self.currentlySelectedAdj = d;
+          var node = this;
+          setTimeout(function(){
+            self.showAdjectiveDetailOverlay(node, d);
+          }, 50);
+        }
+
+        self.container.selectAll('rect.node-bg')
+            .transition()
+            .duration(50)
+            .call(positionAdjectiveBackground);
+
+
+      }
   };
 
 
+  /**
+   * This will looks for adjectives near the mouse and make the text fade in.
+   *
+   * The text of nodes outside the range will be faded out unless they are
+   * have a certain count associated which results in them being always visible
+   *
+   * @param  {Number} mouseX
+   * @param  {Number} mouseY
+   */
   GenderSplitVis.prototype.showNearbyNodes = function(mouseX, mouseY) {
     var self = this;
 
     // We need to fadeOut all the nodes
     var allText = this.container.select('svg').selectAll('text.node-text').filter(function(d, i){
-      return d.count < self.alwaysShowTermThreshold;
+      return d.count < self.alwaysShowTermThreshold && d !== self.currentlySelectedAdj;
     });
 
     allText
@@ -367,17 +464,16 @@ define(function(require) {
       .duration(50)
       .attr('opacity', 0);
 
+    // We then search for nodes near the mouse and show their text
+
     function search(quadtree, x0, y0, x3, y3) {
-      // var selected = [];
       quadtree.visit(function(node, x1, y1, x2, y2) {
         var p = node.point;
         if (p) {
-          p.scanned = true;
           p.selected = (p.x >= x0) && (p.x < x3) && (p.y >= y0) && (p.y < y3);
 
           var textNode = d3.select(p.node).selectAll('text.node-text');
           if (p.selected) {
-            // selected.push(p.node);
             textNode
               .transition()
               .duration(50)
@@ -390,6 +486,96 @@ define(function(require) {
 
     var boxSize = 100;
     search(this.quadtree, mouseX - boxSize, mouseY - boxSize, mouseX + boxSize, mouseY + boxSize);
+  };
+
+
+  /**
+   * Show the overlay for an adjective when it is selected.
+   *
+   * This will display associated tropes and some extra stats about
+   * the adjective.
+   *
+   * @param  {DOMNode} adjectiveNode
+   * @param  {Object} adjectiveData
+   */
+  GenderSplitVis.prototype.showAdjectiveDetailOverlay = function(adjectiveNode, adjectiveData){
+
+    DataManager.getTropesMap()
+      .then(function(tropeInfo){
+        var el = $('#details-container');
+        el.empty();
+
+        function formatTrope(tropeId) {
+          return {
+            id: tropeId,
+            name: tropeInfo[tropeId].name
+          };
+        }
+
+        // TODO: I don't think these percentages are what we should show
+        // here, they can be tricky to relate to the log likelyhood score
+        // which sets the x coordinate. Look into alternatives, such as just the
+        // counts for each gender.
+        var templateData = {
+          id: adjectiveData.id,
+          count: adjectiveData.count,
+          percents: {
+            f: Math.round(adjectiveData.percentage_occurance.female),
+            m: Math.round(adjectiveData.percentage_occurance.male)
+          },
+          tropes: {
+            female: _.map(adjectiveData.tropes.female, formatTrope),
+            male: _.map(adjectiveData.tropes.male, formatTrope)
+          }
+        };
+
+        var detailsHtml = adjectiveDetailsTemplate(templateData);
+        var sum = adjectiveData.percentage_occurance.female + adjectiveData.percentage_occurance.male;
+        var f = (adjectiveData.percentage_occurance.female / sum) * 100;
+        var m = (adjectiveData.percentage_occurance.male / sum) * 100;
+        var barData = {
+          percents: {
+            f: f,
+            m: m
+          }
+        };
+        var barHtml = splitBarTemplate(barData);
+
+        var pos = $(adjectiveNode).offset();
+        var bb = adjectiveNode.getBBox();
+
+        el.append(barHtml);
+        el.append(detailsHtml);
+
+        var width = 460;
+        var height = el.height();
+        var left = pos.left;
+        var top = pos.top + bb.height + 5;
+
+        if(left + width > $(window).width()) {
+          var nodeWidth = bb.width;
+          left -= (width - nodeWidth);
+        }
+
+        if(top + height > $(window).height()) {
+          top -= (height + bb.height + 10);
+        }
+
+        el.css({left: left, top: top, width: width});
+        el.show();
+      })
+      .catch(function(err){
+        console.log('error retreiving trope info');
+      });
+
+  };
+
+  /**
+   * Hide the overlay associated with adjectives.
+   */
+  GenderSplitVis.prototype.hideAdjectiveDetailOverlay = function(){
+    var el = $('#details-container');
+    el.hide();
   };
 
   return GenderSplitVis;

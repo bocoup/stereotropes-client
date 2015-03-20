@@ -34,28 +34,22 @@
     // text-transform: uppercase;
   }
 
-  .node.active {
+  .adjective.active {
 
     .node-text {
-      fill: $highlight-col;
-      text-decoration:underline;
+      fill: white;
+      fill: black;
+      // text-decoration:underline;
       font-weight: 800;
-
-      &.count {
-        fill: $highlight-col;
-        text-decoration: none;
-      }
+      text-transform: uppercase;
+      // font-style: italic;
     }
 
-    .node-rect {
-      fill: $highlight-col;
-      stroke: $highlight-col;
+    .node-bg {
+      fill:$highlight-col
+      // fill: none
+      opacity:0.95;
     }
-  }
-
-  .node-rect {
-    stroke: $silver-blue;
-    fill: none;
   }
 
   .node-bg {
@@ -69,21 +63,72 @@
     }
   }
 
-  .tropeNode.active {
-    .trope-node-bg {
-      fill: $highlight-col;
-      stroke: none;
+  #details-container {
+    display: none;
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.95)
+    // background-color: $silver-blue;
+    font-size: 14px;
+
+    max-height: 250px;
+    overflow-x:scroll;
+    overflow-y:none;
+    border-bottom: 2px solid $silver-blue-dark;
+
+    .gender-split-bar {
+      padding: 0;
+
+      .gender {
+        height: 3px;
+      }
     }
 
-    .trope-node-label {
-      fill: white;
+    .blurb {
+      padding-left: 10px;
     }
-  }
 
-  // Trope info display
+    .lists {
+      display: inline-block;
+      width: 100%;
+      font-size: 12px;
 
-  .blurb {
-    trope-details()
+      ul {
+        display: inline-block;
+        vertical-align: top;
+        list-style-type: none;
+        padding-left: 10px;
+
+        li {
+          margin-bottom:10px;
+        }
+
+        a {
+          padding:2px 6px 3px 6px;
+          text-decoration: none;
+          color: $dark-grey;
+          // color: white;
+        }
+
+        a:hover {
+          background-color: $highlight-col !important;
+          color: white;
+        }
+
+        &.female {
+          a {
+            background-color: $female-col-50;
+
+          }
+        }
+
+        &.male {
+          a {
+            background-color: $male-col-50;
+          }
+        }
+      }
+
+    }
   }
 
 
