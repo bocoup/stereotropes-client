@@ -1,0 +1,140 @@
+.trope-adjectives-timeline {
+
+  .instruction {
+    font-size: 0.8em;
+    display: inline-block;
+    background-color: $silver-blue-dark;
+    color: white;
+    padding: 2px;
+  }
+  .left {
+    float: left;
+  }
+  .right {
+    float: right;
+  }
+
+  .vis {
+    margin-top: 10px;
+    display: inline-block;
+    g.axis {
+      line {
+        stroke-width: 1px
+        stroke: $light-grey;
+      }
+
+      circle {
+        stroke: $dark-grey;
+        fill: white;
+      }
+
+      circle.selected {
+        fill: $silver-blue-dark;
+        stroke: $silver-blue-dark;
+      }
+    }
+
+    g.triangles {
+      .triangle {
+        stroke: none;
+        fill:  $silver-blue;
+        opacity: 0.25;
+      }
+
+      .triangle.selected {
+        fill: $silver-blue-dark;
+      }
+    }
+
+    g.beams {
+      path.gender-m {
+        fill: $male-col
+        opacity: 0.25
+      }
+      path.gender-f {
+        fill: $female-col
+        opacity: 0.25
+      }
+    }
+
+    g.adjectives {
+      font-family: $adjective-font;
+      font-variant:small-caps;
+
+      cursor: pointer;
+
+      text {
+        fill: $silver-blue-dark;
+        transition: fill 0.25s ease;
+      }
+
+
+      .hidden {
+        display: none;
+      }
+
+      .deselected {
+        transition: fill 0.25s ease;
+        fill : $grey;
+      }
+
+      .selected {
+        text-decoration: underline;
+        font-weight: bold;
+        font-size: 1.1em;
+        transition: font-size 0.25s ease;
+      }
+    }
+
+    g.tropes {
+
+      g {
+        cursor: pointer;
+        rect {
+          fill: none;
+        }
+      }
+
+      g.selected {
+        text {
+          fill: white;
+        }
+        rect.gender-f {
+          fill : $female-col;
+        }
+
+        rect.gender-m {
+          fill : $male-col;
+        }
+      }
+
+
+    }
+  }
+
+  .vis.gender-f {
+    g.triangles {
+
+      .triangle.unique {
+        fill: $female-col-50
+      }
+
+      .triangle.selected.unique {
+        fill: $female-col
+      }
+    }
+  }
+
+  .vis.gender-m {
+    g.triangles {
+
+      .triangle.unique {
+        fill: $male-col-50
+      }
+
+      .triangle.selected.unique {
+        fill: $male-col
+      }
+    }
+  }
+}

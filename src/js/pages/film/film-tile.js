@@ -10,6 +10,10 @@ define(function(require) {
 
     className : 'film-tile',
 
+    events: {
+      "click" : "click"
+    },
+
     initialize: function(options) {
       if (!options.film_id) {
         throw new Error("Film id required for rendering film tile!");
@@ -38,11 +42,21 @@ define(function(require) {
 
         self.$el.html(self.template(self.film_data));
         return self;
+      }).catch(function(e) {
+        console.log(e.responseText);
+        return self;
       });
     },
 
     _remove: Promise.method(function() {
       return this.$el.fadeOut().empty();
-    })
+    }),
+
+    click: function() {
+      this.trigger("film-select", this.film_id);
+    },
+    found: function() {
+      return !this.film_data.loading;
+    }
   });
 });

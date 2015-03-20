@@ -1,6 +1,7 @@
 define(function(require) {
 
   var d3 = require("d3");
+
   /**
    * tropeList - render the list vis for
    * showing tropes associated with a movie
@@ -12,6 +13,9 @@ define(function(require) {
     // get passed in or calculated
     var height;
     var width;
+    
+    // send trope selected event up
+    var dispatch = d3.dispatch("tropeSelected");
 
     // minimum size the 
     // visualization can be
@@ -105,7 +109,8 @@ define(function(require) {
         })
         .text(function(d) { return d.details.name; })
         .on("mouseover", mouseover)
-        .on("mouseout", mouseout);
+        .on("mouseout", mouseout)
+        .on("click", click);
     }
 
     /**
@@ -116,6 +121,7 @@ define(function(require) {
      * @return {undefined}
      */
     function mouseover(d,i) {
+
       // TODO: better way to get gender?
       var gender = d.details.gender;
 
@@ -248,6 +254,16 @@ define(function(require) {
     }
 
     /**
+     * click - send off trope selected event
+     *
+     * @param d - current trope selected 
+     * @return {undefined}
+     */
+    function click(d) {
+      dispatch.tropeSelected(d.id);
+    }
+
+    /**
      * updatePositions - calculate positions of 
      * columns based on current width
      *
@@ -328,6 +344,8 @@ define(function(require) {
       return this;
     };
 
+    // get `on` from dispatch onto our chart
+    d3.rebind(chart, dispatch, "on");
 
     return chart;
   };
