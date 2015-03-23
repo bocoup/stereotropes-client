@@ -85,7 +85,7 @@ define(function(require) {
       .range([50, this.width / 2, this.width - 50]);
 
     this.fontSize = d3.scale.linear()
-      .domain(d3.extent(_.map(this.femaleAdj.concat(this.maleAdj), function(d){
+      .domain(d3.extent(_.map(this.adjectives, function(d){
         return d.count;
       })))
       .range([12, 32]);
@@ -107,13 +107,13 @@ define(function(require) {
       .attr('height', this.height)
       .attr('width', this.width);
 
-    // debug rect
+    // Background rect
     this.bgRect = svg.append('rect')
       .attr('class', 'background')
       .attr('width', '100%')
       .attr('height', '100%')
       .attr('fill', 'white');
-      // .attr('fill', '#e1e1e1');
+      // .attr('fill', '#e1e1e1'); // TODO remove
 
     var g = svg.append("g")
       .attr("class", "vis-group");
@@ -343,45 +343,49 @@ define(function(require) {
       .call(positionAdjectiveBackground);
 
       function positionAdjectiveBackground(d, i, highlight) {
-        this.attr("x", function(d, i){
-          var text = this.nextSibling;
-          var bb = text.getBBox();
-          if (d === self.currentlySelectedAdj || highlight) {
-            return -(bb.width/2) - 6;
-          } else {
-            return -bb.width/2;
-          }
-        })
-        .attr("y", function(d, i){
-          var text = this.nextSibling;
-          var bb = text.getBBox();
-          if (d === self.currentlySelectedAdj || highlight) {
-            return -bb.height;
-          } else {
-            return -bb.height / 4;
-          }
+        this
+          .attr('opacity', 0.35)
+          .attr('stroke', 'none')
+          .each(function(d, i) {
+            var text = this.nextSibling;
+            var bb = text.getBBox();
 
-        })
-        .attr("height", function(d, i){
-          var text = this.nextSibling;
-          var bb = text.getBBox();
-          if (d === self.currentlySelectedAdj || highlight) {
-            return bb.height + 8;
-          } else {
-            return bb.height / 2;
-          }
-        })
-        .attr("width", function(d, i){
-          var text = this.nextSibling;
-          var bb = text.getBBox();
-          if (d === self.currentlySelectedAdj || highlight) {
-            return bb.width + 12;
-          } else {
-            return bb.width + 10;
-          }
-        })
-        .attr('opacity', 0.35)
-        .attr('stroke', 'none');
+            var x,y, width, height;
+
+            if (d === self.currentlySelectedAdj || highlight) {
+              x = -(bb.width/2) - 6;
+            } else {
+              x = -bb.width/2;
+            }
+
+            if (d === self.currentlySelectedAdj || highlight) {
+              y = -bb.height;
+            } else {
+              y = -bb.height / 4;
+            }
+
+            if (d === self.currentlySelectedAdj || highlight) {
+              height = bb.height + 8;
+            } else {
+              height = bb.height / 2;
+            }
+
+            if (d === self.currentlySelectedAdj || highlight) {
+              width =  bb.width + 12;
+            } else {
+              width = bb.width + 10;
+            }
+
+
+            var pos = {
+              x: x, y: y, width: width, height: height
+            };
+
+            d3.select(this)
+              .transition()
+              .duration(50)
+              .attr(pos);
+          });
       }
 
 
