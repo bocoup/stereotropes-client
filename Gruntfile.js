@@ -27,7 +27,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('deploy',
     'Compile for production and deploy to s3',
-    ['public-build', 's3']);
+    ['public-build', 'shell']);
 
   grunt.registerTask('default', ['dev']);
 
