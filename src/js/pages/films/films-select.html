@@ -1,0 +1,5 @@
+<select id="genre-selector">
+  <% _.each(genres, function(genre) {%>
+  <option value="<%= genre.id %>"><%= genre.name %></option>
+  <% }); %>
+</select>
