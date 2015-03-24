@@ -191,7 +191,7 @@ define(function(require) {
    *  - 5 adjectives associated with trope (adjs)
    *  - trope gender
    *  - trope image_url
-   * associated with that trope to be used for search.
+   *
    * @param {Promise[Array]} filter List of tropeIds to return data for specifically
    * @return {Promise[Object]}  list of all tropes
    */
@@ -221,6 +221,35 @@ define(function(require) {
         });
       } else {
         getValues(resolve);
+      }
+    });
+  };
+
+  /**
+   * Get all tropes in a map from id to trope information
+   * The values contain:
+   *  - trope name
+   *  - trope id
+   *  - 5 adjectives associated with trope (adjs)
+   *  - trope gender
+   *  - trope image_url
+   *
+   * @return {Promise[Object]}  Map of trope id to basic trope info
+   */
+  DataManager.prototype.getTropesMap = function() {
+    var self = this;
+    var namespace = 'tropes_basic';
+
+    return new Promise(function(resolve, reject) {
+
+      if(_.isUndefined(self.cache[namespace])) {
+        self.getTrope("").then(function() {
+          resolve(self.cache[namespace]);
+        }).catch(function(err) {
+          reject(err);
+        });
+      } else {
+        resolve(self.cache[namespace]);
       }
     });
   };

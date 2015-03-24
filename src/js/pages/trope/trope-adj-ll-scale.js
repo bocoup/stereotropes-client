@@ -80,24 +80,6 @@ define(function(require) {
   }
 
   /**
-   * Call back used to catch end of full transition cycle.
-   * From: https://groups.google.com/forum/#!msg/d3-js/WC_7Xi6VV50/j1HK0vIWI-EJ
-   * @private
-   * @param  {d3.selection}   transition Transition selection
-   * @param  {Function} callback   Callback function
-   */
-  function _endall(transition, callback) {
-    var n = 0;
-    transition
-        .each(function() { ++n; })
-        .each("end", function() {
-          if (!--n) {
-            callback.apply(this, arguments);
-          }
-        });
-  }
-
-  /**
    * Introduces a cached jitter for a position. Takes a
    * scale, which is the +/- range to jitter around and an
    * index to cache the result under. The results are cached so that

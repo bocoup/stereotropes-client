@@ -2,6 +2,14 @@
   <h4><%=name %>'s appearance over time</h4>
   <div class="vis"></div>
   <aside>
-    '<%= name %>' appears in <%= occurrence_over_time[5][1] %> <%= occurrence_over_time[5][0] %>. There are a total of <%= occurrence_over_time[5][3] %> films in this decade in our dataset, which means ~<%= d3.format(".1%")(occurrence_over_time[5][1]/ occurrence_over_time[5][3]) %> of films in this decade contained characters identified as '<%= name %>'.
+    <%
+    var max = 0, id = 0;
+    for(var i = 0; i < occurrence_over_time.length; i++) {
+      if (occurrence_over_time[i][2] > max) {
+        max = occurrence_over_time[i][2];
+        id = i;
+      }
+    } %>
+    '<%= name %>' appears in <%= occurrence_over_time[id][1] %> <%= occurrence_over_time[id][0].toLowerCase() %>. There are a total of <%= occurrence_over_time[id][3] %> films in this decade in our dataset, which means ~<%= d3.format(".1%")(occurrence_over_time[id][1]/ occurrence_over_time[id][3]) %> of films in this decade contained characters identified as '<%= name %>'.
   </aside>
 </div>
