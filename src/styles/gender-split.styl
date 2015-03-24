@@ -1,0 +1,135 @@
+.gender-page {
+
+  .canvas {
+    width: 100%;
+  }
+
+  line.female-line-top, line.female-line-bottom {
+    stroke-width: 4px;
+    stroke: $female-col;
+  }
+
+  line.male-line-top, line.male-line-bottom {
+    stroke-width: 4px;
+    stroke: $male-col;
+  }
+
+  .female-section-label, .male-section-label {
+    font-family: $adjective-font;
+    font-weight: 200;
+    font-style: italic;
+    font-size: 28px;
+  }
+
+  .adjective {
+    cursor: pointer;
+  }
+
+  .node-text {
+    font-family: $adjective-font;
+    font-weight: 400;
+    fill: $silver-blue-dark;
+    // fill: black;
+    // font-variant:small-caps;
+    // text-transform: uppercase;
+  }
+
+  .adjective.active {
+
+    .node-text {
+      fill: white;
+      fill: black;
+      // text-decoration:underline;
+      font-weight: 800;
+      text-transform: uppercase;
+      // font-style: italic;
+    }
+
+    .node-bg {
+      fill:$highlight-col
+      // fill: none
+      opacity:0.95;
+    }
+  }
+
+  .node-bg {
+
+    &.male {
+      fill: $male-col-25;
+    }
+
+    &.female {
+      fill: $female-col-25;
+    }
+  }
+
+  #details-container {
+    display: none;
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.95)
+    // background-color: $silver-blue;
+    font-size: 14px;
+
+    max-height: 250px;
+    overflow-x:scroll;
+    overflow-y:none;
+    border-bottom: 2px solid $silver-blue-dark;
+
+    .gender-split-bar {
+      padding: 0;
+
+      .gender {
+        height: 3px;
+      }
+    }
+
+    .blurb {
+      padding-left: 10px;
+    }
+
+    .lists {
+      display: inline-block;
+      width: 100%;
+      font-size: 12px;
+
+      ul {
+        display: inline-block;
+        vertical-align: top;
+        list-style-type: none;
+        padding-left: 10px;
+
+        li {
+          margin-bottom:10px;
+        }
+
+        a {
+          padding:2px 6px 3px 6px;
+          text-decoration: none;
+          color: $dark-grey;
+          // color: white;
+        }
+
+        a:hover {
+          background-color: $highlight-col !important;
+          color: white;
+        }
+
+        &.female {
+          a {
+            background-color: $female-col-50;
+
+          }
+        }
+
+        &.male {
+          a {
+            background-color: $male-col-50;
+          }
+        }
+      }
+
+    }
+  }
+
+
+}
