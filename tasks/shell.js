@@ -12,23 +12,27 @@ module.exports = function(grunt) {
     expires: new Date(Date.now() + 3600000).toUTCString()
   };
 
-  grunt.config('shell', {
-      options: {
-        stderr: true
-      },
+  grunt.config('bgShell', {
+
       'data': {
-        command: grunt.template.process('aws --profile <%= profile %> s3 sync ' +
+        execOpts: {
+          maxBuffer: false
+        },
+        cmd: grunt.template.process('aws --profile <%= profile %> s3 sync ' +
           'assets/data <%= bucket %>/assets/data --recursive --include \'*\' ' +
           '--acl \'public-read\' --cache-control <%= cacheControl %> ' +
           '--expires <%= expires %>' , { data : opts })
       },
       "public": {
-        command: grunt.template.process('aws --profile <%= profile %> s3 sync '+
+        execOpts: {
+          maxBuffer: false
+        },
+        cmd: grunt.template.process('aws --profile <%= profile %> s3 sync '+
           'public/ <%= bucket %> --exclude "*data/*" --recursive ' +
           '--acl \'public-read\' --cache-control <%= cacheControl %> ' +
           '--expires <%= expires %>' , { data : opts })
       }
   });
 
-  grunt.loadNpmTasks('grunt-shell');
+  grunt.loadNpmTasks('grunt-bg-shell');
 };
