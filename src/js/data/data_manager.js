@@ -438,6 +438,38 @@ define(function(require) {
     });
   };
 
+   /**
+   * Get an array of top rated films ids and names.
+   * if a genre id is passed in, then it will grab
+   * top films from just that genre.
+   *
+   *
+   * @param  {String} genre - genre id.
+   * @return {Promise[Object]} list of films with id and name attributes
+   */
+  DataManager.prototype.getTopFilms = function(genre) {
+    var self = this;
+    var n = 100;
+    var namespace = 'genres';
+    if(!genre) {
+      genre = "all";
+    }
+
+    var filename = "/films/genres/" + genre + "_top_" + n + ".json";
+
+    return this._cacheFetch(namespace, genre, function(resolve, reject){
+      // Fetch and store the trope list in the cache.
+      return self._fetch(filename).then(function(filmList){
+
+        self._cacheSet(namespace, genre, filmList);
+
+        resolve(self._cacheGet(namespace, genre));
+      }).catch(function(err){
+        reject(err);
+      });
+    });
+  };
+
   // Return an instance so that this module is effectively
   // a singleton providing a single source of truth.
   //

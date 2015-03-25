@@ -36,7 +36,7 @@ define(function(require) {
       // tropes list view
       var tropesListContainer = self.$el.find('.film-tropes-list-container');
 
-      var tropesListView = new TropesListView({ 
+      var tropesListView = new TropesListView({
         film_id : this.options.film_id,
         width : tropesListContainer.width()
       });
