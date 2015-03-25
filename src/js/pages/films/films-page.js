@@ -19,9 +19,6 @@ define(function(require) {
     },
 
     initialize: function(options) {
-      // right now this is hardcoded to limit which
-      // ones we want to show...
-      // TODO: move to data manager?
       this.genres = {"all":{name:"All", id:"all"},
                      "action":{name:"Action", id:"action"},
                      "comedy":{name:"Comedy", id:"comedy"},
@@ -58,24 +55,25 @@ define(function(require) {
     self.$el.find(".films-page-header-container")
       .html(headerTemplate({"genre": genre}));
 
-    return dataManager.getTopFilms(genre.id).then(function(shownFilms) {
-      var tiles = shownFilms.map(function(f) { return new FilmTile({film_id : f.id}); });
-      Promise.all(tiles.map(function(t) { return t.render(); })).then(function(tiles) {
+    return dataManager.getTopFilms(genre.id)
+      .then(function(shownFilms) {
+        return shownFilms.map(function(f) { return new FilmTile(f); });
+      })
+      .then(function(tiles) {
+        return Promise.all(tiles.map(function(t) { return t.render(); }));
+      })
+      .then(function(tiles) {
         tiles.forEach(function(tile, index) {
           if(tile.found()) {
             tile.on("film-select", function(id) {
               Backbone.history.navigate('/films/' + id, { trigger: true });
             });
             self.$el.find('.film-tiles-container').append(tile.$el);
-            // TODO: is there a better way to get at
-            // the element once appended? - want it to fade in.
-            self.$el.find('.film-tiles-container .film-tile')
-              .last().hide().delay(index * 80).fadeIn(600);
+            tile.$el.hide().delay(index * 80).fadeIn(600);
           }
+          return self;
         });
 
-        return self;
-      });
     });
   },
   genreSelected: function(e) {
