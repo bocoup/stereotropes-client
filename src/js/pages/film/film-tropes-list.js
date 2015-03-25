@@ -2,6 +2,7 @@ define(function(require) {
   var Promise = require('bluebird');
   var Backbone = require('backbone');
   var d3 = require("d3");
+  var _ = require("lodash");
   require("../../shared/d3.text");
   var View = require("../../core/view");
   var dataManager = require('../../data/data_manager');
@@ -31,15 +32,43 @@ define(function(require) {
       this.$el.html(this.template());
       return this;
     },
+    /**
+     * cleanRole - improve look of roles
+     *
+     * @param role
+     * @return {string} - pretty role
+     */
+    cleanRole: function(role) {
+      // some roles were ending with a ':'
+      role = role.replace(/:\s*$/,'.');
+      // many roles have the role id and
+      // then a : at the beginning
+      role = role.replace(/^.*:\s*/,'');
+      return role;
+
+    },
+    /**
+     * isValidRole - is the role
+     * string worthy of displaying?
+     *
+     * @param role
+     * @return {boolean}
+     */
+    isValidRole: function(role) {
+      // make a first pass at filtering
+      // out completely useless roles
+      return role.length > 3;
+    },
     // TODO: better location for these data functions?
     /**
      * collapseRoles - combine roles with the same id
-     * for the movie. 
+     * for the movie.
      *
      * @param rawRoles - raw roles from dataManager
      * @return {}
      */
     collapseRoles: function(rawRoles) {
+      var self = this;
       // just makes sure we have both groups
       var roles = {'f':[],'m':[]};
       d3.keys(rawRoles).forEach(function(g) {
@@ -51,10 +80,26 @@ define(function(require) {
         // need to grab each copies role
         tropeNest.forEach(function(d) {
           var trope = {"id":d.key, roles:[]};
-          d.values.forEach(function(v) {
-            trope.roles.push(v.role);
+          // get all the roles for this trope and
+          // clean them up
+          var tropeRoles = d.values.map(function(v) {
+            return self.cleanRole(v.role);
           });
-          roles[g].push(trope);
+          // find the longest role string for this trope
+          var role = _.max(tropeRoles, function(r) {return r.length; });
+
+          // if it is a valid role, then
+          // it becomes our trope's role
+          if(self.isValidRole(role)) {
+            trope.roles.push(role);
+          }
+
+          // if this trope has at least one
+          // role, then add it.
+          if(trope.roles.length > 0) {
+            roles[g].push(trope);
+          }
+
         });
 
       });
@@ -77,7 +122,7 @@ define(function(require) {
           // TODO: log in persistent storage (like GA) when errors occur
           details[trope.id] = dataManager.getTropeDetails(trope.id)
             .catch(function(e) {
-              console.log(e.responseText); 
+              console.log(e.responseText);
               return undefined;
             });
         });
@@ -100,7 +145,7 @@ define(function(require) {
         // iterate over the tropes in each role
         var i = roles[gender].length;
         // reversed order of iteration to remove
-        // invalid roles using splice. 
+        // invalid roles using splice.
         // http://stackoverflow.com/questions/9882284/looping-through-array-and-removing-items-without-breaking-for-loop
         while(i--) {
           roles[gender][i].details = roleMap[roles[gender][i].id];
@@ -151,20 +196,20 @@ define(function(require) {
         var roleDetailPromises = self.getRoleDetails(roles);
         return Promise.props(roleDetailPromises).then(function(roleDetails) {
 
-          // now we have all the details, we need to 
+          // now we have all the details, we need to
           // merge them back with the roles.
           self.addRoleDetails(roles, roleDetails);
 
           // pass in counts to gender split to proportion them by gender
           var sum = d3.sum(d3.values(roles), function(v) { return v.length; });
           var percents = {};
-          d3.entries(roles).forEach(function(e) { 
-            percents[e.key]  = Math.round((e.value.length / sum) * 100.0); 
+          d3.entries(roles).forEach(function(e) {
+            percents[e.key]  = Math.round((e.value.length / sum) * 100.0);
           });
 
           self.$el.find(".gender-split-bar-container")
             .html(genderBarTemplate({"percents":percents}));
-          // display the trope list visual! 
+          // display the trope list visual!
           var vis = d3.select(self.$el.find('.vis')[0]);
           vis.datum(roles)
             .call(self.list);
