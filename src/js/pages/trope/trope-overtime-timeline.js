@@ -1,10 +1,13 @@
 define(function(require) {
 
   var d3 = require("d3");
+  require("../../shared/d3.endall");
+
   require("d3Chart");
   var _ = require("lodash");
   var View = require("../../core/view");
   var dataManager = require('../../data/data_manager');
+  var Promise = require('bluebird');
 
   var defaultTicks = ["Films of the 1920s",
         "Films of the 1950s",
@@ -177,6 +180,43 @@ define(function(require) {
 
       // update scale
       this.scales.x.rangeBands([-1, this.width-20]);
+    },
+
+    /**
+     * Removes itself gracefully.
+     * @return {[type]} [description]
+     */
+    remove: function() {
+      var self = this;
+      var removeArea = new Promise(function(resolve, reject) {
+        self.bases.area.selectAll("path").transition()
+          .style('opacity',0)
+          .remove()
+          .endall(resolve);
+      });
+
+      var removeLine = new Promise(function(resolve, reject) {
+        self.bases.line.selectAll("line").transition()
+          .style('opacity',0)
+          .remove()
+          .endall(resolve);
+      });
+
+      var removeMaxLine = new Promise(function(resolve, reject) {
+        self.bases.maxline.selectAll("text").transition()
+          .style('opacity',0)
+          .remove()
+          .endall(resolve);
+      });
+
+      var removeAxis = new Promise(function(resolve, reject) {
+        self.bases.xAxis.transition()
+          .style('opacity', 0)
+          .remove()
+          .endall(resolve);
+      });
+
+      return Promise.join(removeArea, removeLine, removeMaxLine, removeAxis);
     }
 
   });
@@ -205,6 +245,11 @@ define(function(require) {
         this.chart.update(options);
         this.chart.draw(this.data.occurrence_over_time);
       }
+    },
+
+    _remove: function() {
+      this.$el.find('h4,aside').fadeOut();
+      return this.chart.remove();
     },
 
     _render: function() {

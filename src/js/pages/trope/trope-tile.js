@@ -42,8 +42,11 @@ define(function(require) {
       });
     },
 
-    _remove: Promise.method(function() {
-      return this.$el.fadeOut().empty();
-    })
+    _remove: function() {
+      var self = this;
+      return new Promise(function(resolve, reject) {
+        self.$el.fadeOut(200, resolve);
+      });
+    }
   });
 });

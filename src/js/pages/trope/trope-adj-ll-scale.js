@@ -15,6 +15,7 @@ define(function(require) {
 
   var d3 = require('d3');
   require('../../shared/d3.moveToFront');
+  require('../../shared/d3.endall');
 
   var View = require('../../core/view');
   var Backbone = require('backbone');
@@ -768,6 +769,69 @@ define(function(require) {
     }
   }
 
+  /**
+   * Used to fade out a selection at a fixed step, remove the elements when
+   * fade out and then call a resolve callback at the end of the transition.
+   * @private
+   * @param  {d3.selection} selection Selection
+   * @param  {Function} delayFn   Delay computing function
+   * @param  {Function} resolve   Callback resolve function
+   * @return {d3.selection}           Transition selection
+   */
+  function _fadeOut(selection, delayFn, resolve) {
+    return selection.transition()
+      .delay(delayFn)
+      .style('opacity', 0)
+      .remove()
+      .endall(resolve);
+  }
+
+  /**
+   * Removes the visualization elements.
+   * @private
+   * @return {Promise} Returns a promise
+   */
+  function remove() {
+    var delay = 15;
+    var delayFn = function(d, i) { return i * delay; };
+    // remove triangles
+    var removeTriangles = new Promise(function(resolve, reject) {
+      _fadeOut(bases.adjective_triangles.selectAll("path"), delayFn, resolve);
+    });
+
+    var removeAdjectives = new Promise(function(resolve, reject) {
+      _fadeOut(bases.adjectives_text.selectAll("text"), delayFn, resolve);
+    });
+
+    var removeCircles = new Promise(function(resolve, reject) {
+      bases.axis_g.selectAll('circle')
+        .transition()
+        .delay(delayFn)
+        .attr("r", 0)
+        .remove()
+        .endall(resolve);
+    });
+
+    var removeTropes = new Promise(function(resolve, reject) {
+      _fadeOut( bases.tropes.selectAll('g'), delayFn, resolve);
+    });
+
+    var removeBeams = new Promise(function(resolve,reject) {
+      _fadeOut(bases.connector_beams.selectAll("path"), delayFn, resolve);
+    });
+
+    // we aren't making a promise for this just because there is only
+    // one line...
+    bases.axis_g.selectAll("line,text")
+      .transition()
+      .delay(delayFn)
+      .style('opacity', 0)
+      .remove();
+
+    return Promise.join(removeTriangles,
+      removeAdjectives, removeCircles, removeTropes, removeBeams);
+  }
+
   var template = require("tmpl!../../pages/trope/trope-adj-ll-scale");
 
   return View.extend({
@@ -794,6 +858,17 @@ define(function(require) {
       }
     },
 
+    _remove : Promise.method(function() {
+      var self = this;
+      if (this.trope_data) {
+        return remove().then(function() {
+          return new Promise(function(resolve) {
+            self.$el.fadeOut(200, resolve);
+          });
+        });
+      }
+    }),
+
     _preDataRender: function() {
       this.$el.html(this.template(this.trope_data));
       return this;
@@ -801,6 +876,7 @@ define(function(require) {
     _render: function() {
       var self = this;
       this._preDataRender();
+
 
       return dataManager.getTropeDetails(this.trope_id).then(function(trope_details) {
         self.trope_data = trope_details;

@@ -28,6 +28,16 @@ define(function(require) {
       }, 150));
     },
 
+    _remove: function() {
+      var self = this;
+      return this.views['adjs']._remove().then(function() {
+        return Promise.settle(
+          self.views['timeline']._remove(),
+          self.views['tile']._remove(),
+          self.views['details']._remove());
+      });
+    },
+
     _render: function() {
       var self = this;
       this.$el.html(this.template(this.options));
