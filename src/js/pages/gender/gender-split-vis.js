@@ -516,16 +516,12 @@ define(function(require) {
           };
         }
 
-        // TODO: I don't think these percentages are what we should show
-        // here, they can be tricky to relate to the log likelyhood score
-        // which sets the x coordinate. Look into alternatives, such as just the
-        // counts for each gender.
         var templateData = {
           id: adjectiveData.id,
-          count: adjectiveData.count,
+          count: adjectiveData.frequency.female + adjectiveData.frequency.male,
           percents: {
-            f: Math.round(adjectiveData.percentage_occurance.female),
-            m: Math.round(adjectiveData.percentage_occurance.male)
+            f: adjectiveData.percentage_occurance.female.toFixed(2),
+            m: adjectiveData.percentage_occurance.male.toFixed(2)
           },
           tropes: {
             female: _.map(adjectiveData.tropes.female, formatTrope),
