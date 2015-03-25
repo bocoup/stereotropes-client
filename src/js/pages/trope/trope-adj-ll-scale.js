@@ -828,7 +828,7 @@ define(function(require) {
       .style('opacity', 0)
       .remove();
 
-    return Promise.join(removeTriangles,
+    return Promise.settle(removeTriangles,
       removeAdjectives, removeCircles, removeTropes, removeBeams);
   }
 
