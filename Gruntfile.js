@@ -22,12 +22,16 @@ module.exports = function(grunt) {
     ['clean:public', 'jade:public', 'stylus:public', 'copy', 'symlink', 'requirejs']);
 
   grunt.registerTask('public',
-    'Compile for production and start a test webserver.',
+    'Compile for production (not gzipped) and start a test webserver.',
     [ 'public-build', 'connect:public']);
+
+  grunt.registerTask('public-gz',
+    'Compile for production (gzipped) and start a test webserver.',
+    [ 'public-build', 'compress', 'connect:public-gz']);
 
   grunt.registerTask('deploy',
     'Compile for production and deploy to s3',
-    ['public-build', 'bgShell']);
+    ['public-build', 'compress', 'bgShell']);
 
   grunt.registerTask('default', ['dev']);
 

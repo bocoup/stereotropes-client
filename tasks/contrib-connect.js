@@ -16,20 +16,22 @@ module.exports = function(grunt) {
     next();
   }
 
+  function middlewareFn (connect, options) {
+    var middleware = [];
+    // Rewrite routes as-necessary.
+    middleware.push(rewriteRoute);
+    // Serve static files.
+    options.base.forEach(function(base) {
+      middleware.push(connect.static(base));
+    });
+    return middleware;
+  }
+
   grunt.config.set('connect', {
     options: {
       port: 8081,
       hostname: '*',
-      middleware: function(connect, options) {
-        var middleware = [];
-        // Rewrite routes as-necessary.
-        middleware.push(rewriteRoute);
-        // Serve static files.
-        options.base.forEach(function(base) {
-          middleware.push(connect.static(base));
-        });
-        return middleware;
-      }
+      middleware: middlewareFn
     },
     dev: {
       options: {
@@ -42,6 +44,26 @@ module.exports = function(grunt) {
         keepalive: true,
       }
     },
+
+    // gzipped public site version
+    'public-gz': {
+      options: {
+        base: ['public-gz'],
+        keepalive: true,
+        middleware: function(connect, options) {
+          var m = middlewareFn(connect, options);
+
+          // inject a header to mark all files as gzipped.
+          var f = function(req, res, next) {
+            res.setHeader('Content-Encoding', 'gzip');
+            return next();
+          };
+
+          m.unshift(f);
+          return m;
+        }
+      }
+    }
   });
 
   grunt.loadNpmTasks('grunt-contrib-connect');
