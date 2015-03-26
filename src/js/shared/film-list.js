@@ -11,22 +11,11 @@ define(function(require) {
     template: template,
     className: 'films',
     initialize: function(options) {
-      if (!options.trope_id) {
-        throw new Error("Trope id required for rendering trope tile!");
-      }
-
-      this.trope_data = {
-        loading : true
-      };
-
-      this.trope_id = options.trope_id;
     },
     getData: function() {
       var self = this;
       return dataManager.getTropeDetails(self.trope_id)
       .then(function(trope_details) {
-        self.trope_data = trope_details;
-        self.$el.html(self.template(self.trope_data));
         var films = _.chain(trope_details.similar.map(function(s) { return s.films; }))
         .flatten()
         .uniq().slice(0,5).value();
@@ -35,8 +24,9 @@ define(function(require) {
     },
     _render: function() {
       var self = this;
-      return self.getData().then(function(ids) {
-        return ids.map(function(f) { return new FilmTile({id:f}); });
+      self.$el.html(self.template());
+      return self.getData().then(function(film_data) {
+        return film_data.map(function(data) { return new FilmTile(data); });
       })
       .then(function(tiles) {
         return Promise.all(tiles.map(function(t) { return t.render(); }));
@@ -48,11 +38,15 @@ define(function(require) {
               Backbone.history.navigate('/films/' + id, { trigger: true });
             });
             self.$el.find('.film-tiles-container').append(tile.$el);
-            tile.$el.hide().delay(index * 80).fadeIn(600);
+            tile.show(5);
           }
+          return self;
         });
         return self;
       });
-    }
+    },
+    _remove: Promise.method(function() {
+      return this.$el.fadeOut().empty();
+    })
   });
 });

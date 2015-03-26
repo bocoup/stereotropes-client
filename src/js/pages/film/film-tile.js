@@ -57,7 +57,6 @@ define(function(require) {
           self.$el.html(self.template(self.film_data));
           return self;
         }).catch(function(e) {
-          console.log(e.responseText);
           return self;
         });
       }
@@ -66,6 +65,26 @@ define(function(require) {
     _remove: Promise.method(function() {
       return this.$el.fadeOut().empty();
     }),
+
+    show: function(delay) {
+      var self = this;
+      return new Promise(function(resolve, reject) {
+        setTimeout(function() {
+          self.$el.show();
+          resolve();
+        }, delay || 0);
+      });
+    },
+
+    hide: function(delay) {
+      var self = this;
+      return new Promise(function(resolve, reject) {
+        setTimeout(function() {
+          self.$el.show();
+          resolve();
+        }, delay || 0);
+      });
+    },
 
     click: function() {
       this.trigger("film-select", this.id);

@@ -35,7 +35,8 @@ define(function(require) {
         return Promise.settle(
           self.views['timeline']._remove(),
           self.views['tile']._remove(),
-          self.views['details']._remove());
+          self.views['details']._remove(),
+          self.views['films']._remove());
       });
     },
 

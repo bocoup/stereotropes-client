@@ -20,10 +20,10 @@ define(function(require) {
       .then(function(trope_details) {
         self.trope_data = trope_details;
         self.$el.html(self.template(self.trope_data));
-        var films = _.chain(trope_details.similar.map(function(s) { return s.films; }))
+        var ids = _.chain(trope_details.similar.map(function(s) { return s.films; }))
         .flatten()
         .uniq().slice(0,5).value();
-        return films;
+        return ids.map(function(id) { return {id:id}; });
       });
     }
   });
