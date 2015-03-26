@@ -28,7 +28,7 @@ define(function(require) {
       this.$el.html(this.template(this.options));
 
       // thumbnail view
-      var thumbnailView = new ThumbnailView({ film_id : this.options.film_id });
+      var thumbnailView = new ThumbnailView({ id : this.options.film_id });
 
       // header view
       var detailView = new DetailView({ film_id : this.options.film_id });

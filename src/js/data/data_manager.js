@@ -445,7 +445,7 @@ define(function(require) {
    *
    *
    * @param  {String} genre - genre id.
-   * @return {Promise[Object]} list of films with id and name attributes
+   * @return {Promise[Object]} list of films with id, name, and poster_url attributes
    */
   DataManager.prototype.getTopFilms = function(genre) {
     var self = this;
