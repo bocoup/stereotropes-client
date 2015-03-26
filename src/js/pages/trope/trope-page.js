@@ -5,6 +5,7 @@ define(function(require) {
   var ThumbnailView = require('../../pages/trope/trope-tile');
   var DetailView = require('../../pages/trope/trope-detail-header');
   var Timeline = require('../../pages/trope/trope-overtime-timeline');
+  var FilmList = require('../../pages/trope/trope-film-list');
   var _ = require('lodash');
   var Promise = require('bluebird');
   var AdjLine = require('../../pages/trope/trope-adj-ll-scale');
@@ -64,19 +65,25 @@ define(function(require) {
         trope_id : this.options.trope_id
       });
 
+      //film list
+      var filmList = new FilmList({ trope_id : this.options.trope_id });
+
       this.views['tile'] = thumbnailView;
       this.views['details'] = detailView;
       this.views['timeline'] = timelineView;
       this.views['adjs'] = adjLine;
+      this.views['films'] = filmList;
 
       return Promise.join(
         thumbnailView.render(),
         detailView.render(),
         adjLine.render(),
+        filmList.render(),
 
-        function(t_view, h_view ,a_view) {
+        function(t_view, h_view ,a_view, f_view) {
           self.$el.find('.trope-tile-container').append(t_view.$el);
           self.$el.find('.trope-detail-container').append(h_view.$el);
+          self.$el.find('.trope-film-list-container').append(f_view.$el);
 
           timelineView.render();
           return self;

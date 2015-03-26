@@ -49,18 +49,17 @@ define(function(require) {
       if(self.found()) {
         self.$el.html(self.template(self.film_data));
         return self;
-
       } else {
-      return dataManager.getFilmDetails(this.id).then(function(film_details) {
-        self.film_data = _.extend(self.film_data, film_details);
-        self.film_data.loading = false;
+        return dataManager.getFilmDetails(this.id).then(function(film_details) {
+          self.film_data = _.extend(self.film_data, film_details);
+          self.film_data.loading = false;
 
-        self.$el.html(self.template(self.film_data));
-        return self;
-      }).catch(function(e) {
-        console.log(e.responseText);
-        return self;
-      });
+          self.$el.html(self.template(self.film_data));
+          return self;
+        }).catch(function(e) {
+          console.log(e.responseText);
+          return self;
+        });
       }
     },
 
