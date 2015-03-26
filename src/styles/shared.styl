@@ -17,6 +17,16 @@ h2 {
   font-weight: 300;
 }
 
+h3 {
+  font-variant: small-caps;
+  font-size: 18px;
+}
+
+h4 {
+  font-variant: small-caps;
+  color: $grey;
+}
+
 body {
   padding:20px;
 }
@@ -71,7 +81,7 @@ aside {
 #top-bar{
   max-width: 960px;
   margin: 0 auto;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 
 nav {
@@ -136,10 +146,21 @@ center-page(){
 // Trope tiles
 trope-details(){
   .details {
+    font-family: $long-description-font;
+    line-height: 1.4em;
+    font-size: 90%
+
     height: 225px;
 
+    .trope-title {
+      margin-bottom: 10px;
+    }
+
     div.description.short {
-      height: 188px;
+      text-align: left;
+
+
+      height: 100px;
       display: -webkit-box;
       text-overflow: ellipsis;
       overflow-y:hidden;
@@ -148,6 +169,12 @@ trope-details(){
       -webkit-line-clamp: 8;
       -webkit-box-orient: vertical;
       text-overflow: -o-ellipsis-lastline; /* Opera just does this, I guess? */
+    }
+
+    div.description.short:hover {
+      // Experiment. what if we use this
+      // to show the full text
+      height: 100%;
     }
 
     .more {
