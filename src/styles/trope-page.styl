@@ -6,37 +6,24 @@
   .trope-tile-container {
     width: 160px;
     float: left;
+
+    .name {
+      display:none;
+    }
   }
 
   .trope-detail-container {
     margin-left: 200px
     padding-right: 40px;
-    .details {
-      height: 225px;
 
-      div.description.short {
-        height: 188px;
-        display: -webkit-box;
-        text-overflow: ellipsis;
-        overflow-y:hidden;
+    trope-details();
 
-         margin: 0 auto;
-        -webkit-line-clamp: 8;
-        -webkit-box-orient: vertical;
-        text-overflow: -o-ellipsis-lastline; /* Opera just does this, I guess? */
-      }
-
-      .more {
-        margin-top: 15px;
-        float:right;
-      }
-    }
   }
 
   .trope-timeline-container {
     h4 {
-      margin-top: 0;
-      padding-top: 0;
+      padding-bottom: 10px;
+      text-align: right;
     }
 
     .vis {

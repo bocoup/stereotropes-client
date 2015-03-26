@@ -32,7 +32,7 @@ define(function(require) {
      */
     render : Promise.method(function() {
       if (this._render) {
-        return this._render(arguments);
+        return this._render.apply(this,arguments);
       } else {
         this.$el.html(this.template());
         return this;

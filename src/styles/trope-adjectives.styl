@@ -3,9 +3,7 @@
   .instruction {
     font-size: 0.8em;
     display: inline-block;
-    background-color: $silver-blue-dark;
-    color: white;
-    padding: 2px;
+    color: $silver-blue-dark;
   }
   .left {
     float: left;
@@ -31,6 +29,13 @@
       circle.selected {
         fill: $silver-blue-dark;
         stroke: $silver-blue-dark;
+      }
+
+      text.label {
+        font-variant: small-caps;
+        color: $grey;
+        font-size: 18px;
+        font-weight: 500;
       }
     }
 
@@ -60,6 +65,7 @@
     g.adjectives {
       font-family: $adjective-font;
       font-variant:small-caps;
+      font-size: 18px;
 
       cursor: pointer;
 
@@ -81,7 +87,7 @@
       .selected {
         text-decoration: underline;
         font-weight: bold;
-        font-size: 1.1em;
+        font-size: 18px;
         transition: font-size 0.25s ease;
       }
     }
@@ -90,8 +96,18 @@
 
       g {
         cursor: pointer;
-        rect {
-          fill: none;
+
+        text {
+          font-size: 14px;
+          color: $dark-grey;
+        }
+
+        rect.gender-f {
+          fill : none;
+        }
+
+        rect.gender-m {
+          fill : none;
         }
       }
 
