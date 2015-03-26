@@ -792,7 +792,7 @@ define(function(require) {
    * @return {Promise} Returns a promise
    */
   function remove() {
-    var delay = 15;
+    var delay = 5;
     var delayFn = function(d, i) { return i * delay; };
     // remove triangles
     var removeTriangles = new Promise(function(resolve, reject) {
