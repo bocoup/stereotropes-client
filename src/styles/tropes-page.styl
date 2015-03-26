@@ -1,0 +1,38 @@
+.tropes-page {
+
+  .tropes-container {
+
+    $tile-size = 200;
+    $tile-margin = 30;
+
+    float: left;
+    trope-tile($tile-size, $tile-size);
+
+    .trope-tile:hover {
+      cursor: pointer;
+    }
+
+    .trope-tile, .text-tile {
+      float: left;
+      margin-right: unit($tile-margin, 'px');
+      margin-bottom: unit($tile-margin - 5, 'px');
+    }
+
+    .text-tile.tropes {
+      float: left;
+      display: inline-block;
+      position: relative;
+      overflow: hidden;
+      width:  unit($tile-size * 2 + $tile-margin, 'px');
+      height: unit($tile-size * 2, 'px');
+    }
+
+    .text-tile.filter {
+      float: left;
+      text-align: center;
+      width:  unit($tile-size, 'px');
+      height: unit($tile-size, 'px');
+    }
+
+  }
+}
