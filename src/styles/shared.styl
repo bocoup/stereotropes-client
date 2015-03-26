@@ -2,12 +2,19 @@ html, button, input, select, textarea,
 .pure-g [class *= "pure-u"] {
     font-family: $body-font;
     color: $dark-grey;
+
+    font-size: 14px;
 }
 
 h1, h2, h3, h4, h5 {
   font-weight: 500;
   margin-top:0;
   margin-bottom:0;
+  font-family: $header-font;
+}
+
+h2 {
+  font-weight: 300;
 }
 
 body {
@@ -61,8 +68,14 @@ aside {
 
 // Top level nav
 
-nav {
+#top-bar{
+  max-width: 960px;
+  margin: 0 auto;
   margin-bottom: 20px;
+}
+
+nav {
+  font-family: $nav-font;
 
   ul {
     display:inline;
@@ -72,9 +85,9 @@ nav {
 
   li {
     display:inline;
-    font-size: 1.5em;
-    font-weight: 500;
-    line-height: 1.6em;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 18px;
     padding-right: 15px;
 
     .inactive {
@@ -84,6 +97,15 @@ nav {
 
   a {
     text-decoration: none;
+  }
+
+  .site-title {
+    font-weight: 700;
+    color: $silver-blue-dark;
+    text-transform:uppercase;
+    font-size: 90%;
+    letter-spacing: 2px;
+    padding: 0 4px 0 4px;
   }
 }
 
@@ -105,6 +127,11 @@ nav {
 // Mixins. These are styles expected to be mixed into
 // some existing css, not directly applying globally.
 //
+
+center-page(){
+  max-width: 960px;
+  margin: 0 auto;
+}
 
 // Trope tiles
 trope-details(){
