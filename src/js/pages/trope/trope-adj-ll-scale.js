@@ -616,7 +616,7 @@ define(function(require) {
     // trope section label
     bases.axis_g.append("text")
       .classed("label", true)
-      .text("Tropes that share some of the above adjectives:")
+      .text("tropes that share these adjectives")
       .attr({
         x : 0, y : height / 2
       });

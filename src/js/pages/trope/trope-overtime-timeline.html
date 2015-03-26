@@ -1,5 +1,5 @@
 <div>
-  <h4><%=name %>'s appearance over time</h4>
+  <h4>appearance over time</h4>
   <div class="vis"></div>
   <aside>
     <%
@@ -10,6 +10,8 @@
         id = i;
       }
     } %>
-    '<%= name %>' appears in <%= occurrence_over_time[id][1] %> <%= occurrence_over_time[id][0].toLowerCase() %>. There are a total of <%= occurrence_over_time[id][3] %> films in this decade in our dataset, which means ~<%= d3.format(".1%")(occurrence_over_time[id][1]/ occurrence_over_time[id][3]) %> of films in this decade contained characters identified as '<%= name %>'.
+
+    <em><%= name %></em> appears in <%= occurrence_over_time[id][1] %> <%= occurrence_over_time[id][0].toLowerCase() %>
+    (<%= d3.format(".1%")(occurrence_over_time[id][1]/ occurrence_over_time[id][3]) %> of films in this decade).
   </aside>
 </div>

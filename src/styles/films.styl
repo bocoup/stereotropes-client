@@ -33,15 +33,17 @@
 
   .film-detail-container {
     margin-left: 200px
-    padding-right: 40px;
+
     .details {
 
       .description {
+        font-family: $long-description-font;
         display: -webkit-box;
         text-overflow: ellipsis;
         overflow-y:hidden;
 
-         margin: 0 auto;
+        margin: 0 auto;
+        margin-top: 10px;
         -webkit-line-clamp: 8;
         -webkit-box-orient: vertical;
         text-overflow: -o-ellipsis-lastline; /* Opera just does this, I guess? */
