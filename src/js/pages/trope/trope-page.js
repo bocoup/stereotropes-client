@@ -9,6 +9,8 @@ define(function(require) {
   var Promise = require('bluebird');
   var AdjLine = require('../../pages/trope/trope-adj-ll-scale');
 
+  var GenderBar = require("../../shared/gender-split-bar");
+
   return View.extend({
 
     template: template,
@@ -30,6 +32,7 @@ define(function(require) {
 
     _remove: function() {
       var self = this;
+      self.views['genderbar']._remove();
       return this.views['adjs']._remove().then(function() {
         return Promise.settle(
           self.views['timeline']._remove(),
@@ -58,6 +61,9 @@ define(function(require) {
         height: 160 / 2
       });
 
+      // gender split bar
+      var genderBarView = new GenderBar();
+
       //adjective triangles
       var adjLine = new AdjLine({
         el : self.$el.find('.trope-adjectives-timeline'),
@@ -68,15 +74,26 @@ define(function(require) {
       this.views['details'] = detailView;
       this.views['timeline'] = timelineView;
       this.views['adjs'] = adjLine;
+      this.views['genderbar'] = genderBarView;
 
       return Promise.join(
         thumbnailView.render(),
         detailView.render(),
         adjLine.render(),
-
         function(t_view, h_view ,a_view) {
+
+          // we can use the data from the tile view to render
+          // the gender bar
+          if (t_view.data.gender === 'f') {
+            genderBarView.percents({ f : 100, m : 0 });
+          } else {
+            genderBarView.percents({ f : 0, m : 100 });
+          }
+          genderBarView.render();
+
           self.$el.find('.trope-tile-container').append(t_view.$el);
           self.$el.find('.trope-detail-container').append(h_view.$el);
+          self.$el.find('.gender-split-bar-container').append(genderBarView.$el);
 
           timelineView.render();
           return self;
