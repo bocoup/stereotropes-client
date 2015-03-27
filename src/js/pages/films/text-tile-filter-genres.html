@@ -1,0 +1,11 @@
+<h3><%= title %></h3>
+<p>
+<% _.each(genres, function(genre,index) {%>
+  <% if(genre.id !== current_genre) { %>
+     <a data-genre="<%= genre.id %>"><%= genre.name %></a>
+     <% if(index < genres.length - 1) { %>
+|
+     <% } %>
+  <% } %>
+<% }); %>
+  </p>
