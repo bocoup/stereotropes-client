@@ -20,18 +20,23 @@ module.exports = function(grunt) {
           maxBuffer: false
         },
         cmd: grunt.template.process('aws <%= profile %> s3 sync ' +
-          'assets/data <%= bucket %>/assets/data --recursive --include \'*\' ' +
-          '--acl \'public-read\' --cache-control <%= cacheControl %> ' +
-          '--expires <%= expires %>' , { data : opts })
+          'public-gz/assets/data <%= bucket %>/assets/data --recursive --include \'*\' ' +
+          '--acl \'public-read\' --content-encoding "gzip" ' +
+          '--cache-control <%= cacheControl %> --expires <%= expires %> ',
+          { data : opts })
       },
       "public": {
         execOpts: {
           maxBuffer: false
         },
-        cmd: grunt.template.process('aws <%= profile %> s3 sync '+
-          'public/ <%= bucket %> --exclude "*data/*" --recursive ' +
-          '--acl \'public-read\' --cache-control <%= cacheControl %> ' +
-          '--expires <%= expires %>' , { data : opts })
+        cmd:
+          [
+            grunt.template.process('aws <%= profile %> s3 sync '+
+            'public-gz/ <%= bucket %> --exclude "*data/*" --recursive ' +
+            '--acl \'public-read\' --content-encoding "gzip" ' +
+            ' --cache-control <%= cacheControl %> --expires <%= expires %>',
+            { data : opts })
+          ].join(" && ")
       }
   });
 

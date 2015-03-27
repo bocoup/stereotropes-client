@@ -219,7 +219,7 @@ define(function(require) {
         // check intersection and move the text box around if needbe
         var overlapping = true;
         var count = textBoundingBoxes.length, counter=0;
-        var currentBBox = selection[0][0].getBBox();
+        var currentBBox = selection.node().getBBox();
 
         // if the end of the text is outside the frame, we need to move it OR
         // If a potential flip will keep the adjective inside the frame, give a 50%
@@ -228,7 +228,7 @@ define(function(require) {
         if (currentBBox.x + currentBBox.width > width ||
           (x - currentBBox.width > 0 && Math.random() > 0.5)) {
           selection.attr("x", x - currentBBox.width);
-          currentBBox = selection[0][0].getBBox();
+          currentBBox = selection.node().getBBox();
           flip = true;
         }
 
@@ -251,7 +251,7 @@ define(function(require) {
             } else {
               y = floorHeights[currentFloor];
               selection.attr("y", y);
-              currentBBox = selection[0][0].getBBox();
+              currentBBox = selection.node().getBBox();
               counter = 0; // start comparing from the beginning again
             }
 
@@ -267,32 +267,35 @@ define(function(require) {
           }
         } // end while
 
-        currentBBox = selection[0][0].getBBox();
-        textBoundingBoxes.push(selection[0][0].getBBox());
+        if (!selection.classed("hidden")) {
+          currentBBox = selection.node().getBBox();
+          textBoundingBoxes.push(currentBBox);
 
-        //===== add a triangle ======
-        // if we are above the line, then it should be from the bottom
-        // of the box, otherwise, it should be from the top.
 
-        var pathString = _makeTriangle(currentBBox, flip);
-        var triangle = bases.adjective_triangles.selectAll("path")
-          .data([d], function(d) { return d[0]; });
+          //===== add a triangle ======
+          // if we are above the line, then it should be from the bottom
+          // of the box, otherwise, it should be from the top.
 
-        if (triangle.empty()) {
-          triangle.enter()
-            .insert("path", ":first-child")
-            .classed("triangle", true);
-        }
+          var pathString = _makeTriangle(currentBBox, flip);
+          var triangle = bases.adjective_triangles.selectAll("path")
+            .data([d], function(d) { return d[0]; });
 
-        triangle.attr("d", pathString)
-          .style('opacity', 0)
-          .transition()
-          .delay(Math.random() * 400)
-            .style('opacity', 0.25);
+          if (triangle.empty()) {
+            triangle.enter()
+              .insert("path", ":first-child")
+              .classed("triangle", true);
+          }
 
-        // add a uniqueness marker if this adjective doesn't appear in other tropes
-        if (d[4].length === 1 && d[4][0] === current_trope_id) {
-          triangle.classed("unique", true);
+          triangle.attr("d", pathString)
+            .style('opacity', 0)
+            .transition()
+            .delay(Math.random() * 400)
+              .style('opacity', 0.25);
+
+          // add a uniqueness marker if this adjective doesn't appear in other tropes
+          if (d[4].length === 1 && d[4][0] === current_trope_id) {
+            triangle.classed("unique", true);
+          }
         }
 
       };
@@ -411,7 +414,7 @@ define(function(require) {
         .classed("trope-name", true);
 
         // possibly shorten the text once its been placed.
-        var bbox = textNodes[0][0].getBBox();
+        var bbox = textNodes.node().getBBox();
         if (bbox.width > columnWidth) {
 
           var name = tropeDictMap[d.tropeId].name;
@@ -437,7 +440,7 @@ define(function(require) {
       // mark the groups selected or deselected on mouse over
       tropeSelection.on('mouseover', function(d) {
         var selection = d3.select(this);
-        var selectionBBox = selection[0][0].getBBox();
+        var selectionBBox = selection.node().getBBox();
 
         // adjust selectionBBox to transform...
         selectionBBox.y += height/2 + 30;
@@ -468,7 +471,7 @@ define(function(require) {
 
         triangles.each(function(dd) {
           var triangle = d3.select(this);
-          var triangleBBox = triangle[0][0].getBBox();
+          var triangleBBox = triangle.node().getBBox();
 
           // is this above or below the fold?
           var above = true;
@@ -616,7 +619,7 @@ define(function(require) {
     // trope section label
     bases.axis_g.append("text")
       .classed("label", true)
-      .text("Tropes that share some of the above adjectives:")
+      .text("tropes that share these adjectives")
       .attr({
         x : 0, y : height / 2
       });
@@ -792,7 +795,7 @@ define(function(require) {
    * @return {Promise} Returns a promise
    */
   function remove() {
-    var delay = 15;
+    var delay = 5;
     var delayFn = function(d, i) { return i * delay; };
     // remove triangles
     var removeTriangles = new Promise(function(resolve, reject) {
@@ -828,7 +831,7 @@ define(function(require) {
       .style('opacity', 0)
       .remove();
 
-    return Promise.join(removeTriangles,
+    return Promise.settle(removeTriangles,
       removeAdjectives, removeCircles, removeTropes, removeBeams);
   }
 
