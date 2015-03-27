@@ -565,6 +565,7 @@ define(function(require) {
     });
 
     data.adjectives = adjs;
+    return data;
   }
 
 
@@ -574,8 +575,6 @@ define(function(require) {
    * @param  {[Object]} data Trope data to render
    */
   function draw(el, data) {
-
-    _processData(data);
 
     var container = d3.select(el);
     width = $(el).width();
@@ -863,12 +862,14 @@ define(function(require) {
 
     _remove : Promise.method(function() {
       var self = this;
-      if (this.trope_data) {
+      if (this.trope_data && this.trope_data.adjectives.length > 0) {
         return remove().then(function() {
           return new Promise(function(resolve) {
             self.$el.fadeOut(200, resolve);
           });
         });
+      } else {
+        return self;
       }
     }),
 
@@ -882,14 +883,18 @@ define(function(require) {
 
 
       return dataManager.getTropeDetails(this.trope_id).then(function(trope_details) {
-        self.trope_data = trope_details;
+        self.trope_data = _processData(trope_details);
         self.trope_data.loading = false;
-        self.$el.html(self.template(self.trope_data));
-        draw(self.$el.find(".vis")[0], trope_details);
+        if(self.trope_data.adjectives.length > 0) {
+          self.$el.html(self.template(self.trope_data));
+          draw(self.$el.find(".vis")[0], self.trope_data);
 
-        dispatch.on('tropeSelected', function(id) {
-          Backbone.history.navigate('/tropes/' + id, { trigger: true });
-        });
+          dispatch.on('tropeSelected', function(id) {
+            Backbone.history.navigate('/tropes/' + id, { trigger: true });
+          });
+        } else {
+           self.$el.html("");
+        }
 
         return self;
       });
