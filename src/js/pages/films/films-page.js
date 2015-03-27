@@ -52,10 +52,10 @@ define(function(require) {
 
     },
 
-    _createSpecialTile: function(genre_key, list, title) {
+    _createSpecialTile: function(genre_key, list, title, tail) {
       var self = this;
       var genreTile = new TextTile({
-        data: {"genres":_.values(list), "current_genre":genre_key, "title":title},
+        data: {"genres":_.values(list), "current_genre":genre_key, "title":title, "tail":tail},
         template: templates.genreTile,
         classname: 'genres'
       });
@@ -70,10 +70,10 @@ define(function(require) {
 
     },
     _createGenreTile: function(genre_key) {
-      return this._createSpecialTile(genre_key,this.genres, "show only:");
+      return this._createSpecialTile(genre_key,this.genres, "Show only ", "films.");
     },
     _createYearTile: function(genre_key) {
-      return this._createSpecialTile(genre_key,this.years, "show from:");
+      return this._createSpecialTile(genre_key,this.years, "Show films from only the", ".");
     },
 
     _render: function() {
