@@ -31,7 +31,9 @@ define(function(require) {
       if (this.currentPage) {
         var c = this.pages[this.currentPage];
         delete this.pages[this.currentPage];
-        return c.remove();
+        return c.remove().catch(function(err) {
+          console.log(err);
+        });
       } else {
         return true;
       }
@@ -59,7 +61,9 @@ define(function(require) {
       options.el = this.contentElement;
       var self = this;
       return this._destroyCurrentPage().then(function() {
-        return self._renderNewPage(name, options, params);
+        return self._renderNewPage(name, options, params).catch(function(err) {
+          console.log(err);
+        });
       });
     }),
 
