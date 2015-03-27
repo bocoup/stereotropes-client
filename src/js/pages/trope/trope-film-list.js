@@ -18,11 +18,14 @@ define(function(require) {
       var self = this;
       return dataManager.getTropeDetails(self.trope_id)
       .then(function(trope_details) {
-        self.trope_data = trope_details;
-        self.$el.html(self.template(self.trope_data));
-        var ids = _.chain(trope_details.similar.map(function(s) { return s.films; }))
-        .flatten()
-        .uniq().slice(0,5).value();
+        var ids = [];
+        if(trope_details.similar) {
+          self.trope_data = trope_details;
+
+          ids = _.chain(trope_details.similar.map(function(s) { return s.films; }))
+            .flatten()
+            .uniq().slice(0,5).value();
+        }
         return ids.map(function(id) { return {id:id}; });
       });
     }
