@@ -4,12 +4,11 @@ define(function(require) {
     options = options || {};
 
     ga(function() {
-      console.log('library done loading');
+      console.log('ga done loading');
     });
   }
 
   Analytics.prototype.trackPage = function(page) {
-    console.log(page);
     ga("send", "pageview", page);
   };
 
