@@ -80,7 +80,7 @@ define(function(require) {
     var self = this;
     this.container = d3.select(this._container);
 
-    var minWidth = 760;
+    var minWidth = 960;
     this.width = _.max([parseInt(this.container.style('width'), 10), minWidth]);
     this.height = this.width;
 
@@ -629,8 +629,8 @@ define(function(require) {
         var info = self.tropeInfo[d.name];
         var name = info.name.toLowerCase();
 
-        if(name.length > 10) {
-          name = name.substring(0, 8) + '…';
+        if(name.length > 13) {
+          name = name.substring(0, 11) + '…';
         }
 
         if(data.length > maxFullSizeNodes) {
