@@ -27,9 +27,13 @@ define(function(require) {
     initialize: function(options) {
       this.genres = {"all":{name:"All", id:"all"},
                      "action":{name:"Action", id:"action"},
-                     "family":{name:"Family", id:"family"},
+                     "animation":{name:"Animation", id:"animation"},
                      "comedy":{name:"Comedy", id:"comedy"},
                      "drama":{name:"Drama", id:"drama"},
+                     "family":{name:"Family", id:"family"},
+                     "horror":{name:"Horror", id:"horror"},
+                     "musical":{name:"Musical", id:"musical"},
+                     "mystery":{name:"Mystery", id:"mystery"},
                      "sci-fi":{name:"Sci-Fi", id:"sci-fi"},
                      "thriller":{name:"Thriller", id:"thriller"},
                      "western":{name:"Western", id:"western"}};
