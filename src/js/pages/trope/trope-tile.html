@@ -6,6 +6,9 @@
   <div class="image">
     <% if (image_url) { %>
       <div style="background-image: url(/<%= image_url %>);"></div>
+    <% } else { %>
+      <% url = 'assets/img/missing-image-' + gender + '-trope.png' %>
+      <div style="background-image: url(/<%= url %>);"></div>
     <% } %>
   </div>
   <div class="name">
