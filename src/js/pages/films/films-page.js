@@ -9,7 +9,6 @@ define(function(require) {
   var QueryParams = require("../../core/query-data");
   var FilmTile = require('../../pages/film/film-tile');
   var dataManager = require('../../data/data_manager');
-  // var selectTemplate = require("tmpl!../../pages/films/films-select");
   var headerTemplate = require("tmpl!../../pages/films/films-page-header");
   var TextTile = require('../../shared/text-tile');
 
