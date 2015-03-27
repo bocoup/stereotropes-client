@@ -76,12 +76,24 @@ aside {
   padding-bottom: 30px;
 }
 
+
+
 // Top level nav
 
 #top-bar{
   max-width: 960px;
   margin: 0 auto;
   margin-bottom: 30px;
+}
+
+site-title-styles() {
+  .site-title {
+    font-weight: 700;
+    color: $silver-blue-dark;
+    text-transform:uppercase;
+    letter-spacing: 2px;
+    padding: 0 4px 0 4px;
+  }
 }
 
 nav {
@@ -109,13 +121,10 @@ nav {
     text-decoration: none;
   }
 
+  site-title-styles()
+
   .site-title {
-    font-weight: 700;
-    color: $silver-blue-dark;
-    text-transform:uppercase;
     font-size: 90%;
-    letter-spacing: 2px;
-    padding: 0 4px 0 4px;
   }
 }
 
@@ -137,6 +146,7 @@ nav {
 // Mixins. These are styles expected to be mixed into
 // some existing css, not directly applying globally.
 //
+
 
 center-page(){
   max-width: 960px;
@@ -169,12 +179,6 @@ trope-details(){
       -webkit-line-clamp: 8;
       -webkit-box-orient: vertical;
       text-overflow: -o-ellipsis-lastline; /* Opera just does this, I guess? */
-    }
-
-    div.description.short:hover {
-      // Experiment. what if we use this
-      // to show the full text
-      height: 100%;
     }
 
     .more {
