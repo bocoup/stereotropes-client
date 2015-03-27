@@ -2,6 +2,7 @@ define(function(require) {
 
   var Backbone = require('backbone');
   var QueryData = require('../core/query-data');
+  var Analytics = require("../shared/analytics");
 
   var Layout = require('../core/layout');
   var layout = new Layout({
@@ -50,6 +51,7 @@ define(function(require) {
           self.navigate('/films/' + options.id, { trigger: true });
         }
       });
+      this.on("route", this._track);
     },
 
     /**
@@ -115,6 +117,14 @@ define(function(require) {
      */
     about: function(qs, params) {
       layout.page('about', {}, params);
+    },
+
+    _track: function() {
+      var url = Backbone.history.root + Backbone.history.getFragment();
+      if (url === "/") {
+        url = "/tropes";
+      }
+      Analytics.trackPage(url);
     }
 
   });
