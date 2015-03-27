@@ -79,6 +79,9 @@ define(function(require) {
         this.$el.addClass(this.classname);
       }
       return this;
-    })
+    }),
+
+    found: function() { return true; }
+
   });
 });
