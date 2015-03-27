@@ -3,11 +3,11 @@ define(function(require) {
   var d3 = require("d3");
 /**
  * Taken from https://github.com/mbostock/d3/pull/1732
- * 
+ *
  * Description from pull:
- * 
- * Adds a .textWrap() function which can be configured with .bounds() and .padding() and applied to a 
- * text selection using .call(), and will then auto-calculate text length and positioning for dividing 
+ *
+ * Adds a .textWrap() function which can be configured with .bounds() and .padding() and applied to a
+ * text selection using .call(), and will then auto-calculate text length and positioning for dividing
  * into tspans accordingly.
  * */
 
@@ -21,9 +21,9 @@ d3.svg.textWrap = function() {
       arg_int,
       y_offset = 0,
       line_height;
-                    
+
   var textWrap = function(text_selection) {
-  
+
     var text_node = text_selection.node(),
         text_node_height = text_node.getBBox().height,
         text_node_width = text_node.getBBox().width,
@@ -39,7 +39,7 @@ d3.svg.textWrap = function() {
         line_dy,
         test_tspan;
 
-    // only wrap if it actually overflows                              
+    // only wrap if it actually overflows
     if (text_node_width > bounds.width) {
 
       // determine line height from styling or computed text dimensions
@@ -54,7 +54,7 @@ d3.svg.textWrap = function() {
 
       // clear out initial text
       text_selection.text(null);
-      
+
       // use a dummy tspan to check computed length for each
       // additional word and built an array of lines that fit
       test_tspan = text_selection.append('tspan');
@@ -75,14 +75,14 @@ d3.svg.textWrap = function() {
       }
       test_tspan.remove();
 
-      
+
       // append each line as a tspan
       for (var j = 0; j < lines.length; j++) {
         line_dy = j * line_height;
         // only append the line if it doesn't overflow the bounds
         // line height is slightly expanded to account for characters
         // with descenders, but the height may vary between fonts.
-        
+
         if (text_node.getBBox().height + (line_height * 1.25) < bounds.height) {
           text_selection.append('tspan')
             .text(lines[j])
@@ -90,14 +90,18 @@ d3.svg.textWrap = function() {
             .attr('y', bounds.y + (line_height * (j + 1) - bounds.y_offset + bounds.padding));
         }
       }
-      
+
     } else {
-      text_selection.attr("x", bounds.x);
-      text_selection.attr("y", bounds.y + (bounds.y_offset + bounds.padding));
+      text_selection.text(null);
+
+      text_selection.append('tspan')
+        .text(text_content)
+        .attr("x", bounds.x)
+        .attr("y", bounds.y + (bounds.y_offset + bounds.padding));
     }
 
   };
-  
+
   textWrap.bounds = function(_) {
     // if there's no argument, return current bounds
     if (_ === undefined) {
@@ -127,7 +131,7 @@ d3.svg.textWrap = function() {
       } else {
         bounds = default_bounds;
       }
-      // adjust wrap boundaries depending on quirks of 
+      // adjust wrap boundaries depending on quirks of
       // the different wrap targets
       if(arg[0]) {
         // shift up if there's a cy attribute
@@ -141,13 +145,13 @@ d3.svg.textWrap = function() {
         // adjust this dynamically
          } else if (arg[0][0].nodeName === 'polygon') {
            y_offset = -8;
-         }        
+         }
       }
       bounds.y_offset = y_offset;
     }
     return textWrap;
   };
-  
+
   textWrap.padding = function(_) {
     // if there's no argument, return current padding
     if (typeof _ === 'undefined') {
@@ -165,7 +169,7 @@ d3.svg.textWrap = function() {
       }
     }
   };
-        
+
   // return configured function
   return textWrap;
 
