@@ -629,8 +629,8 @@ define(function(require) {
         var info = self.tropeInfo[d.name];
         var name = info.name.toLowerCase();
 
-        if(name.length > 10) {
-          name = name.substring(0, 8) + '…';
+        if(name.length > 13) {
+          name = name.substring(0, 11) + '…';
         }
 
         if(data.length > maxFullSizeNodes) {
