@@ -61,7 +61,8 @@ define(function(require) {
       options.el = this.contentElement;
       var self = this;
       return this._destroyCurrentPage().then(function() {
-        return self._renderNewPage(name, options, params).catch(function(err) {
+        return self._renderNewPage(name, options, params)
+        .catch(function(err) {
           console.log(err);
         });
       });
