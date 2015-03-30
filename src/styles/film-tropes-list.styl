@@ -2,19 +2,31 @@
 .film-page {
 .film-tropes-list-container {
   .vis {
-    .trope-name {
+    font-size: 12px;
+    .trope-list-name {
+      fill: #333;
+    }
+    .trope-list-name, .underbox {
       cursor: pointer;
     }
     .gender {
       text.highlight {
         fill: #fff;
-      }
+        }
     }
+
     .underbox.gender-f {
-      fill: $female-col;
+      fill: $female-col-50;
+      cursor: pointer;
     }
     .underbox.gender-m {
-      fill: $male-col;
+      fill: $male-col-50;
+      cursor: pointer;
+    }
+
+    .underbox.highlight {
+      fill: $highlight-col;
+      cursor: pointer;
     }
     .beam.gender-f {
       fill: $female-col-25;
@@ -24,30 +36,31 @@
     }
     .gender-f {
       text {
-        fill: $female-col-50;
+        fill: #000;
         text-anchor: end;
         }
-      rect.highlight {
-        background-color: $female-col;
-      }
     }
     .gender-m {
       text {
-        fill: $male-col-50;
+        fill: #000;
         text-anchor: start;
       }
+    }
+    .gender text.highlight {
+      fill: #fff;
     }
     .middle-panel {
       text {
         font-size: 14px;
-      }
-      .background.gender-m {
-        fill: $male-col-50;
-      }
-      .background.gender-f {
-        fill: $female-col-50;
-      }
+    }
+    .background.gender-m {
+      fill: $male-col-50;
+    }
+    .background.gender-f {
+      fill: $female-col-50;
     }
   }
-}
+  }
+
+  }
 }
