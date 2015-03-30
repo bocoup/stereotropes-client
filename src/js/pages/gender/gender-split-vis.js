@@ -49,19 +49,20 @@ define(function(require) {
 
     var minWidth = 500;
     this.width = _.max([parseInt(this.container.style('width'), 10), minWidth]);
-    this.height = 700;
+    this.height = 720;
 
 
     // If an adjective has a count greater than this then its text will always show in the vis
     this.alwaysShowTermThreshold = 30;
 
-    var minOccurrences = 10;
+    var minOccurrencesMale = 8;
+    var minOccurrencesFemale = 10;
 
     this.femaleAdj = _.filter(this.data['female'], function(adj) {
-      return adj.count >= minOccurrences;
+      return adj.count >= minOccurrencesFemale;
     });
     this.maleAdj = _.filter(this.data['male'], function(adj) {
-      return adj.count >= minOccurrences;
+      return adj.count >= minOccurrencesMale;
     });
 
     this.femaleAdj = _.sortBy(this.femaleAdj, function(adj){
