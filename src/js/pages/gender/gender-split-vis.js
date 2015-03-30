@@ -4,6 +4,7 @@ define(function(require) {
   var _ = require('lodash');
   var d3 = require('d3');
   var $ = require('jquery');
+  var Analytics = require("../../shared/analytics");
 
   var DataManager = require('../../data/data_manager');
 
@@ -434,6 +435,7 @@ define(function(require) {
           setTimeout(function(){
             self.showAdjectiveDetailOverlay(node, d);
           }, 50);
+          Analytics.trackEvent("gender-page", "adjective", d.id);
         }
 
         self.container.selectAll('rect.node-bg')
