@@ -1,11 +1,9 @@
 define(function(require) {
-  var ga = require('ga');
+  var ga = require('../shared/ga-stub');
+  ga("create", "UA-19937033-1", "auto");
+
   function Analytics(options){
     options = options || {};
-
-    ga(function() {
-      // console.log('ga done loading');
-    });
   }
 
   Analytics.prototype.trackPage = function(page) {
@@ -13,7 +11,6 @@ define(function(require) {
   };
 
   Analytics.prototype.trackEvent = function(category, action, label) {
-    console.log("logging event: " + category + " -> " + action + " : " + label);
     ga("send", "event", category, action, label);
   };
 
