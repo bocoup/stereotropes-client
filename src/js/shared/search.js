@@ -4,6 +4,7 @@ define(function(require) {
   var $ = require('jquery');
   var View = require('../core/view');
   var Bloodhound = require('bloodhound');
+  var Analytics = require("../shared/analytics");
 
   // js hint gives an error for not using typeahead
   // but we need it to be required to bring in the
@@ -78,7 +79,7 @@ define(function(require) {
         source: tropes.ttAdapter(),
         templates: {
           header: templates.tropes_header(),
-          suggestion: function(trope) { 
+          suggestion: function(trope) {
             return templates.tropes_suggestion(trope);
           }
         }
@@ -107,6 +108,7 @@ define(function(require) {
     onSelected: function(el, suggestion, source) {
       this.$el.find('.typeahead').blur();
       this.trigger('search:selected', {"id":suggestion.id, "type":source});
+      Analytics.trackEvent("search", "search", suggestion.id);
     },
     /**
      * onFocus
@@ -118,6 +120,7 @@ define(function(require) {
      */
     onFocus: function() {
       this.$el.find('.typeahead').typeahead('val','');
+      Analytics.trackEvent("search", "focus");
     }
   });
 });

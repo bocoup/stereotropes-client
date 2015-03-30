@@ -11,6 +11,7 @@ define(function(require) {
   var dataManager = require('../../data/data_manager');
   var headerTemplate = require("tmpl!../../pages/films/films-page-header");
   var TextTile = require('../../shared/text-tile');
+  var Analytics = require("../../shared/analytics");
 
   var templates = {
     genreTile : require('tmpl!../films/text-tile-filter-genres')
@@ -63,6 +64,7 @@ define(function(require) {
       genreTile.$el.on('click a', function(ev) {
         var genre_id = $(ev.target).data('genre');
         self.changeGenre(genre_id);
+        Analytics.trackEvent("films-page", "filter", genre_id);
         return false;
       });
 

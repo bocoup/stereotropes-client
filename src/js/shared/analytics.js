@@ -4,7 +4,7 @@ define(function(require) {
     options = options || {};
 
     ga(function() {
-      console.log('ga done loading');
+      // console.log('ga done loading');
     });
   }
 
@@ -12,7 +12,14 @@ define(function(require) {
     ga("send", "pageview", page);
   };
 
-  Analytics.prototype.trackEvent = function(category, action, label, count) {
+  Analytics.prototype.trackEvent = function(category, action, label) {
+    console.log("logging event: " + category + " -> " + action + " : " + label);
+    ga("send", "event", category, action, label);
+  };
+
+  Analytics.prototype.trackError = function(message) {
+    console.log("logging exception: " + message);
+    ga("send", "exception", message);
   };
 
   // Return an instance so that this module is effectively

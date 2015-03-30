@@ -4,7 +4,7 @@
 // from http://veithen.github.io/2015/02/14/requirejs-google-analytics.html
 window.GoogleAnalyticsObject = "__ga__";
 window.__ga__ = {
-    q: [["create", "UA-19937033-1", "auto"]],
+    q: [["create", "UA-61343354-1", "auto"]],
     l: Date.now()
 };
 
