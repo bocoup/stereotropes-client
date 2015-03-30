@@ -9,6 +9,7 @@ define(function(require) {
   var TropesListView = require('../../pages/film/film-tropes-list');
   var FilmList = require('../../pages/film/film-film-list');
   var Promise = require('bluebird');
+  var Analytics = require("../../shared/analytics");
 
   return View.extend({
 
@@ -21,6 +22,7 @@ define(function(require) {
       window.addEventListener("resize", _.debounce(function() {
         var tropesListContainer = self.$el.find('.film-tropes-list-container');
         self.views['tropes'].resize({width: tropesListContainer.width()});
+        Analytics.trackEvent("film-page", "resize");
       }, 150));
     },
 
@@ -61,7 +63,7 @@ define(function(require) {
             return self;
           });
       }).catch(function(e) {
-        console.log(e.message);
+        Analytics.trackError(e.responseText);
         var errorTemplate = require('tmpl!../film/error');
         self.$el.html(errorTemplate());
 

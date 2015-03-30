@@ -7,6 +7,7 @@ define(function(require) {
   var View = require("../../core/view");
   var dataManager = require('../../data/data_manager');
   var tropeList = require("./film-tropes-list-vis");
+  var Analytics = require("../../shared/analytics");
 
   var template = require("tmpl!../../pages/film/film-tropes-list");
 
@@ -119,10 +120,9 @@ define(function(require) {
       var details = {};
       d3.keys(roles).forEach(function(g) {
         roles[g].forEach(function(trope) {
-          // TODO: log in persistent storage (like GA) when errors occur
           details[trope.id] = dataManager.getTropeDetails(trope.id)
             .catch(function(e) {
-              console.log(e.responseText);
+              Analytics.trackError(e.responseText);
               return undefined;
             });
         });

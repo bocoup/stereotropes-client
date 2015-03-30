@@ -10,6 +10,7 @@ define(function(require) {
 
   var TropeTile = require('../trope/trope-tile');
   var TropeDetails = require('../trope/trope-detail-header');
+  var Analytics = require("../../shared/analytics");
 
 
   /**
@@ -399,6 +400,7 @@ define(function(require) {
       self.trigger('adjectiveClicked', d.name);
 
       self.hideTropeDetails();
+      Analytics.trackEvent("adjectives-page", "adjective", d.name);
     }
 
 
@@ -411,6 +413,7 @@ define(function(require) {
       self.trigger('selectionCleared');
       self.render();
       self.hideTropeDetails();
+      Analytics.trackEvent("adjectives-page", "clear");
     }
 
     if (selectedAdj) {
@@ -691,6 +694,7 @@ define(function(require) {
         this.parentNode.appendChild(this);
 
         self.showTropeDetails(this, d);
+        Analytics.trackEvent("adjectives-page", "trope", d.name);
       }
 
     }
