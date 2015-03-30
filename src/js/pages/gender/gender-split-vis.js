@@ -88,7 +88,7 @@ define(function(require) {
       .domain(d3.extent(_.map(this.adjectives, function(d){
         return d.count;
       })))
-      .range([12, 32]);
+      .range([14, 36]);
 
 
     this.quadtreeFactory = d3.geom.quadtree()
