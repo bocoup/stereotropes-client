@@ -60,7 +60,8 @@ define(function(require) {
         updatePositions();
 
         svg = d3.select(this).selectAll("svg").data([data]);
-        svg.enter().append("svg").append("g");
+        svg.enter().append("svg");
+        svg.append("g");
 
         svg.attr("width", width);
         svg.attr("height", height);
@@ -111,28 +112,29 @@ define(function(require) {
         .text(function(d) { return d.details.name; })
           .attr("pointer-events", "none");
 
-      // TODO: if I try to get the bounding boxes in-line, they
-      // all return 0 for size...
-      // is there something I am doing wrong in initializing my
-      // visualization that is causing this code to be run before
-      // the elements are actually appended to the DOM?
-      d3.timer(function() {
-        tropes.each(function(d,i) {
-          var gender = d3.select(this.parentNode).datum().key;
-          var bbox = d3.select(this).node().getBBox();
-          g.insert("rect", ".gender").datum(d)
-            .attr("x", bbox.x - boxPadding )
-            .attr("y", bbox.y - (boxPadding / 2) )
-            .attr("width", bbox.width + boxPadding * 2 )
-            .attr("height", bbox.height + (boxPadding ))
-            .attr("class", "underbox gender-" + gender)
-            .on("mouseover", mouseover)
-            .on("mouseout", mouseout)
-            .on("click", click);
-        });
-        // kill on first run
-        return true;
-      });
+        var boxes = genders.selectAll(".underbox").data(function(d) { return d.value; } );
+
+        boxes.enter()
+          .insert("rect", ".trope-list-name")
+          .classed("underbox", true);
+        boxes.each(function(d,i) {
+          var text = tropes.filter(function(e,j) {
+            return e.id === d.id;
+          });
+          var gender = d3.select(text.node().parentNode).datum().key;
+          var bbox = text.node().getBBox();
+          var attrs = {};
+          attrs.x = bbox.x - boxPadding;
+          attrs.y = bbox.y - (boxPadding / 2);
+          attrs.width = bbox.width + boxPadding * 2;
+          attrs.height = bbox.height + boxPadding;
+          attrs.class =  "underbox gender-" + gender;
+          d3.select(this)
+            .attr(attrs);
+        })
+        .on("mouseover", mouseover)
+        .on("mouseout", mouseout)
+        .on("click", click);
     }
 
     /**
@@ -179,14 +181,21 @@ define(function(require) {
       textY = Math.min(textY, height);
 
       // reset textWrap x and y
-      textWrap.bounds({width: width / 3, height: height, x:textX, y:textY}).padding(6);
+      textWrap.bounds({width: width / 3, height: 10000, x:textX, y:textY}).padding(6);
       // here we call textWrap which will convert our string to a set of tspan's
       panel.select("text")
         .attr("text-anchor", "start")
-        .text(d.roles.join("\n"))
+        .text(d.roles.join(". "))
         .call(textWrap);
 
       var panelBBox = panel.select("text").node().getBBox();
+
+      // update the height if the text box isn't going to fit
+      if (height - (panelBBox.height + (boxPadding * 9)) < 0) {
+        height = panelBBox.height + (boxPadding * 9);
+        svg.attr("height", height);
+
+      }
       // it is possible that after text wrapping, the bottom edge
       // (plus padding) goes past the bottom of the vis.
       var overDiff = height - (panelBBox.y + panelBBox.height +(boxPadding * 9) );
@@ -194,7 +203,7 @@ define(function(require) {
         // if so, move the tspans up.
         panel.select('text').selectAll("tspan")
           .attr("y", function(d,i) {
-              return Math.max(0, (+d3.select(this).attr("y") + overDiff));
+              return (+d3.select(this).attr("y") + overDiff);
           });
         // and reset the panelBBox - for the background
         panelBBox = panel.select("text").node().getBBox();
