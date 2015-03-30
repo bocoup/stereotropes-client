@@ -181,7 +181,7 @@ define(function(require) {
       textY = Math.min(textY, height);
 
       // reset textWrap x and y
-      textWrap.bounds({width: width / 3, height: 10000, x:textX, y:textY}).padding(6);
+      textWrap.bounds({width: width / 3, height: Number.MAX_VALUE, x:textX, y:textY}).padding(6);
       // here we call textWrap which will convert our string to a set of tspan's
       panel.select("text")
         .attr("text-anchor", "start")
