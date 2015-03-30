@@ -65,9 +65,10 @@ define(function(require) {
         self.nav.page(name);
 
         // render new page
-        return self._renderNewPage(name, options, params).catch(function(err) {
-          console.log(err);
-        });
+        return self._renderNewPage(name, options, params)
+          .catch(function(err) {
+            console.log(err);
+          });
       });
     }),
 
