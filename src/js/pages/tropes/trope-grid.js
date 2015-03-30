@@ -9,6 +9,7 @@ define(function(require) {
   var dataManager = require('../../data/data_manager');
   var TropeTile = require('../trope/trope-tile');
   var TextTile = require('../../shared/text-tile');
+  var Analytics = require("../../shared/analytics");
 
   var templates = {
     introTile : require('tmpl!../tropes/tropes-page-intro')
@@ -196,6 +197,7 @@ define(function(require) {
             } else {
               self.goToState('default');
             }
+            Analytics.trackEvent("tropes-page", "filter", gender);
             return false;
           });
 

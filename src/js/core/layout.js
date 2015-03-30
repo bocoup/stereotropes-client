@@ -4,6 +4,7 @@ define(function(require) {
   var Nav = require('../shared/nav');
   var Search = require('../shared/search');
   var Promise = require('bluebird');
+  var Analytics = require("../shared/analytics");
 
   // pages:
   var PageConstructors = {
@@ -33,6 +34,7 @@ define(function(require) {
         delete this.pages[this.currentPage];
         return c.remove().catch(function(err) {
           console.log(err);
+          Analytics.trackError(err);
         });
       } else {
         return true;

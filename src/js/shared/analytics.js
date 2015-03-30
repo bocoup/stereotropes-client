@@ -13,9 +13,12 @@ define(function(require) {
   };
 
   Analytics.prototype.trackEvent = function(category, action, label) {
+    console.log("logging event: " + category + " -> " + action + " : " + label);
+    ga("send", "event", category, action, label);
   };
 
   Analytics.prototype.trackError = function(message) {
+    console.log("logging exception: " + message);
     ga("send", "exception", message);
   };
 
