@@ -62,11 +62,15 @@ define(function(require) {
 
       options.el = this.contentElement;
       var self = this;
-      return this._destroyCurrentPage().then(function() {
+      return this._destroyCurrentPage().finally(function() {
+        // update current nav
+        self.nav.page(name);
+
+        // render new page
         return self._renderNewPage(name, options, params)
-        .catch(function(err) {
-          console.log(err);
-        });
+          .catch(function(err) {
+            console.log(err);
+          });
       });
     }),
 
