@@ -4,18 +4,34 @@
   center-page()
   film-tile()
 
-  .film-tile {
-    margin-right: 28px;
-    margin-bottom: 10px;
-    padding: 2px;
+  .film-tiles-container {
+    margin-top: 20px;
 
-    .image {
-      cursor:pointer;
+    .text-tile {
+      a {
+        cursor: pointer;
+        }
+      padding-right: 18px;
+      padding-bottom: 18px;
+      height: 250px;
+      p {
+        padding-top: 30%;
+      }
     }
 
-    border-bottom: 4px solid white
-    &:hover{
-      border-bottom: 4px solid $highlight-col
+    .film-tile {
+      margin-right: 28px;
+      margin-bottom: 10px;
+      padding: 2px;
+
+      .image {
+        cursor:pointer;
+      }
+
+      border-bottom: 4px solid white
+      &:hover{
+        border-bottom: 4px solid $highlight-col
+      }
     }
   }
 }
