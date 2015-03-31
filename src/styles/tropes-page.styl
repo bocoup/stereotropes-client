@@ -27,6 +27,26 @@
       overflow: hidden;
       width:  unit($tile-size * 2 + $tile-margin, 'px');
       height: unit($tile-size * 2, 'px');
+
+      site-title-styles()
+
+      h1.site-title {
+        font-size: 2em;
+      }
+
+      span.gender-m {
+        padding-left: 7px;
+        padding-right: 7px;
+        background-color: $male-col;
+        color: white;
+      }
+
+      span.gender-f {
+        padding-left: 7px;
+        padding-right: 7px;
+        background-color: $female-col;
+        color: white;
+      }
     }
 
     .text-tile.filter {
