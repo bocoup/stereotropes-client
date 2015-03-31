@@ -120,7 +120,7 @@ define(function(require) {
     },
 
     _track: function() {
-      var url = Backbone.history.root + Backbone.history.getFragment();
+      var url = window.location.pathname;
       if (url === "/") {
         url = "/tropes";
       }

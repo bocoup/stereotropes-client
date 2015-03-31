@@ -64,7 +64,7 @@ define(function(require) {
       var self = this;
       return this._destroyCurrentPage().finally(function() {
         // update current nav
-        self.nav.page(name);
+        self.nav.page(name, options);
 
         // render new page
         return self._renderNewPage(name, options, params)

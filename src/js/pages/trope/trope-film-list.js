@@ -14,6 +14,9 @@ define(function(require) {
 
       this.trope_id = options.trope_id;
     },
+    getTitle: function() {
+      return "films with this trope";
+    },
     getData: function() {
       var self = this;
       return dataManager.getTropeDetails(self.trope_id)
