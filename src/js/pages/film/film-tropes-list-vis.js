@@ -71,6 +71,7 @@ define(function(require) {
         g = svg.select("g")
           .attr("transform", "translate(" + padding.left + "," + padding.top + ")");
 
+        showTitle(400);
         update();
       });
     };
@@ -135,6 +136,83 @@ define(function(require) {
         .on("mouseover", mouseover)
         .on("mouseout", mouseout)
         .on("click", click);
+
+    }
+
+    function showTitle(delay) {
+      var title = "Hover on a trope to get information from tvtropes.org about the character in the film that the trope is used with.";
+
+      showPanel('u', title, delay);
+    }
+
+    function showPanel(gender, text, delay) {
+      delay = delay || 0;
+      // panel is the middle portion where
+      var panel = g.selectAll('.middle-panel').data([text]);
+      var panelE = panel.enter().append("g")
+        .attr("class", "middle-panel");
+
+      panelE.append("rect")
+        .attr("class", "background");
+      panelE.append("text");
+
+      // we start with a standard offset to shift
+      var textOffset = (gender === 'm') ? 200 : -200;
+
+      // textX is the start of the text box
+      var textX = positions.middle - (textWrap.bounds().width / 2);
+
+      // we don't want to go above the vis.
+      // shift up/down box based on offset and location
+      var textY = Math.max(0, (textHeight) + textOffset);
+
+      // don't go past the height of the vis
+      textY = Math.min(textY, height);
+
+      // reset textWrap x and y
+      textWrap.bounds({width: width / 3, height: Number.MAX_VALUE, x:textX, y:textY}).padding(6);
+      // here we call textWrap which will convert our string to a set of tspan's
+      panel.select("text")
+        .attr("text-anchor", "start")
+        .text(text)
+        .call(textWrap);
+
+      var panelBBox = panel.select("text").node().getBBox();
+
+      // update the height if the text box isn't going to fit
+      if (height - (panelBBox.height + (boxPadding * 9)) < 0) {
+        height = panelBBox.height + (boxPadding * 9);
+        svg.attr("height", height);
+
+      }
+
+      // it is possible that after text wrapping, the bottom edge
+      // (plus padding) goes past the bottom of the vis.
+      var overDiff = height - (panelBBox.y + panelBBox.height +(boxPadding * 9) );
+      if(overDiff < 0) {
+        // if so, move the tspans up.
+        panel.select('text').selectAll("tspan")
+          .attr("y", function(d,i) {
+              return (+d3.select(this).attr("y") + overDiff);
+          });
+        // and reset the panelBBox - for the background
+        panelBBox = panel.select("text").node().getBBox();
+      }
+
+      // put background under the text
+      panel.select(".background")
+        .classed("gender-" + gender, true)
+        .attr("x", panelBBox.x - boxPadding * 2)
+        .attr("y", panelBBox.y - boxPadding)
+        .attr("width", panelBBox.width + boxPadding * 4)
+        .attr("height", panelBBox.height + boxPadding * 2);
+
+      panel.attr("opacity", 0)
+        .transition()
+        .duration(delay)
+        .attr("opacity", 1);
+
+      return panel;
     }
 
     /**
@@ -158,64 +236,8 @@ define(function(require) {
         .filter(function(e, j) { return e.id === d.id;})
         .classed("highlight", true);
 
-      // panel is the middle portion where
-      var panel = g.selectAll('.middle-panel').data([d]);
-      var panelE = panel.enter().append("g")
-        .attr("class", "middle-panel");
 
-      panelE.append("rect")
-        .attr("class", "background");
-      panelE.append("text");
-
-      // we start with a standard offset to shift
-      var textOffset = (gender === 'f') ? -200 : 200;
-
-      // textX is the start of the text box
-      var textX = positions.middle - (textWrap.bounds().width / 2);
-
-      // we don't want to go above the vis.
-      // shift up/down box based on offset and location
-      var textY = Math.max(0, (textHeight) + textOffset);
-
-      // don't go past the height of the vis
-      textY = Math.min(textY, height);
-
-      // reset textWrap x and y
-      textWrap.bounds({width: width / 3, height: Number.MAX_VALUE, x:textX, y:textY}).padding(6);
-      // here we call textWrap which will convert our string to a set of tspan's
-      panel.select("text")
-        .attr("text-anchor", "start")
-        .text(d.roles.join(". "))
-        .call(textWrap);
-
-      var panelBBox = panel.select("text").node().getBBox();
-
-      // update the height if the text box isn't going to fit
-      if (height - (panelBBox.height + (boxPadding * 9)) < 0) {
-        height = panelBBox.height + (boxPadding * 9);
-        svg.attr("height", height);
-
-      }
-      // it is possible that after text wrapping, the bottom edge
-      // (plus padding) goes past the bottom of the vis.
-      var overDiff = height - (panelBBox.y + panelBBox.height +(boxPadding * 9) );
-      if(overDiff < 0) {
-        // if so, move the tspans up.
-        panel.select('text').selectAll("tspan")
-          .attr("y", function(d,i) {
-              return (+d3.select(this).attr("y") + overDiff);
-          });
-        // and reset the panelBBox - for the background
-        panelBBox = panel.select("text").node().getBBox();
-      }
-
-      // put background under the text
-      panel.select(".background")
-        .classed("gender-" + gender, true)
-        .attr("x", panelBBox.x - boxPadding * 2)
-        .attr("y", panelBBox.y - boxPadding)
-        .attr("width", panelBBox.width + boxPadding * 4)
-        .attr("height", panelBBox.height + boxPadding * 2);
+      var panel = showPanel(gender, d.roles.join(". "), 400);
 
 
       // add beam
@@ -223,7 +245,11 @@ define(function(require) {
                         panel.select(".background").node().getBBox());
       g.append("path")
         .attr("class", "beam gender-" + gender)
-        .attr("d", beamPath);
+        .attr("d", beamPath)
+        .attr("opacity", 0)
+        .transition()
+        .duration(400)
+        .attr("opacity", 1);
     }
 
     /**
@@ -267,6 +293,7 @@ define(function(require) {
         .classed("highlight", false);
 
       g.selectAll('.middle-panel').remove();
+      showTitle(400);
       g.select(".beam").remove();
     }
 
