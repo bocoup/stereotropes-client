@@ -9,6 +9,9 @@ define(function(require) {
       }
       this.film_id = options.film_id;
     },
+    getTitle: function() {
+      return "similar films based on tropes";
+    },
     getData: function() {
       return dataManager.getFilmDetails(this.film_id)
       .then(function(film_data) {
