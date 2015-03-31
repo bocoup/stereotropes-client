@@ -21,7 +21,6 @@
     }
 
     .text-tile.tropes {
-      float: left;
       display: inline-block;
       position: relative;
       overflow: hidden;
@@ -50,12 +49,32 @@
     }
 
     .text-tile.filter {
-      float: left;
-      text-align: center;
       width:  unit($tile-size, 'px');
       height: unit($tile-size, 'px');
       a {
         cursor: pointer;
+
+        &.f {
+          color: $female-col
+        }
+
+        &.m {
+          color: $male-col
+        }
+      }
+
+      a:hover {
+        color: white;
+      }
+
+      p {
+        margin: 0;
+
+        font-size: 16px;
+        font-weight: 300;
+        line-height: 18px;
+        padding-right: 15px;
+
       }
     }
 
