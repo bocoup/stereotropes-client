@@ -1,18 +1,22 @@
 define(function(require) {
-  var ga = require('ga');
+  var ga = require('../shared/ga-stub');
+  ga("create", "UA-61343354-1", "auto");
+
   function Analytics(options){
     options = options || {};
-
-    ga(function() {
-      console.log('ga done loading');
-    });
   }
 
   Analytics.prototype.trackPage = function(page) {
     ga("send", "pageview", page);
   };
 
-  Analytics.prototype.trackEvent = function(category, action, label, count) {
+  Analytics.prototype.trackEvent = function(category, action, label) {
+    ga("send", "event", category, action, label);
+  };
+
+  Analytics.prototype.trackError = function(message) {
+    console.log("logging exception: " + message);
+    ga("send", "exception", message);
   };
 
   // Return an instance so that this module is effectively

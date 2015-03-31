@@ -4,6 +4,7 @@ define(function(require) {
   var Nav = require('../shared/nav');
   var Search = require('../shared/search');
   var Promise = require('bluebird');
+  var Analytics = require("../shared/analytics");
 
   // pages:
   var PageConstructors = {
@@ -33,6 +34,7 @@ define(function(require) {
         delete this.pages[this.currentPage];
         return c.remove().catch(function(err) {
           console.log(err);
+          Analytics.trackError(err);
         });
       } else {
         return true;
@@ -61,7 +63,8 @@ define(function(require) {
       options.el = this.contentElement;
       var self = this;
       return this._destroyCurrentPage().then(function() {
-        return self._renderNewPage(name, options, params).catch(function(err) {
+        return self._renderNewPage(name, options, params)
+        .catch(function(err) {
           console.log(err);
         });
       });
