@@ -27,11 +27,11 @@ define(function(require) {
       var el = this.$el.find('a[data-name=' + name + ']')
         .addClass('inactive');
       if (el.size()) {
-        document.title = "Stereotropes :: " + name;
+        document.title = "Stereotropes - " + name;
       } else if (name === 'film') {
-        document.title = "Stereotropes :: film - " + unCamelCase(options.film_id);
+        document.title = "Stereotropes - " + unCamelCase(options.film_id);
       } else if (name === 'trope') {
-        document.title = "Stereotropes :: trope - " + unCamelCase(options.trope_id);
+        document.title = "Stereotropes - " + unCamelCase(options.trope_id);
       } else {
         document.title = "Stereotropes";
       }
