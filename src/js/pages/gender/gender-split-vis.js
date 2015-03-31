@@ -326,12 +326,12 @@ define(function(require) {
         // Clamp y values to the bounding box of the chart
         // this also makes sure the quadTree wont throw exceptions
         // on traversal.
-        if (pos.y > self.height) {
-          pos.y = self.height - 10;
+        if (pos.y > self.height - 20) {
+          pos.y = self.height - 20;
         }
 
-        if (pos.y < 0) {
-          pos.y = 10;
+        if (pos.y < 20) {
+          pos.y = 20;
         }
 
         self.boundingBoxes.push(pos);
@@ -361,7 +361,7 @@ define(function(require) {
             }
 
             if (d === self.currentlySelectedAdj || highlight) {
-              y = -bb.height;
+              y = -bb.height + 1;
             } else {
               y = -bb.height / 4;
             }
