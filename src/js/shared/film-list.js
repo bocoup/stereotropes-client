@@ -37,6 +37,10 @@ define(function(require) {
         return tiles.filter(function(t) { return t.found(); });
       })
       .then(function(tiles) {
+        // the item may have similar films - but the similar films
+        // might not be in our details files. So wait till here
+        // to display the film-list - if there are actually tiles
+        // to display.
         if (tiles.length > 0) {
           self.$el.html(self.template({"title": self.getTitle()}));
         }
