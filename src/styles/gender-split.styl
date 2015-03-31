@@ -1,5 +1,19 @@
 .gender-page {
 
+  .blurb:nth-child(1) {
+    -webkit-box-sizing: border-box; /* Safari 3.0 - 5.0, Chrome 1 - 9, Android 2.1 - 3.x */
+    -moz-box-sizing: border-box;    /* Firefox 1 - 28 */
+    box-sizing: border-box;
+    padding-right: 20px;
+  }
+
+  .blurb:nth-child(2) {
+    -webkit-box-sizing: border-box; /* Safari 3.0 - 5.0, Chrome 1 - 9, Android 2.1 - 3.x */
+    -moz-box-sizing: border-box;    /* Firefox 1 - 28 */
+    box-sizing: border-box;
+    padding-left: 20px;
+  }
+
   center-page()
 
   .canvas {
@@ -31,9 +45,7 @@
     font-family: $adjective-font;
     font-weight: 400;
     fill: $silver-blue-dark;
-    user-select: none;
     font-variant:small-caps;
-    // text-transform: uppercase;
   }
 
   .adjective.active {
@@ -47,8 +59,7 @@
 
     .node-bg {
       fill:$highlight-col
-      // fill: none
-      opacity:0.95;
+      opacity:0.85;
     }
   }
 
@@ -67,7 +78,6 @@
     display: none;
     position: absolute;
     background-color: rgba(255, 255, 255, 0.95)
-    // background-color: $silver-blue;
     font-size: 14px;
 
     max-height: 250px;
