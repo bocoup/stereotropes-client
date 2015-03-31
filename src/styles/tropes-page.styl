@@ -53,18 +53,21 @@
       height: unit($tile-size, 'px');
       a {
         cursor: pointer;
+        color: white;
+        text-decoration: none;
 
         &.f {
-          color: $female-col
+          background-color: $female-col;
         }
 
         &.m {
-          color: $male-col
+          background-color: $male-col;
         }
       }
 
       a:hover {
         color: white;
+        background-color: $highlight-col;
       }
 
       p {
@@ -72,7 +75,7 @@
 
         font-size: 16px;
         font-weight: 300;
-        line-height: 18px;
+        line-height: 26px;
         padding-right: 15px;
 
       }
