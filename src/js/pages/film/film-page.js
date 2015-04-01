@@ -63,7 +63,9 @@ define(function(require) {
             return self;
           });
       }).catch(function(e) {
-        Analytics.trackError(e.responseText);
+        var error = e.responseText;
+        error = error || e.message;
+        Analytics.trackError(error);
         var errorTemplate = require('tmpl!../film/error');
         self.$el.html(errorTemplate());
 
