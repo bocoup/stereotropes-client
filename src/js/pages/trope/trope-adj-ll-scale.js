@@ -284,7 +284,7 @@ define(function(require) {
             triangle.enter()
               .insert("path", ":first-child")
               .classed("triangle", true)
-              .on('mouseover', adjectiveMouseOver)
+              .on('mouseover', triangleMouseOver)
               .on('mouseout', adjectiveMouseOut);
           }
           var opacity = 0.25;
@@ -572,21 +572,65 @@ define(function(require) {
     return data;
   }
 
+  /**
+   * Handles triangle mouseover.
+   * @private
+   * @param  {Object} d Data
+   */
+  function triangleMouseOver(d) {
+
+    // current selection is triangle
+    var triangle = d3.select(this)
+      .classed('selected', true);
+
+    // deselect all adjectives
+    bases.adjectives_text.selectAll('text')
+      .classed('deselected', true);
+
+    // find associated adjective
+    var adjective = bases.adjectives_text.selectAll('text')
+      .data([d], function(d) { return d[0]; });
+
+    adjective
+      .classed('selected', true)
+      .classed('deselected', false);
+
+    _onMouseover(triangle, adjective, d);
+
+  }
+
+  /**
+   * Handles adjective mouseover.
+   * @private
+   * @param  {Object} d Data
+   */
   function adjectiveMouseOver(d) {
 
-      // deselect all adjectives
-      bases.adjectives_text.selectAll('text')
-        .classed('deselected', true);
+    // deselect all adjectives
+    bases.adjectives_text.selectAll('text')
+      .classed('deselected', true);
 
-      // mark current label as selected
-      d3.select(this)
+    // current selection is adjective
+    var adjective = d3.select(this)
         .classed('selected', true)
         .classed('deselected', false);
 
-      // find corresponding triangle, mark it as selected
-      var triangle = bases.adjective_triangles.selectAll('path')
-        .data([d], function(d) { return d[0]; })
-        .classed('selected', true);
+    // find corresponding triangle, mark it as selected
+    var triangle = bases.adjective_triangles.selectAll('path')
+      .data([d], function(d) { return d[0]; })
+      .classed('selected', true);
+
+    _onMouseover(triangle, adjective, d);
+  }
+
+  /**
+   * The generic handler for mousing over a triangle or an adjective
+   * @private
+   * @param  {d3.selection} triangle  Triangle selection
+   * @param  {d3.selection} adjective Text selection
+   * @param  {Object} d         Data element
+   */
+  function _onMouseover(triangle, adjective, d) {
 
       // find corresponding circle, mark it as selected
       bases.axis_g.selectAll('circle')
@@ -631,7 +675,6 @@ define(function(require) {
             .attr("d", pathString)
             .classed("gender-" + tropeDictMap[dd.tropeId].gender, true);
       });
-
   }
 
   function adjectiveMouseOut(d) {
