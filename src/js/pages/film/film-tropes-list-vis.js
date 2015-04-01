@@ -140,7 +140,7 @@ define(function(require) {
     }
 
     function showTitle(delay) {
-      var title = "Hover on a trope to get information from tvtropes.org about the character in the film that the trope is used with.";
+      var title = "Hover on a trope to get information from tvtropes.org about the character that embodies this trope.";
 
       showPanel('u', title, delay);
     }
