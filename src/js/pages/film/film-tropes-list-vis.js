@@ -14,6 +14,8 @@ define(function(require) {
     var height;
     var width;
 
+    var maxMobileWidth = 500;
+
     // send trope selected event up
     var dispatch = d3.dispatch("tropeSelected");
 
@@ -76,6 +78,29 @@ define(function(require) {
       });
     };
 
+    function small() {
+      return (width < maxMobileWidth);
+    }
+
+    function mobile() {
+      return (Modernizr.touch || small());
+    }
+
+    function truncateText(text, bbox, right) {
+      var newText = text;
+      var diff = bbox.x - padding.left;
+
+      // if this is not negative, then
+      // we must be on the right hand side.
+      if(diff >= 0) {
+        diff = (width - (bbox.x + bbox.width + padding.left + padding.right));
+      }
+      var less = Math.floor(diff / 6);
+      less = less >= 0 ? -1 : less - 1;
+
+      return newText.slice(0,less) + "...";
+    }
+
     /**
      * update - setup data bindings
      * and update visual
@@ -113,6 +138,17 @@ define(function(require) {
         .text(function(d) { return d.details.name; })
           .attr("pointer-events", "none");
 
+      tropes.each(function(d,i) {
+        var bbox = this.getBBox();
+        var self = d3.select(this);
+        if (bbox.x < 0) {
+          self.text(truncateText(self.text(), bbox));
+        }
+        if (bbox.x + bbox.width > (width - padding.right)) {
+          self.text(truncateText(self.text(), bbox));
+        }
+      });
+
         var boxes = genders.selectAll(".underbox").data(function(d) { return d.value; } );
 
         boxes.enter()
@@ -140,9 +176,11 @@ define(function(require) {
     }
 
     function showTitle(delay) {
+      if(!mobile) {
       var title = "Hover on a trope to get information from tvtropes.org about the character that embodies this trope.";
 
       showPanel('u', title, delay);
+      }
     }
 
     function showPanel(gender, text, delay) {
@@ -237,19 +275,21 @@ define(function(require) {
         .classed("highlight", true);
 
 
-      var panel = showPanel(gender, d.roles.join(". "), 400);
+      if(!small()) {
+        var panel = showPanel(gender, d.roles.join(". "), 400);
 
 
-      // add beam
-      var beamPath = getBeamPath(d3.select(this).node().getBBox(),
-                        panel.select(".background").node().getBBox());
-      g.append("path")
-        .attr("class", "beam gender-" + gender)
-        .attr("d", beamPath)
-        .attr("opacity", 0)
-        .transition()
-        .duration(400)
-        .attr("opacity", 1);
+        // add beam
+        var beamPath = getBeamPath(d3.select(this).node().getBBox(),
+                                   panel.select(".background").node().getBBox());
+        g.append("path")
+          .attr("class", "beam gender-" + gender)
+          .attr("d", beamPath)
+          .attr("opacity", 0)
+          .transition()
+          .duration(400)
+          .attr("opacity", 1);
+      }
     }
 
     /**
@@ -315,9 +355,9 @@ define(function(require) {
      */
     function updatePositions() {
       positions = {
-        f : width / 4,
+        f : small() ? ((width / 2) - (width / 10)) : width / 4,
         middle : (width / 2),
-        m : (width / 2) + (width / 4)
+        m : small() ? ((width / 2) + (width / 10)) : (width / 2) + (width / 4)
       };
 
       // set this initially
