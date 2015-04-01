@@ -283,19 +283,23 @@ define(function(require) {
           if (triangle.empty()) {
             triangle.enter()
               .insert("path", ":first-child")
-              .classed("triangle", true);
+              .classed("triangle", true)
+              .on('mouseover', triangleMouseOver)
+              .on('mouseout', adjectiveMouseOut);
+          }
+          var opacity = 0.25;
+          // add a uniqueness marker if this adjective doesn't appear in other tropes
+          if (d[4].length === 1 && d[4][0] === current_trope_id) {
+            triangle.classed("unique", true);
+            opacity = 0.5;
           }
 
           triangle.attr("d", pathString)
             .style('opacity', 0)
             .transition()
             .delay(Math.random() * 400)
-              .style('opacity', 0.25);
+              .style('opacity', opacity);
 
-          // add a uniqueness marker if this adjective doesn't appear in other tropes
-          if (d[4].length === 1 && d[4][0] === current_trope_id) {
-            triangle.classed("unique", true);
-          }
         }
 
       };
@@ -568,6 +572,146 @@ define(function(require) {
     return data;
   }
 
+  /**
+   * Handles triangle mouseover.
+   * @private
+   * @param  {Object} d Data
+   */
+  function triangleMouseOver(d) {
+
+    // current selection is triangle
+    var triangle = d3.select(this)
+      .classed('selected', true);
+
+    // deselect all adjectives
+    bases.adjectives_text.selectAll('text')
+      .classed('deselected', true);
+
+    // find associated adjective
+    var adjective = bases.adjectives_text.selectAll('text')
+      .data([d], function(d) { return d[0]; });
+
+    adjective
+      .classed('selected', true)
+      .classed('deselected', false);
+
+    _onMouseover(triangle, adjective, d);
+
+  }
+
+  /**
+   * Handles adjective mouseover.
+   * @private
+   * @param  {Object} d Data
+   */
+  function adjectiveMouseOver(d) {
+
+    // deselect all adjectives
+    bases.adjectives_text.selectAll('text')
+      .classed('deselected', true);
+
+    // current selection is adjective
+    var adjective = d3.select(this)
+        .classed('selected', true)
+        .classed('deselected', false);
+
+    // find corresponding triangle, mark it as selected
+    var triangle = bases.adjective_triangles.selectAll('path')
+      .data([d], function(d) { return d[0]; })
+      .classed('selected', true);
+
+    _onMouseover(triangle, adjective, d);
+  }
+
+  /**
+   * The generic handler for mousing over a triangle or an adjective
+   * @private
+   * @param  {d3.selection} triangle  Triangle selection
+   * @param  {d3.selection} adjective Text selection
+   * @param  {Object} d         Data element
+   */
+  function _onMouseover(triangle, adjective, d) {
+
+      // find corresponding circle, mark it as selected
+      bases.axis_g.selectAll('circle')
+         .data([d], function(d) { return d[0]; })
+        .classed('selected', true)
+        .moveToFront();
+
+      // find corresponding tropes
+      // console.log(d);
+      var tropes = bases.tropes.selectAll('g').filter(function(dd) {
+        return d[4].indexOf(dd.tropeId) > -1;
+      });
+
+      var triangleBBox = triangle.node().getBBox();
+
+      // is this above or below the fold?
+      var above = true;
+      if (triangleBBox.y >= height / 4) {
+        above = false;
+      }
+
+      // make the connector beam...
+      var topY = (above ? triangleBBox.y : (triangleBBox.y + triangleBBox.height + 18)); // text height
+
+      tropes.each(function(dd) {
+
+        // mark as selected
+        var selection = d3.select(this);
+        var selectionBBox = selection.node().getBBox();
+
+        selection.classed('selected', true);
+
+        var points = [
+          { x : triangleBBox.x + triangleBBox.width, y: topY }, // top right
+          { x : triangleBBox.x, y : topY }, // top left
+          { x : selectionBBox.x, y : selectionBBox.y + height / 2 + 30 }, // bottom left
+          { x : selectionBBox.x + selectionBBox.width, y : selectionBBox.y + height / 2 + 30} // bottom right
+        ];
+        var pathString = _makePath(points);
+
+        bases.connector_beams.append("path")
+            .attr("d", pathString)
+            .classed("gender-" + tropeDictMap[dd.tropeId].gender, true);
+      });
+  }
+
+  function adjectiveMouseOut(d) {
+      // remove deselect label from all labels
+      bases.adjectives_text.selectAll('text')
+        .classed('deselected', false);
+
+      // deselect current label
+      d3.select(this)
+        .classed('selected', false);
+
+      // find corresponding triangle, deselect it
+      bases.adjective_triangles.selectAll('path')
+        .data([d], function(d) { return d[0]; })
+        .classed('selected', false);
+
+      // find corresponding circle, deselect it
+      bases.axis_g.selectAll('circle')
+         .data([d], function(d) { return d[0]; })
+        .classed('selected', false);
+
+      // find corresponding tropes
+      // console.log(d);
+      var tropes = bases.tropes.selectAll('g').filter(function(dd) {
+        return d[4].indexOf(dd.tropeId) > -1;
+      });
+
+      // remove all markings from tropes.
+      tropes.each(function(dd) {
+        // mark as selected
+        var selection = d3.select(this);
+        selection.classed('selected', false);
+      });
+
+      // remove all beams.
+      bases.connector_beams.selectAll("path").remove();
+  }
 
   /**
    * Main draw routune
@@ -640,104 +784,9 @@ define(function(require) {
     _onEndAdjectivePlacement();
 
     // === events:
-    entering_adjective_text.on('mouseover', function(d) {
+    entering_adjective_text.on('mouseover', adjectiveMouseOver);
 
-      // deselect all adjectives
-      bases.adjectives_text.selectAll('text')
-        .classed('deselected', true);
-
-      // mark current label as selected
-      d3.select(this)
-        .classed('selected', true)
-        .classed('deselected', false);
-
-      // find corresponding triangle, mark it as selected
-      var triangle = bases.adjective_triangles.selectAll('path')
-        .data([d], function(d) { return d[0]; })
-        .classed('selected', true);
-
-      // find corresponding circle, mark it as selected
-      bases.axis_g.selectAll('circle')
-         .data([d], function(d) { return d[0]; })
-        .classed('selected', true)
-        .moveToFront();
-
-      // find corresponding tropes
-      // console.log(d);
-      var tropes = bases.tropes.selectAll('g').filter(function(dd) {
-        return d[4].indexOf(dd.tropeId) > -1;
-      });
-
-      var triangleBBox = triangle.node().getBBox();
-
-      // is this above or below the fold?
-      var above = true;
-      if (triangleBBox.y >= height / 4) {
-        above = false;
-      }
-
-      // make the connector beam...
-      var topY = (above ? triangleBBox.y : (triangleBBox.y + triangleBBox.height + 18)); // text height
-
-      tropes.each(function(dd) {
-
-        // mark as selected
-        var selection = d3.select(this);
-        var selectionBBox = selection.node().getBBox();
-
-        selection.classed('selected', true);
-
-        var points = [
-          { x : triangleBBox.x + triangleBBox.width, y: topY }, // top right
-          { x : triangleBBox.x, y : topY }, // top left
-          { x : selectionBBox.x, y : selectionBBox.y + height / 2 + 30 }, // bottom left
-          { x : selectionBBox.x + selectionBBox.width, y : selectionBBox.y + height / 2 + 30} // bottom right
-        ];
-        var pathString = _makePath(points);
-
-        bases.connector_beams.append("path")
-            .attr("d", pathString)
-            .classed("gender-" + tropeDictMap[dd.tropeId].gender, true);
-      });
-
-    });
-
-    entering_adjective_text.on('mouseout', function(d) {
-      // remove deselect label from all labels
-      bases.adjectives_text.selectAll('text')
-        .classed('deselected', false);
-
-      // deselect current label
-      d3.select(this)
-        .classed('selected', false);
-
-      // find corresponding triangle, deselect it
-      bases.adjective_triangles.selectAll('path')
-        .data([d], function(d) { return d[0]; })
-        .classed('selected', false);
-
-      // find corresponding circle, deselect it
-      bases.axis_g.selectAll('circle')
-         .data([d], function(d) { return d[0]; })
-        .classed('selected', false);
-
-      // find corresponding tropes
-      // console.log(d);
-      var tropes = bases.tropes.selectAll('g').filter(function(dd) {
-        return d[4].indexOf(dd.tropeId) > -1;
-      });
-
-      // remove all markings from tropes.
-      tropes.each(function(dd) {
-        // mark as selected
-        var selection = d3.select(this);
-        selection.classed('selected', false);
-      });
-
-      // remove all beams.
-      bases.connector_beams.selectAll("path").remove();
-
-    });
+    entering_adjective_text.on('mouseout', adjectiveMouseOut);
 
     // ======= tropes =======
     _drawTropes(data);
