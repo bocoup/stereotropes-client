@@ -658,69 +658,27 @@ define(function(require) {
     //
 
     function tropeMouseoverHelper(d){
-      if(_.isNull(self.currentlySelectedTrope)){
-        self.trigger('tropeSelected', d.name);
-        this.parentNode.appendChild(this);
-        self.showTropeDetails(this, d);
-      } else {
-        return;
-      }
+      self.trigger('tropeSelected', d.name);
+      self.showTropeDetails(this, d);
+      this.parentNode.appendChild(this);
+
+      nodes.classed('active', function(d){
+        return d === self.currentlySelectedTrope;
+      });
     }
 
     function tropeMouseoutHelper(d){
-      if(_.isNull(self.currentlySelectedTrope)){
-        self.trigger('tropeSelected', null);
-        self.hideTropeDetails();
-      } else {
-        return;
-      }
+      self.hideTropeDetails();
+      self.trigger('tropeSelected', null);
+
+      nodes.classed('active', function(d){
+        return d === self.currentlySelectedTrope;
+      });
     }
 
     function tropeMouseclicked(d){
-      if(self.currentlySelectedTrope === d) {
-        self.currentlySelectedTrope = null;
-        self.trigger('tropeSelected', null);
-        nodes.classed('active', function(d){
-          return d === self.currentlySelectedTrope;
-        });
-        self.hideTropeDetails();
-      } else {
-        self.currentlySelectedTrope = d;
-        self.trigger('tropeSelected', d.name);
-        self.trigger('tropeClicked', d.name);
-        nodes.classed('active', function(d){
-          return d === self.currentlySelectedTrope;
-        });
-        this.parentNode.appendChild(this);
-
-        self.showTropeDetails(this, d);
-        Analytics.trackEvent("adjectives-page", "trope", d.name);
-      }
-
-    }
-
-    if (selectedTrope) {
-      //Find the node for this trope and 'click' it.
-      nodes.each(function(d, i){
-        if ((d.name) === selectedTrope) {
-          // Call mouseclick in a setTimeout so that we
-          // will not be in an infinite loop. The function
-          // queueing aspect of setTimeout is what we are particuarly
-          // interested rather than the specific timeout.
-          //
-          // We also clear the trope url selection once the
-          // requested state has been restored.
-          //
-          // Its particularly important to do that here because
-          // the trope nodes need to be rendered and that will not
-          // happen until the adjective is selected.
-          var node = this;
-          setTimeout(function(){
-            self.urlSelections.tropes = undefined;
-            tropeMouseclicked.bind(node)(d);
-          }, 1400);
-        }
-      });
+      self.trigger('tropeClicked', d.name);
+      Analytics.trackEvent("adjectives-page", "trope", d.name);
     }
 
   };
@@ -753,13 +711,14 @@ define(function(require) {
       dataManager.getTropeDetails(tropeId).then(function(details){
         var el = $('#details-container');
 
-        var width = 400;
-        var height = 250;
+        var width = 500;
+        var height = 150;
         var left = pos.left;
         var top = pos.top;
 
         if(left + width > $(window).width()) {
-          var nodeWidth = parseInt($(tropeNode).find('.trope-node-bg').attr('width'), 10);
+          var tw = d3.select(tropeNode).select('rect.trope-node-bg').attr('width');
+          var nodeWidth = parseInt(tw, 10);
           left -= (width - nodeWidth);
         }
 
@@ -774,6 +733,7 @@ define(function(require) {
         self.tile = new TropeTile({ trope_id : tropeId });
         self.tropeDesc = new TropeDetails({
           trope_id : tropeId,
+          show_trope_url: false,
           trope_url : '/tropes/' + tropeId,
           same_tab : true
         });
