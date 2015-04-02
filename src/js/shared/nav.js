@@ -2,6 +2,7 @@ define(function(require) {
 
   var View = require('../core/view');
   var template = require('tmpl!../shared/nav');
+  var Analytics = require("../shared/analytics");
 
   function unCamelCase(s) {
     // insert a space before all caps
@@ -13,7 +14,8 @@ define(function(require) {
     template: template,
 
     events: {
-      'click #pull' : 'showMenu'
+      'click #pull' : 'showMenu',
+      'click ul li a' : 'hideMenu',
     },
 
     _render: function() {
@@ -47,6 +49,14 @@ define(function(require) {
       e.preventDefault();
       menu.slideToggle();
       this.$el.find("#pull .site-title").toggle();
+      Analytics.trackEvent("nav", "menu", "show");
+      return false;
+    },
+
+    hideMenu: function(e) {
+      var menu = this.$el.find("ul");
+      menu.slideToggle();
+      this.$el.find("#pull .site-title").show();
     }
 
   });
