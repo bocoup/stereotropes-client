@@ -27,9 +27,11 @@
   .node-text {
     font-family: $adjective-font;
     font-weight: 400;
-    font-size: 20px;
+    font-size: 19px;
     fill: $silver-blue-dark;
     font-variant:small-caps;
+
+    text-rendering: optimizeLegibility;
 
     &.count {
       font-size: 14px;
@@ -62,9 +64,11 @@
   }
 
   .node-target, .node-source {
-    fill: black;
     font-weight: 600;
-    text-decoration:underline;
+
+    .node-text.label {
+      fill: $highlight-col;
+    }
   }
 
 
