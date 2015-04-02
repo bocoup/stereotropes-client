@@ -12,6 +12,10 @@ define(function(require) {
   return View.extend({
     template: template,
 
+    events: {
+      'click #pull' : 'showMenu'
+    },
+
     _render: function() {
       this.$el.html(this.template());
       return this;
@@ -36,6 +40,13 @@ define(function(require) {
         document.title = "Stereotropes";
       }
       return this;
+    },
+    showMenu: function(e) {
+      var menu = this.$el.find("ul");
+      // var menuHeight = menu.height();
+      e.preventDefault();
+      menu.slideToggle();
+      this.$el.find("#pull .site-title").toggle();
     }
 
   });
