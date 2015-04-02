@@ -27,9 +27,11 @@
   .node-text {
     font-family: $adjective-font;
     font-weight: 400;
-    font-size: 20px;
+    font-size: 19px;
     fill: $silver-blue-dark;
     font-variant:small-caps;
+
+    text-rendering: optimizeLegibility;
 
     &.count {
       font-size: 14px;
@@ -62,9 +64,11 @@
   }
 
   .node-target, .node-source {
-    fill: black;
     font-weight: 600;
-    text-decoration:underline;
+
+    .node-text.label {
+      fill: $highlight-col;
+    }
   }
 
 
@@ -130,10 +134,14 @@
 
   #details-container {
     position: absolute;
-    background-color: rgba(255,255,255, 0.85)
+    background-color: rgba(255,255,255, 0.85);
 
     trope-details();
-    trope-tile(100, 100);
+    trope-tile(130, 130);
+
+    -webkit-box-shadow: 3px 3px 5px -1px $silver-blue;
+    -moz-box-shadow: 3px 3px 5px -1px $silver-blue;
+    box-shadow: 3px 3px 5px -1px $silver-blue;
 
     .details {
       padding:10px;

@@ -90,7 +90,7 @@ define(function(require) {
 
     // The distance between the outside of the 'ring' and the edge of the svg container
     // this leaves space for the text and the bars.
-    this.outerSpacing = 280;
+    this.outerSpacing = 240;
     this.innerRadius = this.radius - this.outerSpacing;
 
     // This is the root of the adjective-adjective network (the nodes in the 'ring')
@@ -104,7 +104,7 @@ define(function(require) {
     var maxTropeCount = _.max(_.pluck(this.data.adj_adj_network.nodes, 'trope_count'));
     this.rectScale = d3.scale.linear()
       .domain([0, maxTropeCount])
-      .range([0, (this.outerSpacing / 4)]);
+      .range([0, (this.outerSpacing / 8)]);
 
 
     // Prepare the node and link data.
@@ -252,7 +252,7 @@ define(function(require) {
       .attr("class", "node-mouse");
 
     nodeEnter.append("text")
-      .attr("class", "node-text");
+      .attr("class", "node-text label");
 
     // The adjective occurrence bar
     nodeEnter.append("rect")
@@ -274,7 +274,7 @@ define(function(require) {
     node.selectAll('rect.node-mouse')
       .attr("width", "200px")
       .attr("height", function(d, i){
-        d._mouseRectHeight = 12;
+        d._mouseRectHeight = 11;
         return d._mouseRectHeight;
       })
       .attr("x", "0px")
@@ -291,7 +291,7 @@ define(function(require) {
       .text(function(d) { return d.name; });
 
 
-    var barOffset = 100;
+    var barOffset = 115;
     node.selectAll('rect.node-rect')
       .attr("width", function(d, i){ return self.rectScale(d.trope_count); })
       .attr("height", function(d, i){
@@ -658,69 +658,30 @@ define(function(require) {
     //
 
     function tropeMouseoverHelper(d){
-      if(_.isNull(self.currentlySelectedTrope)){
-        self.trigger('tropeSelected', d.name);
-        this.parentNode.appendChild(this);
-        self.showTropeDetails(this, d);
-      } else {
-        return;
-      }
+
+      self.trigger('tropeSelected', d.name);
+      self.showTropeDetails(this, d);
+      this.parentNode.appendChild(this);
+
+      var node = this;
+      nodes.classed('active', function(d){
+        return this === node;
+      });
     }
 
     function tropeMouseoutHelper(d){
-      if(_.isNull(self.currentlySelectedTrope)){
-        self.trigger('tropeSelected', null);
-        self.hideTropeDetails();
-      } else {
-        return;
-      }
+      self.hideTropeDetails();
+      self.trigger('tropeSelected', null);
+
+      var node = this;
+      nodes.classed('active', function(d){
+        return this === node;
+      });
     }
 
     function tropeMouseclicked(d){
-      if(self.currentlySelectedTrope === d) {
-        self.currentlySelectedTrope = null;
-        self.trigger('tropeSelected', null);
-        nodes.classed('active', function(d){
-          return d === self.currentlySelectedTrope;
-        });
-        self.hideTropeDetails();
-      } else {
-        self.currentlySelectedTrope = d;
-        self.trigger('tropeSelected', d.name);
-        self.trigger('tropeClicked', d.name);
-        nodes.classed('active', function(d){
-          return d === self.currentlySelectedTrope;
-        });
-        this.parentNode.appendChild(this);
-
-        self.showTropeDetails(this, d);
-        Analytics.trackEvent("adjectives-page", "trope", d.name);
-      }
-
-    }
-
-    if (selectedTrope) {
-      //Find the node for this trope and 'click' it.
-      nodes.each(function(d, i){
-        if ((d.name) === selectedTrope) {
-          // Call mouseclick in a setTimeout so that we
-          // will not be in an infinite loop. The function
-          // queueing aspect of setTimeout is what we are particuarly
-          // interested rather than the specific timeout.
-          //
-          // We also clear the trope url selection once the
-          // requested state has been restored.
-          //
-          // Its particularly important to do that here because
-          // the trope nodes need to be rendered and that will not
-          // happen until the adjective is selected.
-          var node = this;
-          setTimeout(function(){
-            self.urlSelections.tropes = undefined;
-            tropeMouseclicked.bind(node)(d);
-          }, 1400);
-        }
-      });
+      self.trigger('tropeClicked', d.name);
+      Analytics.trackEvent("adjectives-page", "trope", d.name);
     }
 
   };
@@ -753,13 +714,14 @@ define(function(require) {
       dataManager.getTropeDetails(tropeId).then(function(details){
         var el = $('#details-container');
 
-        var width = 400;
-        var height = 250;
+        var width = 500;
+        var height = 150;
         var left = pos.left;
         var top = pos.top;
 
         if(left + width > $(window).width()) {
-          var nodeWidth = parseInt($(tropeNode).find('.trope-node-bg').attr('width'), 10);
+          var tw = d3.select(tropeNode).select('rect.trope-node-bg').attr('width');
+          var nodeWidth = parseInt(tw, 10);
           left -= (width - nodeWidth);
         }
 
@@ -774,6 +736,7 @@ define(function(require) {
         self.tile = new TropeTile({ trope_id : tropeId });
         self.tropeDesc = new TropeDetails({
           trope_id : tropeId,
+          show_trope_url: false,
           trope_url : '/tropes/' + tropeId,
           same_tab : true
         });

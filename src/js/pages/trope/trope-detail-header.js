@@ -14,7 +14,8 @@ define(function(require) {
       }
 
       this.trope_data = {
-        loading : true
+        loading : true,
+
       };
 
       this.trope_id = options.trope_id;
@@ -26,6 +27,7 @@ define(function(require) {
       }
 
       this.same_tab = options.same_tab;
+      this.show_trope_url = options.show_trope_url;
     },
 
     _preDataRender: function() {
@@ -38,10 +40,19 @@ define(function(require) {
       this._preDataRender();
 
       return dataManager.getTropeDetails(this.trope_id).then(function(trope_details) {
+
         self.trope_data = trope_details;
         self.trope_data.loading = false;
         self.trope_data.trope_url = self.trope_url;
         self.trope_data.url_target = (self.same_tab ? '' : '_blank');
+
+        // we explicitly check against false because the option may not be passed in at all.
+        if(self.show_trope_url !== false) {
+          self.trope_data.show_trope_url = true;
+        } else {
+          self.trope_data.show_trope_url = false;
+        }
+
         self.$el.html(self.template(self.trope_data));
         return self;
       });
