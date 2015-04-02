@@ -51,7 +51,7 @@ define(function(require) {
     setState: function(toState, options) {
 
       // Going from default => filter
-      if (this.currentState === 'default' && toState === 'filter') {
+      if (toState === 'filter') {
         // male:
         if (options.gender === 'm') {
           return this.goToState('m');
@@ -188,16 +188,24 @@ define(function(require) {
             classname: 'tropes'
           });
 
+          introTile.$el.on('click', 'a.gender-filter', function(ev) {
+            var el = $(ev.target);
+            var gender = el.data('gender');
+
+            self.goToState('filter', { gender: gender });
+            Analytics.trackEvent("tropes-page", "filter", gender);
+          });
+
           var filterTile = new FilterTextTile({});
 
           filterTile.$el.on('click a', function(ev) {
             var gender = $(ev.target).data('gender');
             if (gender !== 'all') {
               self.goToState('filter', { gender : gender});
+              Analytics.trackEvent("tropes-page", "filter", gender);
             } else {
               self.goToState('default');
             }
-            Analytics.trackEvent("tropes-page", "filter", gender);
             return false;
           });
 

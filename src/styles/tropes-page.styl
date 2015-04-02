@@ -21,7 +21,6 @@
     }
 
     .text-tile.tropes {
-      float: left;
       display: inline-block;
       position: relative;
       overflow: hidden;
@@ -34,28 +33,58 @@
         font-size: 2em;
       }
 
-      span.gender-m {
+      a.gender-filter {
         padding-left: 7px;
         padding-right: 7px;
-        background-color: $male-col;
         color: white;
-      }
+        text-decoration: none;
+        cursor: pointer;
+        &.m {
+          background-color: $male-col;
+        }
 
-      span.gender-f {
-        padding-left: 7px;
-        padding-right: 7px;
-        background-color: $female-col;
-        color: white;
+        &.f {
+          background-color: $female-col;
+        }
       }
     }
 
     .text-tile.filter {
-      float: left;
-      text-align: center;
       width:  unit($tile-size, 'px');
       height: unit($tile-size, 'px');
       a {
         cursor: pointer;
+
+        &.f {
+          background-color: $female-col;
+          color: white;
+          text-decoration: none;
+          padding-left: 7px;
+          padding-right: 7px;
+        }
+
+        &.m {
+          background-color: $male-col;
+          color: white;
+          text-decoration: none;
+          padding-left: 7px;
+          padding-right: 7px;
+        }
+      }
+
+      a:hover {
+        color: white;
+        background-color: $highlight-col;
+      }
+
+      p {
+        margin: 0;
+
+        font-size: 16px;
+        font-weight: 300;
+        line-height: 26px;
+        padding-right: 15px;
+
       }
     }
 

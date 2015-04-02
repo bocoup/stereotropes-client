@@ -106,7 +106,7 @@ define(function(require) {
       })
       .then(function(tiles) {
         // tiles.unshift(self._createYearTile(genre.id));
-        tiles.splice(4,0, self._createYearTile(genre.id));
+        tiles.splice(7,0, self._createYearTile(genre.id));
         tiles.unshift(self._createGenreTile(genre.id));
         return Promise.all(tiles.map(function(t) { return t.render(); }));
       })
