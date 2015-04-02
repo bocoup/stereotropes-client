@@ -2,6 +2,7 @@ define(function(require) {
 
   var View = require('../core/view');
   var template = require('tmpl!../shared/nav');
+  var Analytics = require("../shared/analytics");
 
   function unCamelCase(s) {
     // insert a space before all caps
@@ -11,6 +12,11 @@ define(function(require) {
   }
   return View.extend({
     template: template,
+
+    events: {
+      'click #pull' : 'showMenu',
+      'click ul li a' : 'hideMenu',
+    },
 
     _render: function() {
       this.$el.html(this.template());
@@ -36,6 +42,25 @@ define(function(require) {
         document.title = "Stereotropes";
       }
       return this;
+    },
+    showMenu: function(e) {
+      var menu = this.$el.find("ul");
+      // var menuHeight = menu.height();
+      e.preventDefault();
+      menu.slideToggle();
+      this.$el.find("#pull .site-title").toggle();
+      Analytics.trackEvent("nav", "menu", "show");
+      return false;
+    },
+
+    hideMenu: function(e) {
+      var pull = this.$el.find("#pull");
+      if(pull.is(':visible')) {
+
+        var menu = this.$el.find("ul");
+        menu.slideToggle();
+        this.$el.find("#pull .site-title").show();
+      }
     }
 
   });
