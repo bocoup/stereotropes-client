@@ -36,5 +36,8 @@
     "bluebird": "~2.9.8",
     "almond": "~0.3.0",
     "typeahead.js": "~0.10.5"
+  },
+  "resolutions": {
+    "d3": "~3.5.5"
   }
 }
