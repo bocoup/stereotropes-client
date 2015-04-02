@@ -45,7 +45,8 @@ film-tile-all(){
   .text-tile.genres {
     max-width: 160px;
     }
-  }
+
+}
 
 
 // Trope List
@@ -56,6 +57,54 @@ film-tile(){
     .image {
       cursor:pointer;
     }
+  }
+}
+
+films-tile(){
+  .text-tile {
+    a {
+      cursor: pointer;
+      }
+    padding-right: 28px;
+    padding-bottom: 18px;
+    height: 250px;
+    p {
+      padding-top: 30%;
+    }
+  }
+
+  .film-tile {
+    margin-right: 25px;
+    margin-bottom: 10px;
+    padding: 2px;
+
+    .image {
+      cursor:pointer;
+    }
+
+    border-bottom: 4px solid white
+    &:hover{
+      border-bottom: 4px solid $highlight-col
+    }
+  }
+}
+
+film-tile-mobile() {
+  .film-tile {
+    margin: 0 5px 10px 0;
+    padding: 0 0 0 0;
+  }
+  .text-tile {
+    min-width: 100%;
+    max-width: 100%;
+    margin: 0 0 10px 0;
+    padding: 4px 0 0 0;
+    p {
+      padding-left: 5px;
+      padding-top: 10px;
+      font-size: 150%;
+    }
+    height: 100%;
   }
 }
 
