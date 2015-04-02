@@ -33,18 +33,19 @@
         font-size: 2em;
       }
 
-      span.gender-m {
+      a.gender-filter {
         padding-left: 7px;
         padding-right: 7px;
-        background-color: $male-col;
         color: white;
-      }
+        text-decoration: none;
+        cursor: pointer;
+        &.m {
+          background-color: $male-col;
+        }
 
-      span.gender-f {
-        padding-left: 7px;
-        padding-right: 7px;
-        background-color: $female-col;
-        color: white;
+        &.f {
+          background-color: $female-col;
+        }
       }
     }
 
