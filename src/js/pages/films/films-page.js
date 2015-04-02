@@ -63,8 +63,10 @@ define(function(require) {
 
       genreTile.$el.on('click a', function(ev) {
         var genre_id = $(ev.target).data('genre');
-        self.changeGenre(genre_id);
-        Analytics.trackEvent("films-page", "filter", genre_id);
+        if(genre_id) {
+          self.changeGenre(genre_id);
+          Analytics.trackEvent("films-page", "filter", genre_id);
+        }
         return false;
       });
 
@@ -129,12 +131,7 @@ define(function(require) {
     this.changeGenre(genre_key);
   },
   changeGenre: function(genre_id) {
-    QueryParams.set('genre', genre_id);
 
-    // TODO: pretty brittle way
-    // to pick the 'genre' now that
-    // 'genre' can include regular genres
-    // and years
     var genre = {};
     if(_.has(this.genres, genre_id)) {
       genre = this.genres[genre_id];
@@ -143,8 +140,11 @@ define(function(require) {
     } else {
       console.log("INVALID GENRE");
       console.log(genre_id);
-      return false;
+      genre_id = "all";
+      genre = this.genres["all"];
     }
+
+    QueryParams.set('genre', genre_id);
     return this.updateFilms(genre);
   }
   });
