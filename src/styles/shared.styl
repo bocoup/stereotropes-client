@@ -6,6 +6,7 @@ html, button, input, select, textarea,
     font-size: 14px;
 }
 
+
 h1, h2, h3, h4, h5 {
   font-weight: 500;
   margin-top:0;
@@ -29,6 +30,14 @@ h4 {
 
 body {
   padding:20px;
+}
+
+@media screen and (max-width:567px) {
+  .hide-small{display:none;}
+}
+
+@media screen and (min-width:568px) {
+  .show-small{display:none;}
 }
 
 a, a:visited{
@@ -80,6 +89,9 @@ aside {
   padding-bottom: 30px;
 }
 
+.faded {
+  color: $grey;
+  }
 
 
 // Top level nav
@@ -265,4 +277,5 @@ trope-tile(tileWidth, tileHeight) {
     float:right;
   }
 }
+
 
