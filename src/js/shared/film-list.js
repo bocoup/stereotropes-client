@@ -12,6 +12,9 @@ define(function(require) {
     className: 'films',
     initialize: function(options) {
     },
+    getTitle: function() {
+      return "";
+    },
     getData: function() {
       var self = this;
       return dataManager.getTropeDetails(self.trope_id)
@@ -24,7 +27,6 @@ define(function(require) {
     },
     _render: function() {
       var self = this;
-      self.$el.html(self.template());
       return self.getData().then(function(film_data) {
         return film_data.map(function(data) { return new FilmTile(data); });
       })
@@ -32,14 +34,22 @@ define(function(require) {
         return Promise.all(tiles.map(function(t) { return t.render(); }));
       })
       .then(function(tiles) {
+        return tiles.filter(function(t) { return t.found(); });
+      })
+      .then(function(tiles) {
+        // the item may have similar films - but the similar films
+        // might not be in our details files. So wait till here
+        // to display the film-list - if there are actually tiles
+        // to display.
+        if (tiles.length > 0) {
+          self.$el.html(self.template({"title": self.getTitle()}));
+        }
         tiles.forEach(function(tile, index) {
-          if(tile.found()) {
-            tile.on("film-select", function(id) {
-              Backbone.history.navigate('/films/' + id, { trigger: true });
-            });
-            self.$el.find('.film-tiles-container').append(tile.$el);
-            tile.show(5);
-          }
+          tile.on("film-select", function(id) {
+            Backbone.history.navigate('/films/' + id, { trigger: true });
+          });
+          self.$el.find('.film-tiles-container').append(tile.$el);
+          tile.show(5);
           return self;
         });
         return self;

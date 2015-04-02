@@ -50,19 +50,20 @@ define(function(require) {
 
     var minWidth = 500;
     this.width = _.max([parseInt(this.container.style('width'), 10), minWidth]);
-    this.height = 700;
+    this.height = 720;
 
 
     // If an adjective has a count greater than this then its text will always show in the vis
     this.alwaysShowTermThreshold = 30;
 
-    var minOccurrences = 10;
+    var minOccurrencesMale = 8;
+    var minOccurrencesFemale = 10;
 
     this.femaleAdj = _.filter(this.data['female'], function(adj) {
-      return adj.count >= minOccurrences;
+      return adj.count >= minOccurrencesFemale;
     });
     this.maleAdj = _.filter(this.data['male'], function(adj) {
-      return adj.count >= minOccurrences;
+      return adj.count >= minOccurrencesMale;
     });
 
     this.femaleAdj = _.sortBy(this.femaleAdj, function(adj){
@@ -89,7 +90,7 @@ define(function(require) {
       .domain(d3.extent(_.map(this.adjectives, function(d){
         return d.count;
       })))
-      .range([12, 32]);
+      .range([14, 36]);
 
 
     this.quadtreeFactory = d3.geom.quadtree()
@@ -325,12 +326,12 @@ define(function(require) {
         // Clamp y values to the bounding box of the chart
         // this also makes sure the quadTree wont throw exceptions
         // on traversal.
-        if (pos.y > self.height) {
-          pos.y = self.height - 10;
+        if (pos.y > self.height - 20) {
+          pos.y = self.height - 20;
         }
 
-        if (pos.y < 0) {
-          pos.y = 10;
+        if (pos.y < 20) {
+          pos.y = 20;
         }
 
         self.boundingBoxes.push(pos);
@@ -360,7 +361,7 @@ define(function(require) {
             }
 
             if (d === self.currentlySelectedAdj || highlight) {
-              y = -bb.height;
+              y = -bb.height + 1;
             } else {
               y = -bb.height / 4;
             }

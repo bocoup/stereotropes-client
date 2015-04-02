@@ -1,6 +1,7 @@
 define(function(require) {
 
   var $ = require('jquery');
+  var Backbone = require('backbone');
 
   var View = require('../../core/view');
   var template = require('tmpl!../adjectives/adjectives-page');
@@ -28,8 +29,7 @@ define(function(require) {
       return DataManager.getAdjectiveNetwork().then(function(adjectiveData){
 
         var urlSelections = {
-          'tropes': QueryParams.get('tropes'),
-          'adjectives': QueryParams.get('adjectives'),
+          'adjectives': QueryParams.get('adjectives')
         };
 
         var adjVis = new AdjectiveVis({
@@ -44,15 +44,11 @@ define(function(require) {
 
         adjVis.on('tropeClicked', function(tropeId){
           if(tropeId) {
-            QueryParams.set('tropes', tropeId);
-          } else {
-            QueryParams.remove('tropes');
+            Backbone.history.navigate('/tropes/' + tropeId, true);
           }
-
         });
 
         adjVis.on('selectionCleared', function(tropeId){
-          QueryParams.remove('tropes');
           QueryParams.remove('adjectives');
         });
 

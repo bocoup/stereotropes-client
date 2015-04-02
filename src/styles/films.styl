@@ -2,16 +2,22 @@
 
 .films-page {
   center-page()
+  film-tile-all()
   film-tile()
+
 
   .film-tiles-container {
     margin-top: 20px;
+    // not enough for all tiles - but enough
+    // to ensure the scrollbar is present
+    // at the start.
+    min-height: 1280px;
 
     .text-tile {
       a {
         cursor: pointer;
         }
-      padding-right: 18px;
+      padding-right: 28px;
       padding-bottom: 18px;
       height: 250px;
       p {
@@ -20,7 +26,7 @@
     }
 
     .film-tile {
-      margin-right: 28px;
+      margin-right: 25px;
       margin-bottom: 10px;
       padding: 2px;
 
@@ -42,6 +48,7 @@
 .film-page {
 
   center-page()
+  film-tile-all()
   film-tile()
 
   .film-tile-container {
@@ -68,7 +75,7 @@
       }
 
       .more {
-        margin-top: 15px;
+        margin-top: 25px;
         float:right;
       }
     }

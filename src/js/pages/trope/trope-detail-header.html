@@ -5,5 +5,7 @@
   <div class="description short collapsed">
     <%= description %>
   </div>
-  <a class="more" href=<%= trope_url %> target=<%= url_target %>>Read more on tvtropes.org &raquo;</a>
+  <% if (show_trope_url) { %>
+    <a class="more" href=<%= trope_url %> target=<%= url_target %>><span class="hide-small">Read more on </span>tvtropes.org &raquo;</a>
+  <% } %>
 <% } %>
