@@ -658,12 +658,14 @@ define(function(require) {
     //
 
     function tropeMouseoverHelper(d){
+
       self.trigger('tropeSelected', d.name);
       self.showTropeDetails(this, d);
       this.parentNode.appendChild(this);
 
+      var node = this;
       nodes.classed('active', function(d){
-        return d === self.currentlySelectedTrope;
+        return this === node;
       });
     }
 
@@ -671,8 +673,9 @@ define(function(require) {
       self.hideTropeDetails();
       self.trigger('tropeSelected', null);
 
+      var node = this;
       nodes.classed('active', function(d){
-        return d === self.currentlySelectedTrope;
+        return this === node;
       });
     }
 
