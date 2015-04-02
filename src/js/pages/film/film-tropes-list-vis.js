@@ -168,7 +168,7 @@ define(function(require) {
     }
 
     function showTitle(delay) {
-      if(!mobile.mobile(width)) {
+      if(!mobile.small()) {
 
         showPanel('u', title, delay);
       }
@@ -266,7 +266,7 @@ define(function(require) {
         .classed("highlight", true);
 
 
-      if(!mobile.small(width)) {
+      if(!mobile.small()) {
         var panel = showPanel(gender, d.roles.join(". "), 400);
 
 
@@ -346,9 +346,9 @@ define(function(require) {
      */
     function updatePositions() {
       positions = {
-        f : mobile.small(width) ? ((width / 2) - (width / 10)) : width / 4,
+        f : mobile.small() ? ((width / 2) - (width / 10)) : width / 4,
         middle : (width / 2),
-        m : mobile.small(width) ? ((width / 2) + (width / 10)) : (width / 2) + (width / 4)
+        m : mobile.small() ? ((width / 2) + (width / 10)) : (width / 2) + (width / 4)
       };
 
       // set this initially
