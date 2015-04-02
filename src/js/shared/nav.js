@@ -54,9 +54,13 @@ define(function(require) {
     },
 
     hideMenu: function(e) {
-      var menu = this.$el.find("ul");
-      menu.slideToggle();
-      this.$el.find("#pull .site-title").show();
+      var pull = this.$el.find("#pull");
+      if(pull.is(':visible')) {
+
+        var menu = this.$el.find("ul");
+        menu.slideToggle();
+        this.$el.find("#pull .site-title").show();
+      }
     }
 
   });
