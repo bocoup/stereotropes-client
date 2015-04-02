@@ -90,7 +90,7 @@ define(function(require) {
 
     // The distance between the outside of the 'ring' and the edge of the svg container
     // this leaves space for the text and the bars.
-    this.outerSpacing = 280;
+    this.outerSpacing = 240;
     this.innerRadius = this.radius - this.outerSpacing;
 
     // This is the root of the adjective-adjective network (the nodes in the 'ring')
@@ -104,7 +104,7 @@ define(function(require) {
     var maxTropeCount = _.max(_.pluck(this.data.adj_adj_network.nodes, 'trope_count'));
     this.rectScale = d3.scale.linear()
       .domain([0, maxTropeCount])
-      .range([0, (this.outerSpacing / 4)]);
+      .range([0, (this.outerSpacing / 8)]);
 
 
     // Prepare the node and link data.
@@ -252,7 +252,7 @@ define(function(require) {
       .attr("class", "node-mouse");
 
     nodeEnter.append("text")
-      .attr("class", "node-text");
+      .attr("class", "node-text label");
 
     // The adjective occurrence bar
     nodeEnter.append("rect")
@@ -274,7 +274,7 @@ define(function(require) {
     node.selectAll('rect.node-mouse')
       .attr("width", "200px")
       .attr("height", function(d, i){
-        d._mouseRectHeight = 12;
+        d._mouseRectHeight = 11;
         return d._mouseRectHeight;
       })
       .attr("x", "0px")
@@ -291,7 +291,7 @@ define(function(require) {
       .text(function(d) { return d.name; });
 
 
-    var barOffset = 100;
+    var barOffset = 115;
     node.selectAll('rect.node-rect')
       .attr("width", function(d, i){ return self.rectScale(d.trope_count); })
       .attr("height", function(d, i){
