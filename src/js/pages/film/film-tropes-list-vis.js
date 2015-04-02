@@ -1,6 +1,7 @@
 define(function(require) {
 
   var d3 = require("d3");
+  var mobile = require("../../shared/mobile");
 
   /**
    * tropeList - render the list vis for
@@ -13,8 +14,7 @@ define(function(require) {
     // get passed in or calculated
     var height;
     var width;
-
-    var maxMobileWidth = 500;
+    var title = "Hover on a trope to get information from tvtropes.org about the character that embodies this trope.";
 
     // send trope selected event up
     var dispatch = d3.dispatch("tropeSelected");
@@ -25,7 +25,6 @@ define(function(require) {
     var minHeight = 240;
     // space alloted for words
     // in trope lists
-    // TODO: should I just use a scale?
     var textHeight = 28;
     // padding around
     // hightlight boxes
@@ -78,13 +77,6 @@ define(function(require) {
       });
     };
 
-    function small() {
-      return (width < maxMobileWidth);
-    }
-
-    function mobile() {
-      return (Modernizr.touch || small());
-    }
 
     function truncateText(text, bbox, right) {
       var newText = text;
@@ -176,10 +168,9 @@ define(function(require) {
     }
 
     function showTitle(delay) {
-      if(!mobile) {
-      var title = "Hover on a trope to get information from tvtropes.org about the character that embodies this trope.";
+      if(!mobile.mobile(width)) {
 
-      showPanel('u', title, delay);
+        showPanel('u', title, delay);
       }
     }
 
@@ -275,7 +266,7 @@ define(function(require) {
         .classed("highlight", true);
 
 
-      if(!small()) {
+      if(!mobile.small(width)) {
         var panel = showPanel(gender, d.roles.join(". "), 400);
 
 
@@ -355,9 +346,9 @@ define(function(require) {
      */
     function updatePositions() {
       positions = {
-        f : small() ? ((width / 2) - (width / 10)) : width / 4,
+        f : mobile.small(width) ? ((width / 2) - (width / 10)) : width / 4,
         middle : (width / 2),
-        m : small() ? ((width / 2) + (width / 10)) : (width / 2) + (width / 4)
+        m : mobile.small(width) ? ((width / 2) + (width / 10)) : (width / 2) + (width / 4)
       };
 
       // set this initially
@@ -422,6 +413,7 @@ define(function(require) {
      */
     chart.resize = function() {
       updatePositions();
+      showTitle(400);
       svg.attr("width", width)
         .attr("height", height);
       update();
