@@ -25,6 +25,12 @@ define(function(require) {
       //Set up the initial template
       this.$el.html(this.template());
 
+      // If the canvas is hidden (e.g. on mobile) do not load data
+      // or render the vis.
+      if(!($('.canvas').is(":visible"))){
+        return;
+      }
+
       //Load data and render the visualization
       return DataManager.getAdjectiveNetwork().then(function(adjectiveData){
 

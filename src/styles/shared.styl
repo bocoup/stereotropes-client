@@ -364,3 +364,18 @@ trope-tile(tileWidth, tileHeight) {
 }
 
 
+// Show element at only at width < 568px
+small-show(){
+  @media (min-width: 35.5em) {
+    display: none;
+  }
+}
+
+// Hide element at width > 568px
+small-hide(){
+  @media (max-width: 35.5em) {
+    display: none;
+  }
+}
+
+
