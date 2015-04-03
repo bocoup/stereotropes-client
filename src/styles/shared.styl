@@ -32,14 +32,15 @@ body {
   padding:20px;
 }
 
-$mobile-width = 567px;
-$min-desktop-width = $mobile-width + 1;
+$max-mobile-width = 567px;
+$min-med-width = $max-mobile-width + 1;
+$max-med-width = 820px;
 
-@media screen and (max-width:$mobile-width) {
+@media screen and (max-width:$max-mobile-width) {
   .hide-small{display:none;}
 }
 
-@media screen and (min-width:$min-desktop-width) {
+@media screen and (min-width:$min-med-width) {
   .show-small{display:none;}
 }
 
@@ -163,14 +164,13 @@ nav {
     display:none;
   }
 }
-@media screen and (min-width:481px) and (max-width:820px) {
+@media screen and (min-width:$min-med-width) and (max-width:$max-med-width) {
   nav ul {
-    text-height: 30px;
     border-bottom: none;
   }
 }
 
-@media screen and (max-width:$mobile-width) {
+@media screen and (max-width:$max-mobile-width) {
 
   nav {
     height: auto;
