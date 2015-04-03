@@ -48,8 +48,8 @@ define(function(require) {
     // var self = this;
     this.container = d3.select(this._container);
 
-    var minWidth = 500;
-    this.width = _.max([parseInt(this.container.style('width'), 10), minWidth]);
+    var minWidth = 460;
+    this.width = parseInt(this.container.style('width'), 10);
     this.height = 720;
 
 
@@ -74,9 +74,17 @@ define(function(require) {
       return -adj.count;
     });
 
+    console.log(this.width)
+    if (this.width < minWidth + 5) {
+      this.femaleAdj = _.first(this.femaleAdj, 15);
+      this.maleAdj = _.first(this.maleAdj, 15);
+    }
+
+
 
     this.adjectives = this.femaleAdj.concat(this.maleAdj);
 
+    console.log('adjectives', this.adjectives)
 
     //Set up scales
 
@@ -389,6 +397,10 @@ define(function(require) {
               .attr(pos);
           });
       }
+
+
+      adjective.exit()
+        .remove();
 
 
       //Mouse Handlers
