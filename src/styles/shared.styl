@@ -32,11 +32,14 @@ body {
   padding:20px;
 }
 
-@media screen and (max-width:567px) {
+$mobile-width = 567px;
+$min-desktop-width = $mobile-width + 1;
+
+@media screen and (max-width:$mobile-width) {
   .hide-small{display:none;}
 }
 
-@media screen and (min-width:568px) {
+@media screen and (min-width:$min-desktop-width) {
   .show-small{display:none;}
 }
 
@@ -167,7 +170,7 @@ nav {
   }
 }
 
-@media screen and (max-width:480px) {
+@media screen and (max-width:$mobile-width) {
 
   nav {
     height: auto;
@@ -225,7 +228,6 @@ nav {
      top: 5px;
   }
 }
-
 
 
 // footer

@@ -24,8 +24,11 @@
       display: inline-block;
       position: relative;
       overflow: hidden;
-      width:  unit($tile-size * 2 + $tile-margin, 'px');
-      height: unit($tile-size * 2, 'px');
+      max-width:  unit($tile-size * 2 + $tile-margin, 'px');
+      min-height: unit($tile-size * 2, 'px');
+      @media screen and (max-width:$mobile-width) {
+        min-height: 100%;
+      }
 
       site-title-styles()
 
