@@ -170,11 +170,11 @@ define(function(require) {
     function showTitle(delay) {
       if(!mobile.small()) {
 
-        showPanel('u', title, delay);
+        showPanel('u', title, delay, 0);
       }
     }
 
-    function showPanel(gender, text, delay) {
+    function showPanel(gender, text, delay, startingY) {
       delay = delay || 0;
       // panel is the middle portion where
       var panel = g.selectAll('.middle-panel').data([text]);
@@ -186,7 +186,7 @@ define(function(require) {
       panelE.append("text");
 
       // we start with a standard offset to shift
-      var textOffset = (gender === 'm') ? 200 : -200;
+      var textOffset = (gender === 'm') ? (200) : (startingY - 200);
 
       // textX is the start of the text box
       var textX = positions.middle - (textWrap.bounds().width / 2);
@@ -265,9 +265,11 @@ define(function(require) {
         .filter(function(e, j) { return e.id === d.id;})
         .classed("highlight", true);
 
+      var top = d3.select(this).node().getBBox().y;
+      console.log(top);
 
       if(!mobile.small()) {
-        var panel = showPanel(gender, d.roles.join(". "), 400);
+        var panel = showPanel(gender, d.roles.join(". "), 400, top);
 
 
         // add beam
