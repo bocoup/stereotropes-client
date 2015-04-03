@@ -74,7 +74,6 @@ define(function(require) {
       return -adj.count;
     });
 
-    console.log(this.width)
     if (this.width < minWidth + 5) {
       this.femaleAdj = _.first(this.femaleAdj, 15);
       this.maleAdj = _.first(this.maleAdj, 15);
@@ -83,8 +82,6 @@ define(function(require) {
 
 
     this.adjectives = this.femaleAdj.concat(this.maleAdj);
-
-    console.log('adjectives', this.adjectives)
 
     //Set up scales
 
