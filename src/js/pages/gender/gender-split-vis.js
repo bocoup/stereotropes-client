@@ -54,10 +54,10 @@ define(function(require) {
 
 
     // If an adjective has a count greater than this then its text will always show in the vis
-    this.alwaysShowTermThreshold = 30;
+    this.alwaysShowTermThreshold = 25;
 
     var minOccurrencesMale = 8;
-    var minOccurrencesFemale = 10;
+    var minOccurrencesFemale = 11;
 
     this.femaleAdj = _.filter(this.data['female'], function(adj) {
       return adj.count >= minOccurrencesFemale;
