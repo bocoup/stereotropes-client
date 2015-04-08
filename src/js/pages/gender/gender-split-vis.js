@@ -48,16 +48,16 @@ define(function(require) {
     // var self = this;
     this.container = d3.select(this._container);
 
-    var minWidth = 500;
-    this.width = _.max([parseInt(this.container.style('width'), 10), minWidth]);
+    var minWidth = 460;
+    this.width = parseInt(this.container.style('width'), 10);
     this.height = 720;
 
 
     // If an adjective has a count greater than this then its text will always show in the vis
-    this.alwaysShowTermThreshold = 30;
+    this.alwaysShowTermThreshold = 25;
 
     var minOccurrencesMale = 8;
-    var minOccurrencesFemale = 10;
+    var minOccurrencesFemale = 11;
 
     this.femaleAdj = _.filter(this.data['female'], function(adj) {
       return adj.count >= minOccurrencesFemale;
@@ -74,9 +74,14 @@ define(function(require) {
       return -adj.count;
     });
 
+    if (this.width < minWidth + 5) {
+      this.femaleAdj = _.first(this.femaleAdj, 15);
+      this.maleAdj = _.first(this.maleAdj, 15);
+    }
+
+
 
     this.adjectives = this.femaleAdj.concat(this.maleAdj);
-
 
     //Set up scales
 
@@ -389,6 +394,10 @@ define(function(require) {
               .attr(pos);
           });
       }
+
+
+      adjective.exit()
+        .remove();
 
 
       //Mouse Handlers

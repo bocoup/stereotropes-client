@@ -12,6 +12,7 @@
     -moz-box-sizing: border-box;    /* Firefox 1 - 28 */
     box-sizing: border-box;
     padding-left: 20px;
+    small-hide();
   }
 
   center-page()
@@ -35,6 +36,19 @@
     font-weight: 200;
     font-style: italic;
     font-size: 28px;
+  }
+
+  .female-section-label, .male-section-label {
+    font-family: $adjective-font;
+    font-weight: 200;
+    font-style: italic;
+    font-size: 28px;
+  }
+
+  @media (max-width: $max-mobile-width) {
+    .female-section-label, .male-section-label {
+      font-size: 20px;
+    }
   }
 
   .adjective {
