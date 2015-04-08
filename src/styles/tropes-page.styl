@@ -25,7 +25,7 @@
       position: relative;
       overflow: hidden;
       max-width:  unit($tile-size * 2 + $tile-margin, 'px');
-      min-height: unit($tile-size * 2, 'px');
+      height: unit($tile-size * 2 + ($tile-margin - 5) , 'px');
       @media screen and (max-width:$mobile-width) {
         min-height: 100%;
       }
