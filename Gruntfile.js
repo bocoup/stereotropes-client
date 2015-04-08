@@ -31,7 +31,11 @@ module.exports = function(grunt) {
 
   grunt.registerTask('deploy',
     'Compile for production and deploy to s3',
-    ['public-build', 'compress', 'bgShell']);
+    ['public-build', 'compress', 'bgShell:public']);
+
+  grunt.registerTask('deploy-data',
+    'Compile for production and deploy to s3',
+    ['public-build', 'compress', 'bgShell:data']);
 
   grunt.registerTask('default', ['dev']);
 
