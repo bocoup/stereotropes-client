@@ -1,3 +1,170 @@
 <div class="page about-page">
-  <h1>About Page</h1>
+  <div class='pure-g'>
+
+      <div class="table-of-contents pure-u-1-1">
+        <h1>About</h1>
+        <ul>
+          <ol><a href="#what-is-stereotropes" data-bypass>What is Stereotropes?</a></ol>
+          <ol><a href="#why-we-did-this" data-bypass>Why We Did This</a></ol>
+          <ol><a href="#what-data" data-bypass>About Our Data</a></ol>
+          <ol><a href="#contact" data-bypass>Contact Us</a></ol>
+        </ul>
+      </div>
+
+      <div class="about-content pure-u-1-1">
+
+        <div class="section" class="pure-g" id="what-is-stereotropes" name="what-is-stereotropes">
+          <h2>
+            What is Stereotropes?
+          </h2>
+
+          <p class="pure-u-md-16-24 pure-u-1-1">
+            Some of the greatest reflections on society take place in film, through narrative plots, expressive scenery and complex characters, often falling into familiar patterns called "Tropes". Tropes are devices and conventions that a writer can reasonably rely on as being present in the audience’s minds and expectations. Some tropes are cliché (stereotyped and trite), while others put into plain sight what is otherwise hidden or unspoken.
+          </p>
+
+          <p class="pure-u-md-16-24 pure-u-1-1">
+            Stereotropes is an interactive visualization experiment, exploring a set of tropes authored and tracked by the community on the TV Tropes. Specifically, this project focuses on gender and the differences between words and associations for male and female tropes.
+          </p>
+
+          <!-- link to tv tropes -->
+          <p class="pure-u-md-7-24 pure-u-1-1 aside">
+            TV Tropes <br><a href="http://tvtropes.org">http://tvtropes.org</a>
+          </p>
+
+          <p class="pure-u-md-16-24 pure-u-1-1">
+          Tropes on tvtropes.org tend to have long descriptions, identifying images and a catalogue of film roles that embody the trope. Films are also often associated with a decade or genres. From this data Stereotropes is able to get adjectives used to describe tropes and see how they are used differently across tropes and categories like gender.
+          </p>
+
+          <p class="pure-u-md-16-24 pure-u-1-1">
+          While tropes are used to cover anything from people, actions and places, the focus of Stereotropes is to present a specific subset of tropes identified as being Always Male or Always Female. This vast collection of data allow us to ask interesting questions about the representation of gender in films. Are certain adjectives <a href="#gender">more likely to describe</a> a female or male tropes? How are these adjectives <a href="#adjectives">used together</a>? With this dataset, we can start these conversations.
+          </p>
+        </div>
+
+        <div class="section" class="pure-g" id="why-we-did-this" name="why-we-did-this">
+          <h2>
+            Why We Did This
+          </h2>
+
+          <p class="pure-u-md-16-24 pure-u-1-1">
+          Working with data that has to do with gender is really hard. We felt very responsible for the way in which we portray it and whether we are moving with or against the slow and steady effort towards social progress in the ways we talk about gender.
+
+          </p>
+          <p class="pure-u-md-16-24 pure-u-1-1">
+To start with, our dataset is inherently binary. We chose only the tropes that were marked as being 'always male' or 'always female'. There was an additional dataset of tropes labelled 'always unisex' that we chose not to use. Our main focus was on exploring the language used to describe stereotypical male and female characters and we made the choice to focus on those because we wanted to highlight the differences in language associated with the two poles.
+          </p>
+          <p class="pure-u-md-16-24 pure-u-1-1">
+          Our hope is that in exposing these tropes that pervade our culture, we can shed light on them and force ourselves and those around us to confront them head on; to acknowledge our own biases and call out the biases of others. We know that these tropes permeate our media, and that every day people all along the gender spectrum wonder about their place in the world as a result.
+          </p>
+          <p class="pure-u-md-16-24 pure-u-1-1">
+          We hope Stereotropes can be a small step in bringing us closer to a culture that is more critical in our thinking about the stereotypes reflected in media and the ones we hold personally, as well as more thoughtful about our collective experience of gender in society.
+          </p>
+
+        </div>
+
+        <div class="section" class="pure-g" id="what-data" name="what-data">
+          <h2>
+            About Our Data
+          </h2>
+
+          <h3>Source</h3>
+          <p class="pure-u-md-16-24 pure-u-1-1">
+            The data used for Stereotropes comes primarily from TV Tropes, found at TV Tropes. TV Tropes is a community wiki where members describe, discuss and track tropes from a wide range of media, starting with television but later expanding into film, literature and more. It is a popular site with thousands of active community members and millions of visits. As a community it is much less formal than a wiki like Wikipedia, so it is important to keep in mind that these trope descriptions reflect <i>the particular biases and mores of the TV Tropes community</i>. That said TV Tropes is the most comprehensive online resource cataloguing this type of information.
+          </p>
+
+          <p class="pure-u-md-16-24 pure-u-1-1">
+            TV Tropes data is structured in a wiki format, meaning that it is very loosely structured at best. In order to be able to use the data computationally, we download it from a secondary website, DBTropes. DBTropes offers a ​Linked Data wrapper for TV Tropes. It parses TV Tropes pages and outputs machine-interpretable RDF that we then use for our computations.
+          </p>
+
+          <!-- links to db tropes and wikipedia -->
+          <p class="pure-u-md-7-24 pure-u-1-1 aside">
+            DB Tropes <br><a href="http://dbtropes.org">http://dbtropes.org</a>
+            <br><br/>
+            More about Linked Data <br><a href="http://en.wikipedia.org/wiki/Linked_data">Linked Data on Wikipedia</a>
+          </p>
+
+          <p class="pure-u-md-16-24 pure-u-1-1">
+            We also augment our data with some additional resources. Specifically, we get film metadata using the Rotten Tomato API as well as the API offered by the Open Movie Database.
+          </p>
+
+          <!-- links to rotten tomatoes and omdb -->
+          <p class="pure-u-md-7-24 pure-u-1-1 aside">
+            Rotten Tomatoes <br><a href="http://rottentomatoes.com">http://rottentomatoes.com</a>
+            <br><br/>
+            Open Movie Database <br><a href="http://omdbapi.com">http://omdbapi.com</a>
+          </p>
+
+          <h3>Analysis at a glance</h3>
+
+          <div class="pure-u-md-16-24 pure-u-1-1">
+            <p>
+              Once we obtain the data we need from the aforementioned sources, there is quite a bit of data munging that takes place. Most importantly, we look at the adjectives that are used to describe tropes. We assemble the entire collection of adjectives and look at it in different ways:
+            </p>
+
+            <ol>
+              <li>
+                Our gender visualization explores how those adjectives are used across genders
+              </li>
+              <li>
+                Our adjectives visualization explores the top adjectives and their connections
+              </li>
+              <li>
+                Our various trope pages explore what adjectives are used to describe each trope and how strongly associated they are with this trope versus other ones. For example, an adjective that would appear 3 times in one trope, but only once in another, would be "strongly associated" with the first one.
+              </li>
+            </ol>
+          </div>
+
+           <!-- links to rotten tomatoes and omdb -->
+          <p class="pure-u-md-7-24 pure-u-1-1 aside">
+            1. Gender Visualization: <br> <a href="#gender">gender</a>
+            <br><br>
+            2. Adjectives Visualization: <br><a href="#adjectives">adjectives</a>
+            <br><br>
+            3. Example Tropes: <br>
+            <a href='#tropes/EvilMatriarch'>Evil Matriarch</a> <br>
+            <a href='#tropes/Samurai'>Samurai</a> <br>
+            <a href='#tropes/GirlNextDoor'>Girl Next Door</a>
+          </p>
+
+          <p class="pure-u-md-16-24 pure-u-1-1">
+            In addition to adjectives, we also look at how a trope's occurrence changes in films over time.
+            Some tropes show a clear increase, such as Action Girl, and others show a notable decrease, like
+            Damsel in Distress.
+          </p>
+
+          <p class="pure-u-md-7-24 pure-u-1-1 aside">
+            <a href='#tropes/ActionGirl'>Action Girl</a> <br>
+            <a href='#tropes/DamselInDistress'>Damsel in Distress</a> <br>
+          </p>
+
+          <p class="pure-u-md-16-24 pure-u-1-1">
+            For a more in-depth explanation of our methods, keep scrolling!
+          </p>
+        </div>
+
+        <div class="section" class="pure-g" id="contact" name="contact">
+          <h2>
+            Contact us
+          </h2>
+
+          <div class="pure-u-md-16-24 pure-u-1-1">
+            <p>
+              There are so many more things we want to do, and so many conversations we want to have about this project. We want it to be the beginning and not the end. If you have thoughts of any sort, please reach out to us. We want to know how we did and what we can do better. We also want to answer any questions you might have and explain things that are confusing. Whatever the case, there are many ways to get in touch.
+            </p>
+
+            <ol>
+              <li>You can email us</li>
+              <li>You can tweet at us with the hashtag #stereotropes</li>
+              <li>You can send us anonymous feedback through a google form</li>
+            </ol>
+          </div>
+
+          <p class="pure-u-md-7-24 pure-u-1-1 aside">
+            1. Email us at: <br><a href='mailto:stereotropes@bocoup.com'>stereotropes@bocoup.com</a> <br><br>
+            2. #stereotropes on twitter <br> <a href="https://twitter.com/search?src=typd&q=%23stereotropes">#stereotropes</a><br><br>
+            3. Stereotropes Anonymous Feedback <br> <a href="https://docs.google.com/a/bocoup.com/forms/d/1ytwN3tdaKG0WaYXjA73fYDQxO_LjuGK5g_f2GXkWp9E/viewform">Form</a>
+          </p>
+
+        </div>
+      </div>
+  </div>
 </div>
