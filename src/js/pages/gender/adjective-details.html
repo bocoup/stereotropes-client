@@ -7,12 +7,12 @@
   <div class="lists">
     <ul class="female">
       <% _.each(tropes.female, function(trope) { %>
-        <li><a href=<%= '/tropes/' + trope.id %>><%= trope.name %></a></li>
+        <li><a href=<%= '#tropes/' + trope.id %>><%= trope.name %></a></li>
       <% }); %>
     </ul>
     <ul class="male">
       <% _.each(tropes.male, function(trope) { %>
-        <li><a href=<%= '/tropes/' + trope.id %>><%= trope.name %></a></li>
+        <li><a href=<%= '#tropes/' + trope.id %>><%= trope.name %></a></li>
       <% }); %>
     </ul>
   </div>
