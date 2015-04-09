@@ -95,7 +95,7 @@ define(function(require) {
       .domain(d3.extent(_.map(this.adjectives, function(d){
         return d.count;
       })))
-      .range([14, 36]);
+      .range([14, 32]);
 
 
     this.quadtreeFactory = d3.geom.quadtree()
@@ -229,7 +229,7 @@ define(function(require) {
         return 'adjective ' + d.gender;
       })
       .attr('transform', function(d) {
-        var x = d.gender === 'female' ? -50 : self.width + 50;
+        var x = d.gender === 'female' ? -250 : self.width + 250;
         var y = Math.random() * self.height;
 
         return "translate(" + x + "," + y + ")";
@@ -258,7 +258,7 @@ define(function(require) {
 
     adjective.selectAll('text.node-text')
       .style('font-size', function(d, i) {
-        return self.fontSize(d.count);
+        return self.fontSize(d.count) + "px";
       });
 
 
