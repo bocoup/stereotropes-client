@@ -12,7 +12,8 @@ define(function(require) {
   var Analytics = require("../../shared/analytics");
 
   var templates = {
-    introTile : require('tmpl!../tropes/tropes-page-intro')
+    introTile : require('tmpl!../tropes/tropes-page-intro'),
+    navTile : require('tmpl!../tropes/tropes-page-nav-tile')
   };
 
   // Special tile used to switch between female & male
@@ -196,6 +197,8 @@ define(function(require) {
             Analytics.trackEvent("tropes-page", "filter", gender);
           });
 
+          // Make filter tile
+
           var filterTile = new FilterTextTile({});
 
           filterTile.$el.on('click a', function(ev) {
@@ -209,15 +212,26 @@ define(function(require) {
             return false;
           });
 
+          // Make nav tile
+          var navTile = new TextTile({
+            template: templates.navTile,
+            classname: 'navTile'
+          });
+
+
 
           self.specialTiles['introTile'] = introTile;
           self.specialTiles['filter'] = filterTile;
+          self.specialTiles['nav'] = navTile;
 
           self.tiles.push(introTile);
 
-          tropes.map(function(trope, idx){
+          tropes.forEach(function(trope, idx){
             if (idx === 3) {
               self.tiles.push(filterTile);
+            }
+            if (idx === 5) {
+              self.tiles.push(navTile);
             }
             self.tiles.push(new TropeTile({ trope_data : trope }));
           });
