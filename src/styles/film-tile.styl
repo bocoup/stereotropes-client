@@ -18,28 +18,26 @@ film-tile-all(){
         width: 100%;
       }
       .box {
-        background: rgb(238,238,238); /* Old browsers */
-        background: -moz-linear-gradient(top, rgba(238,238,238,1) 0%, rgba(204,204,204,1) 100%); /* FF3.6+ */
-        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(238,238,238,1)), color-stop(100%,rgba(204,204,204,1))); /* Chrome,Safari4+ */
-        background: -webkit-linear-gradient(top, rgba(238,238,238,1) 0%,rgba(204,204,204,1) 100%); /* Chrome10+,Safari5.1+ */
-        background: -o-linear-gradient(top, rgba(238,238,238,1) 0%,rgba(204,204,204,1) 100%); /* Opera 11.10+ */
-        background: -ms-linear-gradient(top, rgba(238,238,238,1) 0%,rgba(204,204,204,1) 100%); /* IE10+ */
-        background: linear-gradient(to bottom, rgba(238,238,238,1) 0%,rgba(204,204,204,1) 100%); /* W3C */
+        background: $grey;
+        background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20'><rect width='10' height='10' fill='#9e9e9e' /><rect x='10' y='10' width='1' height='1' fill='#EEEEEE' /></svg>");
+        background-repeat: repeat;
       }
       .title {
         font-variant: small-caps;
-        text-align: center;
-        font-size: 1.4em;
+        text-transform: lowercase;
+        text-align: left;
+        font-weight: 200;
+        color: white;
+        font-size: 1.7em;
         line-height: 1.0em;
         position: absolute;
-        top: 20px;
+        bottom: 10px;
         left: 10px;
-        width: 140px;
+        max-width: 140px;
+
+        background-color:$grey;
       }
 
-      div:hover {
-        background-position: 50% 100%;
-      }
     }
   }
 
