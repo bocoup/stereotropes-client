@@ -46,7 +46,8 @@ $max-med-width = 820px;
 
 a, a:visited{
   padding: 0 2px 0 2px;
-  color: $highlight-col;
+  // color: $highlight-col;
+  color: $dark-grey
   text-decoration: underline;
 }
 
@@ -54,7 +55,7 @@ a:hover{
   padding: 0 2px 0 2px;
   color: white;
   background-color: $highlight-col;
-  text-decoration: none;
+  text-decoration: underline;
 }
 
 a:active {
@@ -112,10 +113,25 @@ aside {
 
 // Top level nav
 
+
+#top-bar-container {
+  background-color: $dark-grey;
+  height: 80px;
+  position: absolute;
+  top:0px;
+  left: 0px;
+  width: 100%;
+}
+
 #top-bar{
   max-width: 960px;
   margin: 0 auto;
+  margin-top: 25px;
   margin-bottom: 30px;
+}
+
+.content {
+  margin-top: 100px;
 }
 
 site-title-styles() {
@@ -125,6 +141,12 @@ site-title-styles() {
     text-transform:uppercase;
     letter-spacing: 2px;
     padding: 0 4px 0 4px;
+    margin-right: 60px;
+
+    img {
+      vertical-align: middle;
+      height: 35px;
+    }
   }
 }
 
@@ -145,14 +167,24 @@ nav {
     padding-right: 15px;
 
     .inactive {
-      color: $silver-blue-dark;
+      color: $grey !important;
       outline: none;
     }
+
   }
 
   a {
     text-decoration: none;
+    color: white !important;
+    font-style: italic;
   }
+
+  a:hover{
+    color: white;
+    background-color: $dark-grey;
+    text-decoration: underline;
+  }
+
 
   site-title-styles()
 
