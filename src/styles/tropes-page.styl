@@ -25,20 +25,21 @@
       position: relative;
       overflow: hidden;
       max-width:  unit($tile-size * 2 + $tile-margin, 'px');
-      height: unit($tile-size * 2 + ($tile-margin - 5) , 'px');
+      /*height: unit($tile-size * 2 + ($tile-margin - 5) , 'px');*/
+      height: unit($tile-size , 'px');
       @media screen and (max-width:$mobile-width) {
         min-height: 100%;
       }
 
       site-title-styles()
 
-      h1.site-title {
-        font-size: 2em;
+      h2.site-title {
+        /*font-size: 2em;*/
+        padding-left: 0px;
       }
 
       a.gender-filter {
-        padding-left: 7px;
-        padding-right: 7px;
+        padding: 1.5px 7px;
         color: white;
         text-decoration: none;
         cursor: pointer;
@@ -57,21 +58,16 @@
       height: unit($tile-size, 'px');
       a {
         cursor: pointer;
+        padding: 1.5px 7px;
+        color: white;
+        text-decoration: none;
 
         &.f {
           background-color: $female-col;
-          color: white;
-          text-decoration: none;
-          padding-left: 7px;
-          padding-right: 7px;
         }
 
         &.m {
           background-color: $male-col;
-          color: white;
-          text-decoration: none;
-          padding-left: 7px;
-          padding-right: 7px;
         }
       }
 
