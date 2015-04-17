@@ -234,14 +234,14 @@ nav {
     float: left;
     position: relative;
   }
-  nav li a {
+  nav li a, nav li a:visited, nav li a:active {
     padding-left: 10px;
   }
 
-  nav a {
+  nav a, nav a:active, nav a:hover, nav a:visited {
+    padding-left: 10px;
     text-align: left;
     width: 100%;
-    text-indent: 20px;
     line-height: 30px;
   }
 
@@ -257,6 +257,7 @@ nav {
 
 
   nav a#pull {
+    padding-left: 0px;
     display: block;
     background-color: $dark-grey;
     width: 100%;
