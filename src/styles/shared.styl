@@ -32,16 +32,16 @@ body {
   padding:20px;
 }
 
-$max-mobile-width = 567px;
-$min-med-width = $max-mobile-width + 1;
-$max-med-width = 820px;
-
-@media screen and (max-width:$max-mobile-width) {
-  .hide-small{display:none;}
+@media screen and (max-width:$screen-size-sm) {
+  .hide-small{
+    display: none;
+  }
 }
 
-@media screen and (min-width:$min-med-width) {
-  .show-small{display:none;}
+@media screen and (min-width:$screen-size-sm) {
+  .show-small{
+    display: none;
+  }
 }
 
 a, a:visited{
@@ -117,7 +117,7 @@ aside {
 #top-bar-container {
   background-color: $dark-grey;
   min-height: 80px;
-  min-width: 960px;
+  /*min-width: 960px;*/
   position: absolute;
   top:0px;
   left: 0px;
@@ -143,7 +143,6 @@ site-title-styles() {
     text-transform:uppercase;
     letter-spacing: 2px;
     padding: 0 4px 0 4px;
-    margin-right: 60px;
 
     img {
       vertical-align: middle;
@@ -159,34 +158,32 @@ nav {
     display:inline;
     padding: 0 0 8px 0;
     border-bottom: 2px solid $dark-grey;
-  }
 
-  li {
-    display:inline;
-    font-size: 16px;
-    font-weight: 300;
-    line-height: 18px;
-    padding-right: 15px;
+    li {
+      display:inline;
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 18px;
+      padding-right: 15px;
 
-    .inactive {
-      color: $grey !important;
-      outline: none;
+      .inactive {
+        color: $grey !important;
+        outline: none;
+      }
+
+      a {
+        text-decoration: none;
+        color: white !important;
+        font-style: italic;
+      }
+
+      a:hover{
+        color: white;
+        background-color: $dark-grey;
+        text-decoration: underline;
+      }
     }
-
   }
-
-  a {
-    text-decoration: none;
-    color: white !important;
-    font-style: italic;
-  }
-
-  a:hover{
-    color: white;
-    background-color: $dark-grey;
-    text-decoration: underline;
-  }
-
 
   site-title-styles()
 
@@ -199,7 +196,7 @@ nav {
   }
 }
 
-@media screen and (max-width:$max-mobile-width) {
+@media screen and (max-width:$screen-size-md) {
   #top-bar-container {
     position: inherit;
     background-color: white;
@@ -219,67 +216,101 @@ nav {
   }
 
   nav {
+
+    border-bottom: 0;
     height: auto;
     background-color: $dark-grey;
     padding-right:10px;
-  }
-  nav ul {
-    width: 100%;
-    display: block;
-    height: auto;
-    border-bottom: none;
-  }
-  nav li {
-    width: 100%;
-    float: left;
-    position: relative;
-  }
-  nav li a, nav li a:visited, nav li a:active {
-    padding-left: 10px;
-  }
 
-  nav a, nav a:active, nav a:hover, nav a:visited {
-    padding-left: 10px;
-    text-align: left;
-    width: 100%;
-    line-height: 30px;
-  }
+    ul {
+      width: 100%;
+      display: none;
+      height: auto;
+      border-bottom: none;
+      margin-top: 7px;
+      margin-bottom: 0px;
+      padding-bottom: 0px;
 
-  nav {
-    border-bottom: 0;
-  }
-  nav ul {
-    display: none;
-    height: auto;
+      li {
+        width: 100%;
+        float: left;
+        position: relative;
+
+
+        a, a:visited, a:active, nav a:hover {
+          padding-left: 5px;
+          text-align: left;
+          width: 100%;
+          line-height: 30px;
+        }
+
+        &.logo {
+          margin-bottom: 10px;
+        }
+
+        &.nav-item {
+          padding-left: 15px;
+        }
+      }
+    }
+
+    a#pull {
+      padding-left: 5px;
+      display: block;
+      background-color: $dark-grey;
+      width: 100%;
+      padding-top:7px;
+      padding-bottom:5px;
+      height: 38px;
+      position: relative;
+      text-height: 0.8em;
+    }
+
+    a#pull:after {
+      content:"";
+      background: url('assets/img/nav-icon-white.png') no-repeat;
+      width: 30px;
+      height: 30px;
+      display: inline-block;
+      position: absolute;
+      right: 5px;
+      top: 15px;
+    }
   }
 
   site-title-styles()
+}
 
 
-  nav a#pull {
-    padding-left: 0px;
-    display: block;
-    background-color: $dark-grey;
-    width: 100%;
-    text-align: center;
-    padding-top:5px;
-    padding-bottom:5px;
-    height: 38px;
-    position: relative;
-    text-height: 0.8em;
-  }
-  nav a#pull:after {
-    content:"";
-    background: url('assets/img/nav-icon-white.png') no-repeat;
-    width: 30px;
-    height: 30px;
-    display: inline-block;
-    position: absolute;
-    right: 15px;
-    top: 15px;
+@media screen and (min-width:$screen-size-md) and (max-width: $screen-size-lg) {
+  nav {
+    ul {
+      li.logo {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+      li.nav-item {
+        padding-left: 5px;
+        padding-right: 5px;
+      }
+    }
   }
 }
 
+@media screen and (min-width: $screen-size-lg) {
+  nav {
+    ul {
+      li.logo {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+      li.nav-item {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+    }
+  }
+}
 
 // footer
 #footer {
@@ -299,7 +330,7 @@ nav {
   border-top: 1px solid $light-grey;
 }
 
-@media screen and (max-width:$max-mobile-width) {
+@media screen and (max-width:$screen-size-sm) {
   #footer {
     text-align: center;
   }
@@ -310,13 +341,10 @@ nav {
 // some existing css, not directly applying globally.
 //
 
-
 center-page(){
   max-width: 960px;
   margin: 0 auto;
 }
-
-
 
 // Trope tiles
 trope-details(){

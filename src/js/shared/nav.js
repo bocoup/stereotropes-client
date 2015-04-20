@@ -45,9 +45,9 @@ define(function(require) {
     },
     showMenu: function(e) {
       var menu = this.$el.find("ul");
-      // var menuHeight = menu.height();
       e.preventDefault();
-      menu.slideToggle();
+
+      menu.slideToggle("fast");
       this.$el.find("#pull .site-title").toggle();
       Analytics.trackEvent("nav", "menu", "show");
       return false;
@@ -55,11 +55,13 @@ define(function(require) {
 
     hideMenu: function(e) {
       var pull = this.$el.find("#pull");
+      var self = this;
       if(pull.is(':visible')) {
 
         var menu = this.$el.find("ul");
-        menu.slideToggle();
-        this.$el.find("#pull .site-title").show();
+        menu.slideToggle("fast", function() {
+          self.$el.find("#pull .site-title").show();
+        });
       }
     }
 
