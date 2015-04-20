@@ -27,7 +27,12 @@ define(function(require) {
 
           ids = _.chain(trope_details.similar.map(function(s) { return s.films; }))
             .flatten()
-            .uniq().slice(0,5).value();
+            .uniq();
+          if (ids.length > 10) {
+            ids = ids.slice(0,10).value();
+          } else {
+            ids = ids.slice(0,5).value();
+          }
         }
         return ids.map(function(id) { return {id:id}; });
       });
