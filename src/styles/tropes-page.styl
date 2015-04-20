@@ -21,11 +21,11 @@
 
       .trope-tile, .text-tile {
         float: left;
-        margin-bottom: unit(tileMargin - 5, 'px');
+        margin-bottom: unit(tileMargin, 'px');
       }
 
       .text-tile.tropes {
-        height: unit(tileSize * 2 + (tileMargin - 5) , 'px');
+        height: unit(tileSize , 'px');
         min-height: 100%;
       }
 
@@ -67,13 +67,13 @@
 
       site-title-styles()
 
-      h1.site-title {
-        font-size: 2em;
+      h2.site-title {
+        /*font-size: 2em;*/
+        padding-left: 0px;
       }
 
       a.gender-filter {
-        padding-left: 7px;
-        padding-right: 7px;
+        padding: 1.5px 7px;
         color: white;
         text-decoration: none;
         cursor: pointer;
@@ -90,21 +90,16 @@
     .text-tile.filter {
       a {
         cursor: pointer;
+        padding: 1.5px 7px;
+        color: white;
+        text-decoration: none;
 
         &.f {
           background-color: $female-col;
-          color: white;
-          text-decoration: none;
-          padding-left: 7px;
-          padding-right: 7px;
         }
 
         &.m {
           background-color: $male-col;
-          color: white;
-          text-decoration: none;
-          padding-left: 7px;
-          padding-right: 7px;
         }
       }
 
@@ -236,7 +231,7 @@
       }
 
       .text-tile.tropes {
-        max-width: 46%;
+        max-width: 71%;
       }
 
       .text-tile.navTile, .text-tile.filter {
@@ -245,7 +240,7 @@
         height: unit($tileSize, 'px');
 
         p {
-          font-size: 1em;
+          font-size: 0.95em;
           line-height: 1.6em;
         }
       }

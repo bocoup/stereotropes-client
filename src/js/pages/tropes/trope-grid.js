@@ -227,7 +227,7 @@ define(function(require) {
           self.tiles.push(introTile);
 
           tropes.forEach(function(trope, idx){
-            if (idx === 3) {
+            if (idx === 4) {
               self.tiles.push(filterTile);
             }
             if (idx === 5) {
