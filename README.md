@@ -20,10 +20,10 @@ to detailed information about them. All the data lives in a separate repository
 that is inaccessible. Instead, there is a public version of this repository that
 you can check out into your `assets/data/` folder here: https://github.com/bocoup/stereotropes-data-public
 
-```
-cd assets/data/
-git clone https://github.com/bocoup/stereotropes-data-public .
-```
+  ```
+  cd assets/data/
+  git clone https://github.com/bocoup/stereotropes-data-public .
+  ```
 
 ## Contributing
 
