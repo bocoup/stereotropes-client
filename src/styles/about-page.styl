@@ -2,12 +2,24 @@
   center-page();
 
   .table-of-contents {
-    ul {
-      padding: 0;
+    ol {
       margin: 0;
+      counter-reset: item
+      padding: 0 0 0 20px;
+      li {
+        padding: 0;
+        display: block;
+      }
+      li:before {
+        content: counters(item, ".") ". ";
+        counter-increment: item;
+        color: $highlight-col;
+      }
 
       ol {
-        padding: 0;
+        li:before {
+          content: counters(item, ".") " ";
+        }
       }
     }
   }
@@ -43,6 +55,6 @@
       }
     }
 
-
+    trope-timeline();
   }
 }

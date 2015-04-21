@@ -3,16 +3,25 @@
 
       <div class="table-of-contents pure-u-1-1">
         <h1>About</h1>
-        <ul>
-          <ol><a href="#what-is-stereotropes" data-bypass>What is Stereotropes?</a></ol>
-          <ol><a href="#why-we-did-this" data-bypass>Why We Did This</a></ol>
-          <ol><a href="#interesting-patterns" data-bypass>Interesting Patterns</a></ol>
-          <ol><a href="#what-data" data-bypass>About Our Data</a></ol>
-          <ol><a href="#contact" data-bypass>Contact Us</a></ol>
-          <ol><a href="#press-kit" data-bypass>Press Kit</a></ol>
-          <ol><a href="#code" data-bypass>Code</a></ol>
-          <ol><a href="#credits" data-bypass>Credits</a></ol>
-        </ul>
+        <ol>
+          <li><a href="#what-is-stereotropes" data-bypass>What is Stereotropes?</a></li>
+          <li><a href="#why-we-did-this" data-bypass>Why We Did This</a></li>
+          <li><a href="#interesting-patterns" data-bypass>Interesting Patterns</a></li>
+          <li><a href="#what-data" data-bypass>About Our Data</a></li>
+          <li>
+            <a href="#analysis" data-bypass>Data Analysis</a>
+            <ol>
+              <li><a href="#text-analysis" data-bypass>Text Analysis</a></li>
+              <li><a href="#gender-association" data-bypass>Calculating Gender Association with Log Likelihood</a></li>
+              <li><a href="#exploring-similarity" data-bypass>Exploring Similarity</a></li>
+              <li><a href="#change-over-time" data-bypass>Change Over Time</a></li>
+            </ol>
+          </li>
+          <li><a href="#contact" data-bypass>Contact Us</a></li>
+          <li><a href="#press-kit" data-bypass>Press Kit</a></li>
+          <li><a href="#code" data-bypass>Code</a></li>
+          <li><a href="#credits" data-bypass>Credits</a></li>
+        </ol>
       </div>
 
       <div class="about-content pure-u-1-1">
@@ -171,55 +180,182 @@ To start with, our dataset is inherently binary. We chose only the tropes that w
             <br><br/>
             Open Movie Database <br><a href="http://omdbapi.com">http://omdbapi.com</a>
           </p>
-
-          <h3>Analysis at a glance</h3>
-
-          <div class="pure-u-md-16-24 pure-u-1-1">
-            <p>
-              Once we obtain the data we need from the aforementioned sources, there is quite a bit of data munging that takes place. Most importantly, we look at the adjectives that are used to describe tropes. We assemble the entire collection of adjectives and look at it in different ways:
-            </p>
-
-            <ol>
-              <li>
-                Our gender visualization explores how those adjectives are used across genders
-              </li>
-              <li>
-                Our adjectives visualization explores the top adjectives and their connections
-              </li>
-              <li>
-                Our various trope pages explore what adjectives are used to describe each trope and how strongly associated they are with this trope versus other ones. For example, an adjective that would appear 3 times in one trope, but only once in another, would be "strongly associated" with the first one.
-              </li>
-            </ol>
-          </div>
-
-           <!-- links to rotten tomatoes and omdb -->
-          <p class="pure-u-md-7-24 pure-u-1-1 aside">
-            1. Gender Visualization: <br> <a href="#gender">gender</a>
-            <br><br>
-            2. Adjectives Visualization: <br><a href="#adjectives">adjectives</a>
-            <br><br>
-            3. Example Tropes: <br>
-            <a href='#tropes/EvilMatriarch'>Evil Matriarch</a> <br>
-            <a href='#tropes/Samurai'>Samurai</a> <br>
-            <a href='#tropes/GirlNextDoor'>Girl Next Door</a>
-          </p>
-
-          <p class="pure-u-md-16-24 pure-u-1-1">
-            In addition to adjectives, we also look at how a trope's occurrence changes in films over time.
-            Some tropes show a clear increase, such as Action Girl, and others show a notable decrease, like
-            Damsel in Distress.
-          </p>
-
-          <p class="pure-u-md-7-24 pure-u-1-1 aside">
-            <a href='#tropes/ActionGirl'>Action Girl</a> <br>
-            <a href='#tropes/DamselInDistress'>Damsel in Distress</a> <br>
-          </p>
-
-          <p class="pure-u-md-16-24 pure-u-1-1">
-            For a more in-depth explanation of our methods, keep scrolling!
-          </p>
         </div>
 
+        <!-- Analysis data sections -->
+        <div class="section" class="pure-g" id="analysis" name="analysis">
+          <h2>
+            Data Analysis
+          </h2>
+
+          <p class="pure-u-md-16-24 pure-u-1-1">
+            The data you interact with on Stereotropes has gone through a
+            data analysis pipeline. From collecting it, querying it, to extracting valuable
+            insights through statistical methods, it's all there.
+          </p>
+
+          <p class="pure-u-md-16-24 pure-u-1-1">
+            You can see the code behind our analysis in our stereotropes-analysis
+            Github repo. The resulting data from this analysis is also avaialble on Github.
+          </p>
+
+          <p class="pure-u-md-7-24 pure-u-1-1 aside">
+            Code and data:<br>
+            <a href='https://github.com/bocoup/stereotropes-analysis'>Stereotropes Analysis Code</a><br>
+            <a href='https://github.com/bocoup/stereotropes-data-public'>Stereotropes Data</a><br>
+          </p>
+
+          <h3 id="text-analysis">Text Analysis</h3>
+          <p class="pure-u-md-16-24 pure-u-1-1">
+            Many of the visualizations on Stereotropes rely on text analysis, specifically those that have to do with adjectives. We break down the descriptions of tropes into individual words and then run them through a Part of Speech Tagger. A Part-Of-Speech Tagger (POS Tagger) is a piece of software that reads text in some language and assigns parts of speech to each word (and other token), such as noun, verb, adjective, etc. This allowed us to extract only the <b>adjectives</b> used in those descriptions and discard the rest. We used python's Natural Language Toolkit (NLTK) POS tagger. We use adjectives in several different ways:
+          </p>
+
+          <p class="pure-u-md-7-24 pure-u-1-1 aside">
+            Python's Natural Language Toolkit <br><a href='http://www.nltk.org/'>NLTK</a><br>
+          </p>
+
+          <ol class="pure-u-md-16-24 pure-u-1-1">
+            <li>
+              Our gender visualization explores how those adjectives are used across genders
+            </li>
+            <li>
+              Our adjectives visualization explores the top adjectives and their connections
+            </li>
+            <li>
+              Our various trope pages explore what adjectives are used to describe each trope and how strongly associated they are with this trope versus other ones. For example, an adjective that would appear 3 times in one trope, but only once in every other, would be more "strongly associated" with the first one.
+            </li>
+          </ol>
+
+          <h3 id="gender-association">Calculating Gender Association with Log Likelihood</h3>
+
+          <p class="pure-u-md-16-24 pure-u-1-1">
+            If you looked at our <a href="#gender">gender</a> visualization, you'll notice that adjectives
+            are associated with being "more feminine" or "more masculine". As we extract adjectives out of trope descriptions we associate every single one with the original gender of the trope we're looking at. For example, if the word "cute" appeared in a trope that was categorized as "Always Female" then we will add the word "cute" to our overall collection of female adjectives. If the word "cute" appears in a male trope, we will add it as well to the male adjective collection. Adjectives will often appear multiple times (especially if they are used frequently.)
+          </p>
+
+          <p class="pure-u-md-16-24 pure-u-1-1">
+            Once we have these two collections of male adjectives and female adjectives, we use a technique called <b>Log-Likelihood</b> to determine whether any given adjective is more <i>statistically likely</i> to appear in one set or the other. The log-likelihood technique is especially useful when looking at corpuses that are of different lengths (which is true in our case, given that there are just more tropes associated with being Always Female, thus leading to there being more female adjectives in our list).
+          </p>
+
+          <p class="pure-u-md-7-24 pure-u-1-1 aside">
+            How to calculate log likelihood <br><a href=' http://ucrel.lancs.ac.uk/llwizard.html'>See here</a><br>
+          </p>
+
+          <p class="pure-u-md-16-24 pure-u-1-1">
+            To illustrate this, if we take two sample lists for each gender, such as:
+          </p>
+          <table class="pure-u-md-16-24 pure-u-1-1">
+            <tr>
+              <th>Female</th>
+              <th>Male</th>
+            </tr>
+            <tbody>
+              <tr>
+                <td>cute</td>
+                <td>strong</td>
+              </tr>
+              <tr>
+                <td>old</td>
+                <td>old</td>
+              </tr>
+              <tr>
+                <td>strong</td>
+                <td>certain</td>
+              </tr>
+              <tr>
+                <td>cute</td>
+                <td>large</td>
+              </tr>
+              <tr>
+                <td>cute</td>
+                <td>short</td>
+              </tr>
+              <tr>
+                <td>scared</td>
+                <td>strong</td>
+              </tr>
+              <tr>
+                <td>young</td>
+                <td>cute</td>
+              </tr>
+              <tr>
+                <td>first</td>
+              </tr>
+              <tr>
+                <td>anxious</td>
+              </tr>
+              <tr>
+                <td>cute</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p class="pure-u-md-16-24 pure-u-1-1">
+            If we compare the use of the word "cute" in both lists, we see that it appears 4 times in the female corpus (which has 10 adjectives) and only 1 time in the male corpus (which has 7 adjectives). To compute the log-likelihood score for each list, we would need to compare that occurance count against the <i>total occurance in the union of the two lists</i>. In our case, the word "cute" appears 5 times in the combined list of male and female adjectives, which is 17 words long.
+            <br><br>
+            The female score then is:
+            <br>
+            <code>loglikelihood(4,10,5,17) = 0.20694102481157617</code>
+            <br><br>
+            And the male score is:
+            <br>
+            <code>loglikelihood(1,7,5,17) = -0.50595771910690379</code>
+            <br>
+            <br>
+            We can see that the word "cute" is more strongly associated with our female list, than with our male list. We use these scores to <i>rank</i> adjectives
+            as being more female or more male in our dataset and use various visualization techniques to communicate this ranking. You can see this reflected in the <a href="/#gender">gender visualization</a> as well as
+            any <a href="/#tropes/DamselInDistress">any individual trope</a>.
+          </p>
+
+          <h3 id="exploring-similarity">Exploring Similarity</h3>
+
+          <p class="pure-u-md-16-24 pure-u-1-1">
+            In several places throughout Stereotropes, you can get related tropes or films to explore, depending on where you are. Tropes offer a way to see related tropes, and films have related films to explore.
+          </p>
+
+          <p class="pure-u-md-16-24 pure-u-1-1">
+            To compute this similiarity, we use two different techniques. For <b>related tropes</b>, we look at adjective co-occurance as a measure of relatedness. For example, if the adjective "angry" appears in two different tropes, we consider those related. You can see related tropes by browsing individual trope pages, such as this one called <a href="/#tropes/ProperLady">Proper Lady</a>. In the screenshot below we can see some of the tropes that share the adjective "Good". Note that "Good" isn't particularly strongly associated with this trope versus other tropes, but the adjective "English" is.
+
+            <img class="pure-img" src="/assets/img/about-adjectives.png" alt="trope adjective timeline" />
+          </p>
+
+
+
+          <p class="pure-u-md-16-24 pure-u-1-1">
+            We use trope co-occurance as a measure of how related two films are. The more tropes two films have in common, the more "related" we consider them. We try to show related films that have the highest degree of overlap. For example, the film <a href="/#films/BeautyAndTheBeast">Beauty and the Beast</a> has the film <a href="/#films/Frozen">Frozen</a> listed as a similar film, because they share the following tropes:
+            Damsel Out Of Distress, Prince Charmless, Spirited Young Lady, Everythings Better With Princesses, Hunk, Plucky Girl.
+          </p>
+
+          <p class="pure-u-md-6-24 pure-u-1-1 aside">
+            Tropes shared by the movies <a href="/#films/BeautyAndTheBeast">Beauty and the Beast</a> and <a href="/#films/Frozen">Frozen</a>: <br><br>
+            <a href="/#tropes/DamselOutOfDistress">Damsel Out Of Distress</a>,
+            <a href="/#tropes/PrinceCharmless">Prince Charmless</a>,
+            <a href="/#tropes/SpiritedYoungLady">Spirited Young Lady</a>,
+            <a href="/#tropes/EverythingsBetterWithPrincesses">Everythings Better With Princesses</a>,
+            <a href="/#tropes/Hunk">Hunk</a>,
+            <a href="/#tropes/PluckyGirl">Plucky Girl</a>
+          </p>
+
+          <h3 id="change-over-time">Change over time</h3>
+
+          <p class="pure-u-md-16-24 pure-u-1-1">
+            On individual trope pages we explore how the use of a trope has evolved over time. We're especially curious to find out whether certain tropes have grown or decreased in popularity over time. For example, the trope Damsel in Distress is on the decline, but Damsel Out of Distress is on the rise!
+          </p>
+
+          <p class="pure-u-md-7-24 pure-u-1-1 aside">
+            <a href="/#tropes/DamselOutOfDistress">Damsel out of Distress</a><br>
+            <a href="/#tropes/DamselInDistress">Damsel in Distress</a>
+          </p>
+
+          <div class="trope-timeline-container gender-f pure-u-md-16-24 pure-u-1-1">
+            <b>Damsel in Distress: </b><br>
+            <svg class="vis" height="80" width="320"><g><path class="area" d="M14.05,3.272727272727282Q38.13,10.447066447066451,44.150000000000006,14.781218781218785C53.18000000000001,21.282447282447286,65.22,42.28783839011112,74.25,46.614250614250615S95.32000000000001,46.525195443377264,104.35000000000001,43.62396694214876S125.42000000000002,25.945521591593238,134.45000000000002,27.272727272727273S155.52,50.14262584781442,164.55,52.47200481637567S185.62000000000003,44.19105702031205,194.65000000000003,42.80192039646895S215.72000000000003,42.428218605585634,224.75000000000003,43.21109399075501S245.82000000000002,48.411225443589174,254.85000000000002,48.021089630931456Q260.87,47.76099908915964,284.95000000000005,40.61018857303687L284.95000000000005,60Q260.87,60,254.85000000000002,60C245.82000000000002,60,233.78000000000003,60,224.75000000000003,60S203.68000000000004,60,194.65000000000003,60S173.58,60,164.55,60S143.48000000000002,60,134.45000000000002,60S113.38000000000001,60,104.35000000000001,60S83.28,60,74.25,60S53.18000000000001,60,44.150000000000006,60Q38.13,60,14.05,60Z"></path></g><g class="x axis" transform="translate(0,60)"><g class="tick" transform="translate(14.05,0)" style="opacity: 1;"><line y2="-80" x2="0"></line><text dy=".71em" y="3" x="0" style="text-anchor: middle;"> 1920</text></g><g class="tick" transform="translate(104.35000000000001,0)" style="opacity: 1;"><line y2="-80" x2="0"></line><text dy=".71em" y="3" x="0" style="text-anchor: middle;"> 1950</text></g><g class="tick" transform="translate(194.65000000000003,0)" style="opacity: 1;"><line y2="-80" x2="0"></line><text dy=".71em" y="3" x="0" style="text-anchor: middle;"> 1980</text></g><g class="tick" transform="translate(284.95000000000005,0)" style="opacity: 1;"><line y2="-80" x2="0"></line><text dy=".71em" y="3" x="0" style="text-anchor: middle;"> 2010</text></g><path class="domain" d="M-1,-80V0H300V-80"></path></g><g class="marker"><line x1="14.05" x2="14.05" y1="3.272727272727282" y2="60"></line></g><g class="max_line"><text x="316" y="12.272727272727282">13.3%</text></g></svg>
+            <br><br>
+            <b>Damsel out of Distress: </b><br>
+            <svg class="vis" height="80" width="320"><g><path class="area" d="M14.05,54Q38.13,56.432432432432435,44.150000000000006,54C53.18000000000001,50.35135135135135,65.22,34.277948402948404,74.25,29.675675675675674S95.32000000000001,19.669533169533167,104.35000000000001,23.318181818181817S125.42000000000002,53.42090608067429,134.45000000000002,54S155.52,34.76824576644065,164.55,27.178807947019862S185.62000000000003,4.872094486309899,194.65000000000003,3.4037478705281057S215.72000000000003,12.647492864800718,224.75000000000003,17.389830508474578S245.82000000000002,37.05102655219984,254.85000000000002,35.019332161687174Q260.87,33.664869234678726,284.95000000000005,3.8452012383900955L284.95000000000005,60Q260.87,60,254.85000000000002,60C245.82000000000002,60,233.78000000000003,60,224.75000000000003,60S203.68000000000004,60,194.65000000000003,60S173.58,60,164.55,60S143.48000000000002,60,134.45000000000002,60S113.38000000000001,60,104.35000000000001,60S83.28,60,74.25,60S53.18000000000001,60,44.150000000000006,60Q38.13,60,14.05,60Z"></path></g><g class="x axis" transform="translate(0,60)"><g class="tick" transform="translate(14.05,0)" style="opacity: 1;"><line y2="-80" x2="0"></line><text dy=".71em" y="3" x="0" style="text-anchor: middle;"> 1920</text></g><g class="tick" transform="translate(104.35000000000001,0)" style="opacity: 1;"><line y2="-80" x2="0"></line><text dy=".71em" y="3" x="0" style="text-anchor: middle;"> 1950</text></g><g class="tick" transform="translate(194.65000000000003,0)" style="opacity: 1;"><line y2="-80" x2="0"></line><text dy=".71em" y="3" x="0" style="text-anchor: middle;"> 1980</text></g><g class="tick" transform="translate(284.95000000000005,0)" style="opacity: 1;"><line y2="-80" x2="0"></line><text dy=".71em" y="3" x="0" style="text-anchor: middle;"> 2010</text></g><path class="domain" d="M-1,-80V0H300V-80"></path></g><g class="marker"><line x1="194.65000000000003" x2="194.65000000000003" y1="3.4037478705281057" y2="60"></line></g><g class="max_line"><text x="316" y="12.403747870528106">1.9%</text></g></svg>
+          </div>
+
+        </div>
         <div class="section" class="pure-g" id="contact" name="contact">
           <h2>
             Contact us
@@ -306,6 +442,7 @@ To start with, our dataset is inherently binary. We chose only the tropes that w
               <li><a href="https://github.com/jrburke/almond">almond</a></li>
               <li><a href="https://twitter.github.io/typeahead.js/">typeahead.js</a></li>
               <li><a href="http://gruntjs.com">grunt</a></li>
+              <li><a href='http://www.nltk.org/'>NLTK</a></li>
             </ul>
 
           </div>
