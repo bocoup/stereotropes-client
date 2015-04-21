@@ -560,14 +560,23 @@ define(function(require) {
         el.append(detailsHtml);
 
         var width = 460;
+        var windowWidth = $(window).width();
+        if(width > windowWidth) {
+          width = windowWidth - 20;
+        }
         var height = el.height();
         var left = pos.left;
         var top = pos.top + bb.height + 5;
 
-        if(left + width > $(window).width()) {
-          var nodeWidth = bb.width;
+        var nodeWidth = bb.width;
+        if(left + width > windowWidth) {
           left -= (width - nodeWidth);
         }
+
+        if(left < 0) {
+          left = 10;
+        }
+
 
         if(top + height > $(window).height()) {
           top -= (height + bb.height + 10);
