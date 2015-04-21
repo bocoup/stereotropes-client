@@ -1,14 +1,56 @@
 .tropes-page {
 
+  /**
+  * Defines a function for sizing all the tiles appropriatly
+  * to a base default tile size
+  **/
+  trope-container(tileSize, tileMargin) {
+
+    .tropes-container {
+      margin: 0 auto;
+      width: 97%;
+
+      trope-tile(tileSize, tileSize);
+
+      .trope-tile .name {
+        width: 100%;
+      }
+      .trope-tile:hover {
+        cursor: pointer;
+      }
+
+      .trope-tile, .text-tile {
+        float: left;
+        margin-bottom: unit(tileMargin, 'px');
+      }
+
+      .text-tile.tropes {
+        height: unit(tileSize , 'px');
+        min-height: 100%;
+      }
+
+      .text-tile.filter {
+        height: unit(tileSize, 'px');
+      }
+
+      .text-tile.navTile {
+        height: unit($tile-size, 'px');
+      }
+    }
+  }
+
   center-page()
 
+  // Build default trope tile container
+  $tile-size = 200;
+  $tile-margin = 30;
+  trope-container($tile-size, $tile-margin)
+
+  // customize styles only (no sizing here!)
   .tropes-container {
 
-    $tile-size = 200;
-    $tile-margin = 30;
-
-    float: left;
-    trope-tile($tile-size, $tile-size);
+    margin: 0 auto;
+    width: 97%;
 
     .trope-tile:hover {
       cursor: pointer;
@@ -16,29 +58,22 @@
 
     .trope-tile, .text-tile {
       float: left;
-      margin-right: unit($tile-margin, 'px');
-      margin-bottom: unit($tile-margin - 5, 'px');
     }
 
     .text-tile.tropes {
       display: inline-block;
       position: relative;
       overflow: hidden;
-      max-width:  unit($tile-size * 2 + $tile-margin, 'px');
-      height: unit($tile-size * 2 + ($tile-margin - 5) , 'px');
-      @media screen and (max-width:$mobile-width) {
-        min-height: 100%;
-      }
 
       site-title-styles()
 
-      h1.site-title {
-        font-size: 2em;
+      h2.site-title {
+        /*font-size: 2em;*/
+        padding-left: 0px;
       }
 
       a.gender-filter {
-        padding-left: 7px;
-        padding-right: 7px;
+        padding: 1.5px 7px;
         color: white;
         text-decoration: none;
         cursor: pointer;
@@ -53,25 +88,18 @@
     }
 
     .text-tile.filter {
-      width:  unit($tile-size, 'px');
-      height: unit($tile-size, 'px');
       a {
         cursor: pointer;
+        padding: 1.5px 7px;
+        color: white;
+        text-decoration: none;
 
         &.f {
           background-color: $female-col;
-          color: white;
-          text-decoration: none;
-          padding-left: 7px;
-          padding-right: 7px;
         }
 
         &.m {
           background-color: $male-col;
-          color: white;
-          text-decoration: none;
-          padding-left: 7px;
-          padding-right: 7px;
         }
       }
 
@@ -92,8 +120,6 @@
     }
 
     .text-tile.navTile {
-      width:  unit($tile-size, 'px');
-      height: unit($tile-size, 'px');
       a {
         cursor: pointer;
       }
@@ -113,6 +139,140 @@
 
       }
     }
+  }
 
+  // mobile tiles
+  @media screen and (max-width:$screen-size-sm) {
+
+    $tileSize = 155;
+    trope-container($tileSize, 20);
+
+    .tropes-container {
+
+      .trope-tile {
+        min-width: 45%;
+      }
+
+      .text-tile, .trope-tile {
+        margin-right: 2%;
+        margin-left: 2%;
+        margin-bottom: 20px;
+      }
+
+      .text-tile.tropes {
+        max-width:  96%
+        height: auto;
+      }
+
+      .text-tile.navTile, .text-tile.filter {
+        width:  45%;
+        margin-bottom: 20px;
+        height: unit($tileSize, 'px');
+
+        p {
+          font-size: 0.95em;
+          line-height: 1.5em;
+        }
+      }
+    }
+  }
+
+  // tablet tiles
+  @media screen and (min-width:$screen-size-sm) and (max-width: $screen-size-md) {
+
+    $tileSize = 155;
+    trope-container($tileSize, 20);
+
+    .tropes-container {
+
+      .trope-tile {
+        min-width: 29%;
+      }
+
+      .text-tile, .trope-tile {
+        margin-right: 2%;
+        margin-left: 2%;
+      }
+
+      .text-tile.tropes {
+        max-width:  97%
+        height: auto;
+      }
+
+      .text-tile.navTile, .text-tile.filter {
+        width:  29%;
+        margin-bottom: 20px;
+        height: unit($tileSize, 'px')
+
+        p {
+          font-size: 0.9em;
+          line-height: 1.45em;
+        }
+      }
+    }
+  }
+
+  // lg screen
+  @media screen and (min-width:$screen-size-md) and (max-width: $screen-size-lg) {
+
+    $tileSize = 180;
+    trope-container($tileSize, 20);
+
+    .tropes-container {
+
+      .trope-tile {
+        min-width: 21%;
+        margin-bottom: 20px;
+      }
+
+      .text-tile, .trope-tile {
+        margin-right: 2%;
+        margin-left: 2%;
+      }
+
+      .text-tile.tropes {
+        max-width: 71%;
+      }
+
+      .text-tile.navTile, .text-tile.filter {
+        width:  21%;
+        margin-bottom: 20px;
+        height: unit($tileSize, 'px');
+
+        p {
+          font-size: 0.95em;
+          line-height: 1.6em;
+        }
+      }
+    }
+  }
+
+  // xl screen
+  @media screen and (min-width:$screen-size-lg) {
+
+    $tileSize = 200;
+    trope-container($tileSize, 20);
+
+    .tropes-container {
+
+      .trope-tile {
+        min-width: 21%;
+        margin-bottom: 20px;
+      }
+
+      .text-tile, .trope-tile {
+        margin-right: 2%;
+        margin-left: 2%;
+      }
+      .text-tile.tropes {
+        max-width: 46%;
+      }
+
+      .text-tile.navTile, .text-tile.filter {
+        width:  21%;
+        margin-bottom: 20px;
+        height: unit($tileSize, 'px');
+      }
+    }
   }
 }
