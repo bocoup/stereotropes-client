@@ -11,9 +11,9 @@ To read more about this project, see our [about](http://stereotropes.bocoup.com/
 1. Clone this repository
 2. Set up dependencies
 
-`npm install`
-
-(this will run `npm install` and `bower install` subsequently.)
+  `npm install`
+  
+  (this will run `npm install` and `bower install` subsequently.)
 
 3. Stereotropes relies on a lot of data to run. From dictionaries of tropes and films
 to detailed information about them. All the data lives in a separate repository
