@@ -1,41 +1,4 @@
-.trope-page {
-
-  center-page()
-  film-tile-all()
-  film-tile()
-  $tile-size = 200;
-  $tile-margin = 20;
-  trope-tile($tile-size, $tile-size);
-
-  .trope-tile-container {
-    width: 160px;
-    float: left;
-
-    .name {
-      display:none;
-    }
-  }
-
-  .trope-detail-container {
-    margin-left: $tile-size + $tile-margin px
-    padding-right: $tile-margin px;
-
-    trope-details();
-
-    .details {
-      height: 190px;
-
-      div.description.short {
-        -webkit-line-clamp: 6;
-      }
-    }
-  }
-
-  .gender-split-bar {
-    height: 2px;
-    margin-bottom: 15px;
-  }
-
+trope-timeline() {
   .trope-timeline-container {
     h4 {
       padding-bottom: 10px;
@@ -99,5 +62,46 @@
       fill: $male-col;
     }
   }
-
 }
+
+.trope-page {
+
+  center-page()
+  film-tile-all()
+  film-tile()
+  $tile-size = 200;
+  $tile-margin = 20;
+  trope-tile($tile-size, $tile-size);
+
+  .trope-tile-container {
+    width: 160px;
+    float: left;
+
+    .name {
+      display:none;
+    }
+  }
+
+  .trope-detail-container {
+    margin-left: $tile-size + $tile-margin px
+    padding-right: $tile-margin px;
+
+    trope-details();
+
+    .details {
+      height: 190px;
+
+      div.description.short {
+        -webkit-line-clamp: 6;
+      }
+    }
+  }
+
+  .gender-split-bar {
+    height: 2px;
+    margin-bottom: 15px;
+  }
+
+  trope-timeline();
+}
+
