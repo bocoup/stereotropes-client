@@ -111,16 +111,9 @@ define(function(require) {
 
     var adjAdjNodes = this.data.adj_adj_network.nodes;
 
-    if(this.sortOrder === 'ratio') {
+    if(this.sortOrder === 'alphabet') {
       adjAdjNodes = _.sortBy(adjAdjNodes, function(node){
-        var relatedTropes = self.getTropes(node.name);
-        relatedTropes = _.map(relatedTropes, function(tropeName){
-          return self.tropeInfo[tropeName];
-        });
-        var byGender = _.groupBy(relatedTropes, function(trope) {
-          return trope.gender;
-        });
-        return (byGender['f'].length / byGender['m'].length);
+        return node.name;
       });
     }
 
@@ -323,7 +316,7 @@ define(function(require) {
       .attr("x", "0px")
       .attr("y", function(d){ return -d._mouseRectHeight/2; })
       .attr('fill', 'white')
-      .attr('opacity', 0.1)
+      .attr('opacity', 0)
       .attr('stroke', 'none');
 
     node.selectAll('text.node-text')
