@@ -1,7 +1,7 @@
 define(function(require) {
 
   var Promise = require('bluebird');
-  var _ = require('underscore');
+  var _ = require('lodash');
   var $ = require('jquery');
 
   /**
@@ -47,7 +47,7 @@ define(function(require) {
     if(_.isUndefined(cacheNamespace)){
       return undefined;
     } else {
-      return this.cache[namespace][key];
+      return _.cloneDeep(this.cache[namespace][key]);
     }
   };
 
@@ -147,7 +147,7 @@ define(function(require) {
       if(_.isUndefined(cacheNamespace)){
         return notFoundCallback(resolve, reject);
       } else {
-        resolve(cacheNamespace);
+        resolve(_.cloneDeep(cacheNamespace));
       }
     });
   };
