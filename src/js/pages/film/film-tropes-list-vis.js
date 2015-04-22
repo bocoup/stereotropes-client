@@ -266,7 +266,6 @@ define(function(require) {
         .classed("highlight", true);
 
       var top = d3.select(this).node().getBBox().y;
-      console.log(top);
 
       if(!mobile.small()) {
         var panel = showPanel(gender, d.roles.join(". "), 400, top);

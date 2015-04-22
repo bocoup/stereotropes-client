@@ -31,17 +31,19 @@ define(function(require) {
       }, 150));
     },
 
-    _remove: function() {
-      var self = this;
-      self.views['genderbar']._remove();
-      return this.views['adjs']._remove().then(function() {
-        return Promise.settle(
-          self.views['timeline']._remove(),
-          self.views['tile']._remove(),
-          self.views['details']._remove(),
-          self.views['films']._remove());
-      });
-    },
+    // removing the animated "remove" of the trope page.
+    // If we ever want to put it back, that's where it is...
+    // _remove: function() {
+    //   var self = this;
+    //   self.views['genderbar']._remove();
+    //   return this.views['adjs']._remove().then(function() {
+    //     return Promise.settle(
+    //       self.views['timeline']._remove(),
+    //       self.views['tile']._remove(),
+    //       self.views['details']._remove(),
+    //       self.views['films']._remove());
+    //   });
+    // },
 
     _render: function() {
       var self = this;

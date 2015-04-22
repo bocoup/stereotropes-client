@@ -77,7 +77,19 @@ define(function(require) {
   return View.extend({
     template : template,
     events: {
-      'click .trope-tile': '_tileClick'
+      'click .trope-tile': '_tileClick',
+      'mouseover .trope-tile': '_tileHover',
+      'mouseout .trope-tile' : '_tileHoverOut'
+    },
+
+    _tileHover: function(ev) {
+      var target = $(ev.target).closest('.trope-tile');
+      target.addClass('selected');
+    },
+
+    _tileHoverOut: function(ev) {
+      var target = $(ev.target).closest('.trope-tile');
+      target.removeClass('selected');
     },
 
     /**
@@ -227,7 +239,7 @@ define(function(require) {
           self.tiles.push(introTile);
 
           tropes.forEach(function(trope, idx){
-            if (idx === 3) {
+            if (idx === 4) {
               self.tiles.push(filterTile);
             }
             if (idx === 5) {

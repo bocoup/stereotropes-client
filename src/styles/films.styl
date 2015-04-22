@@ -5,10 +5,22 @@
   film-tile-all()
   film-tile()
   films-tile()
-  @media screen and (max-width:$mobile-width) {
-    film-tile-mobile()
+
+  @media screen and (max-width:$screen-size-sm) {
+    film-tile-mobile();
   }
 
+  @media screen and (min-width: $screen-size-sm) and (max-width: $screen-size-md) {
+    film-tile-tablet();
+  }
+
+  @media screen and (min-width: $screen-size-md) and (max-width: $screen-size-lg) {
+    film-tile-large();
+  }
+
+   @media screen and (min-width: $screen-size-lg) {
+    film-tile-xlarge();
+  }
 
   .film-tiles-container {
     // not enough for all tiles - but enough

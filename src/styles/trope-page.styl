@@ -3,6 +3,9 @@
   center-page()
   film-tile-all()
   film-tile()
+  $tile-size = 200;
+  $tile-margin = 20;
+  trope-tile($tile-size, $tile-size);
 
   .trope-tile-container {
     width: 160px;
@@ -14,8 +17,8 @@
   }
 
   .trope-detail-container {
-    margin-left: 200px
-    padding-right: 40px;
+    margin-left: $tile-size + $tile-margin px
+    padding-right: $tile-margin px;
 
     trope-details();
 

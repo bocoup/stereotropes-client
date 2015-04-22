@@ -1,89 +1,106 @@
-
 #search {
-  text-align: right;
-}
 
-.typeahead,
-.tt-query,
-.tt-hint {
-  width: 240px;
-  height: 19px;
-  padding: 5px 12px;
+  float:right;
+  padding-right: 15px;
+  margin-top: -7px;
 
-  // font-size: 1.2em;
-  // line-height: 1.2em;
-
-  border: 1px solid $light-grey;
-  outline: none;
-}
-
-.typeahead {
-  background-color: #fff;
-}
-
-.typeahead:focus {
-  border-color: $silver-blue;
+  setup-search(width, height) {
+    .typeahead,
+    .tt-query,
+    .tt-hint {
+      width: unit(width, 'px')
+      height: unit(height, 'px')
+      padding: 5px 12px;
+      border: 1px solid $light-grey;
+      outline: none;
+    }
   }
 
-@media screen and (max-width:$max-med-width) {
-  .typeahead,
-  .tt-query,
+  $searchHeight = 19;
+
+  // for medium size screens, so that we can fit the nav items
+  // logo and search, make the search smaller.
+  @media screen and (min-width: $screen-size-md) and (max-width: $screen-size-lg) {
+    $searchWidth = 180;
+
+    setup-search($searchWidth, $searchHeight);
+  }
+
+  // otherwise, make it large for tiny screens (where it has its own row)
+  // and for large screens.
+  @media screen and (min-width: $screen-size-lg), screen and (max-width: $screen-size-md) {
+    $searchWidth = 240;
+
+    setup-search($searchWidth,  $searchHeight);
+  }
+
+  .typeahead {
+    background-color: #fff;
+  }
+
+  .typeahead:focus {
+    border-color: $silver-blue;
+  }
+
   .tt-hint {
-    float:left;
-    margin-top:15px;
+    color: #999;
+  }
+
+  .tt-dropdown-menu {
+    text-align: left;
+    margin-top: 0px;
+    padding: 8px 0;
+    background-color: #fff;
+
+    border-bottom: 1px solid $silver-blue;
+    border-left: 1px solid $silver-blue;
+    border-right: 1px solid $silver-blue;
+
+    font-weight: 400;
+  }
+
+  .tt-dropdown-menu .search-name {
+    margin: 0 unit($searchHeight, 'px') 5px unit($searchHeight, 'px');
+    padding: 3px 0;
+    border-bottom: 1px solid $silver-blue-dark;
+    text-transform: uppercase;
+    font-weight: 200;
+    color: $highlight-col;
+  }
+
+  .tt-suggestion {
+    padding: 3px 20px 15px;
+  }
+
+  .tt-suggestion.tt-cursor {
+    background-color: $silver-blue;
+  }
+
+  .tt-suggestion p {
+    margin: 0;
+  }
+
+  .tt-suggestion-detail {
+    font-size: 12px;
+    line-height: 1.4em;
+    font-style: italic;
+    font-weight: 200;
   }
 }
 
-.tt-query {
-  // What does this section style?
-  // -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
-  // -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
-  // box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+@media screen and (max-width:$screen-size-md) {
+
+  #search {
+    padding-right: 0px;
+
+    .typeahead,
+    .tt-query,
+    .tt-hint {
+      float:left;
+      margin-top:15px;
+    }
+  }
 }
 
-.tt-hint {
-  color: #999;
-}
 
-.tt-dropdown-menu {
-  text-align: left;
-  width: 264px;
-  margin-top: 0px;
-  padding: 8px 0;
-  background-color: #fff;
-
-  border-bottom: 1px solid $silver-blue;
-  border-left: 1px solid $silver-blue;
-  border-right: 1px solid $silver-blue;
-
-  font-weight: 400;
-}
-
-.tt-dropdown-menu .search-name {
-  margin: 0 20px 5px 20px;
-  padding: 3px 0;
-  border-bottom: 1px solid $silver-blue-dark;
-  text-transform: uppercase;
-  font-weight: 200;
-  color: $highlight-col;
-}
-
-.tt-suggestion {
-  padding: 3px 20px 15px;
-}
-
-.tt-suggestion.tt-cursor {
-  background-color: $silver-blue;
-}
-
-.tt-suggestion p {
-  margin: 0;
-}
-
-.tt-suggestion-detail {
-  font-size: 12px;
-  line-height: 1.4em;
-  font-style: italic;
-  font-weight: 200;
-}
 
