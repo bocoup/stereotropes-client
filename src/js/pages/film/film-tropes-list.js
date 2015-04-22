@@ -107,27 +107,34 @@ define(function(require) {
       return roles;
     },
 
-    //TODO: use Irene's filter list once that
-    //is in dataManager
     /**
-     * getRoleDetails - pull out details for
+     * getRoleDetails - pull out trope details for
      * all roles in movie
      *
      * @param roles
      * @return {object} - of promises keyed by their id's
      */
     getRoleDetails: function(roles) {
-      var details = {};
+      var tropeIds, promise, promises = [], details = {};
+
       d3.keys(roles).forEach(function(g) {
-        roles[g].forEach(function(trope) {
-          details[trope.id] = dataManager.getTropeDetails(trope.id)
-            .catch(function(e) {
-              Analytics.trackError(e.responseText);
-              return undefined;
-            });
+
+        tropeIds = roles[g].map(function(trope) {
+          return trope.id;
         });
+
+        promise = dataManager.getTropes(tropeIds).then(function(tropes) {
+         _.each(tropes, function(trope) {
+            details[trope.id] = trope;
+          });
+        });
+
+        promises.push(promise);
       });
-      return details;
+
+      return Promise.settle(promises).then(function() {
+        return details;
+      });
     },
     /**
      * addRoleDetails - combine roles and details for
@@ -219,6 +226,10 @@ define(function(require) {
           });
 
           return self;
+        }).catch(function(e) {
+          var error = e.responseText;
+          error = error || e.message;
+          Analytics.trackError(error);
         });
 
       });
