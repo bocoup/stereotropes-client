@@ -35,6 +35,8 @@ define(function(require) {
     this.urlSelections = options.selections || {};
     this._container = options.container;
 
+    this.sortOrder = 'count';
+
     // Holders for currenly selected adjectives and tropes
     // to allow us to have locked selections, as well as
     // mouseover interaction.
@@ -53,16 +55,27 @@ define(function(require) {
       return memo;
     }, {});
 
-
-    self.update();
-    self.initialRender();
-
     dataManager.getTropes().then(function(tropes){
       self.tropeInfo = _.reduce(tropes, function(memo, ti){
         memo[ti.id] = ti;
         return memo;
       }, {});
+
+      self.update();
+      self.initialRender();
+      self.render(0);
+
+      // This is a bit of a hack but a second render
+      // allow seems to allow for certain bounding boxes
+      // to be correctly calculated. I haven't quite tracked
+      // down exactly why this is needed, but after swtiching all
+      // the updates to transitions this was put in
+      setTimeout(function(){
+        self.render(10);
+      }, 100);
+
     });
+
 
     // Add event support to this object so that we can alert
     // external components of when a trope is selected.
@@ -100,13 +113,29 @@ define(function(require) {
 
     // This is the root of the adjective-adjective network (the nodes in the 'ring')
     // it is created as a shallow all with all the nodes under one root node
+
+    var adjAdjNodes = this.data.adj_adj_network.nodes;
+
+    if(this.sortOrder === 'ratio') {
+      adjAdjNodes = _.sortBy(adjAdjNodes, function(node){
+        var relatedTropes = self.getTropes(node.name);
+        relatedTropes = _.map(relatedTropes, function(tropeName){
+          return self.tropeInfo[tropeName];
+        });
+        var byGender = _.groupBy(relatedTropes, function(trope) {
+          return trope.gender;
+        });
+        return (byGender['f'].length / byGender['m'].length);
+      });
+    }
+
     this.adjAdjroot = {
       'name': '',
       'depth': 0,
-      'children': this.data.adj_adj_network.nodes
+      'children': adjAdjNodes
     };
 
-    var maxTropeCount = _.max(_.pluck(this.data.adj_adj_network.nodes, 'trope_count'));
+    var maxTropeCount = _.max(_.pluck(adjAdjNodes, 'trope_count'));
     this.rectScale = d3.scale.linear()
       .domain([0, maxTropeCount])
       .range([0, (this.outerSpacing / 8)]);
@@ -145,6 +174,10 @@ define(function(require) {
 
   };
 
+  AdjectiveVis.prototype.setSortOrder = function(order) {
+    this.sortOrder = order;
+  };
+
   /**
    * Initial rendering function. Expected to be called
    * only once. Adds basic elements to the container.
@@ -180,7 +213,7 @@ define(function(require) {
    *
    */
 
-  AdjectiveVis.prototype.render = function() {
+  AdjectiveVis.prototype.render = function(transitionDuration) {
     // Adjust dimensions in case things have been resized.
     this.container.select('svg')
       .attr('height', this.height)
@@ -192,7 +225,7 @@ define(function(require) {
 
     // Note: this.urlSelections will be modified once the state specified by them
     // has been restored.
-    this.renderAdjAdjNetwork(this.urlSelections.adjectives);
+    this.renderAdjAdjNetwork(this.urlSelections.adjectives, transitionDuration);
     this.renderLinkedTropes(this.urlSelections.tropes);
   };
 
@@ -207,7 +240,7 @@ define(function(require) {
    * under an invisible root node.
    *
    */
-  AdjectiveVis.prototype.renderAdjAdjNetwork = function(selectedAdj) {
+  AdjectiveVis.prototype.renderAdjAdjNetwork = function(selectedAdj, _transitionDuration) {
     var self = this;
 
     var bundle = d3.layout.bundle();
@@ -217,19 +250,25 @@ define(function(require) {
       .radius(function(d) { return d.y; })
       .angle(function(d) { return d.x / 180 * Math.PI; });
 
+
+    var transitionDuration = _.isUndefined(_transitionDuration) ? 800 : (_transitionDuration);
+
     //
     // Render Links
     //
     var link = this.adjAdjLink.selectAll(".link")
-        .data(bundle(this.links), function(link) {
-          return _.pluck(link, "name").join("");
-        });
+      .data(bundle(this.links), function(link) {
+        return _.pluck(link, "name").join("");
+      });
 
     link.enter()
       .append("path")
       .attr("class", "link");
 
-    link.each(function(d) {
+    link
+      .transition()
+      .duration(transitionDuration)
+      .each(function(d) {
         d.source = d[0];
         d.target = d[d.length - 1];
       })
@@ -242,7 +281,7 @@ define(function(require) {
     // later update them with rendering attributes.
     //
     var node = this.adjAdjNode.selectAll(".node")
-      .data(this.nodes.filter(function(n) { return !n.children; }));
+      .data(this.nodes.filter(function(n) { return !n.children; }), function(d) { return d.name; });
 
     var nodeEnter = node.enter()
       .append("g")
@@ -273,11 +312,15 @@ define(function(require) {
     // rendering attributes.
 
     node
+      .transition()
+      .duration(transitionDuration)
       .attr("transform", function(d) {
         return "rotate(" + (d.x - 90) + ")translate(" + (d.y + 8) + ",0)";
       });
 
     node.selectAll('rect.node-mouse')
+      .transition()
+      .duration(transitionDuration)
       .attr("width", "200px")
       .attr("height", function(d, i){
         d._mouseRectHeight = 11;
@@ -286,15 +329,26 @@ define(function(require) {
       .attr("x", "0px")
       .attr("y", function(d){ return -d._mouseRectHeight/2; })
       .attr('fill', 'white')
+      .attr('opacity', 0.1)
       .attr('stroke', 'none');
 
     node.selectAll('text.node-text')
+      .text(function(d) { return d.name; })
+      .transition()
+      .duration(transitionDuration)
       .attr("dy", ".31em")
       .attr("transform", function(d) {
           return (d.x < 180 ? "" : "rotate(180)");
-      })
-      .style("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
-      .text(function(d) { return d.name; });
+      });
+
+
+    // Change anchor in the middle of the transition so it doesn't appear
+    // to jump visually
+    node.selectAll('text.node-text')
+      .transition('anchor')
+      .delay(transitionDuration / 2)
+      .style("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; });
+
 
 
     var barOffset = 110;
@@ -302,6 +356,8 @@ define(function(require) {
       barOffset = 95;
     }
     node.selectAll('rect.node-rect')
+      .transition()
+      .duration(transitionDuration)
       .attr("width", function(d, i){ return self.rectScale(d.trope_count); })
       .attr("height", function(d, i){
         d._rectHeight = 6;
@@ -316,6 +372,10 @@ define(function(require) {
 
 
     node.selectAll("text.count")
+      .text(function(d) { return d.trope_count; })
+      .transition()
+      .delay(transitionDuration + 100)
+      .duration(transitionDuration)
       .attr("transform", function(d) {
           return (d.x < 180 ? "" : "rotate(180)");
       })
@@ -328,12 +388,19 @@ define(function(require) {
         // look reversed.
         var sign = d.x < 180 ? 1 : -1;
         var rect = d3.select(this)[0][0].previousSibling;
+
         var bb = rect.getBBox();
         return (barOffset + 5 + bb.width) * sign;
       })
-      .style("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
-      .text(function(d) { return d.trope_count; });
+      .attr('opacity', 0);
 
+
+      // Change anchor in the middle of the transition so it doesn't appear
+      // to jump visually
+      node.selectAll("text.count")
+        .transition('anchor')
+        .delay(transitionDuration / 2)
+        .style("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; });
 
 
     //
@@ -405,7 +472,7 @@ define(function(require) {
       self.currentlySelectedTrope = null;
       self.trigger('tropeClicked', null);
 
-      self.render();
+      self.render(0);
       self.trigger('adjectiveClicked', d.name);
 
       self.hideTropeDetails();
@@ -420,7 +487,7 @@ define(function(require) {
       self.currentlySelectedTrope = null;
       mouseouted();
       self.trigger('selectionCleared');
-      self.render();
+      self.render(0);
       self.hideTropeDetails();
       Analytics.trackEvent("adjectives-page", "clear");
     }

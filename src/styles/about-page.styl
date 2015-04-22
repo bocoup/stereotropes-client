@@ -2,12 +2,24 @@
   center-page();
 
   .table-of-contents {
-    ul {
-      padding: 0;
+    ol {
       margin: 0;
+      counter-reset: item
+      padding: 0 0 0 20px;
+      li {
+        padding: 0;
+        display: block;
+      }
+      li:before {
+        content: counters(item, ".") ". ";
+        counter-increment: item;
+        color: $highlight-col;
+      }
 
       ol {
-        padding: 0;
+        li:before {
+          content: counters(item, ".") " ";
+        }
       }
     }
   }
@@ -27,7 +39,22 @@
         font-size: 0.8em;
         font-style:italic;
       }
+
+      ul.tags {
+        list-style-type: none;
+        padding: 0;
+
+        li {
+          display: inline-block;
+          float: left;
+          padding: 3px;
+          margin-right: 5px;
+          margin-bottom: 5px;
+          background-color: $light-grey;
+        }
+      }
     }
 
+    trope-timeline();
   }
 }

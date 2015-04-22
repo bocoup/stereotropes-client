@@ -40,6 +40,21 @@
     padding-left: 20px;
   }
 
+  .controls {
+    font-style: italic;
+    float: right;
+    cursor: pointer;
+
+    a {
+      color: $dark-grey;
+    }
+
+    a.inactive {
+      color: $grey;
+      text-decoration: underline;
+    }
+  }
+
   .canvas {
     width: 100%;
   }
@@ -79,6 +94,7 @@
       &.count {
         fill: $highlight-col;
         text-decoration: none;
+        opacity: 1;
       }
     }
 
