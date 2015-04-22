@@ -12,7 +12,6 @@ define(function(require) {
   var TropeDetails = require('../trope/trope-detail-header');
   var Analytics = require("../../shared/analytics");
 
-
   /**
    * The main visualization for the adjectives page.
    *
@@ -94,7 +93,8 @@ define(function(require) {
     var self = this;
     this.container = d3.select(this._container);
 
-    var minWidth = 960;
+    var minWidth = 569;
+
     this.width = _.max([parseInt(this.container.style('width'), 10), minWidth]);
     this.height = this.width;
 
@@ -104,6 +104,11 @@ define(function(require) {
     // The distance between the outside of the 'ring' and the edge of the svg container
     // this leaves space for the text and the bars.
     this.outerSpacing = 240;
+
+    if(this.width < 960) {
+      this.outerSpacing = 200;
+    }
+
     this.innerRadius = this.radius - this.outerSpacing;
 
     // This is the root of the adjective-adjective network (the nodes in the 'ring')
@@ -207,6 +212,7 @@ define(function(require) {
    * Render the visualization.
    *
    */
+
   AdjectiveVis.prototype.render = function(transitionDuration) {
     // Adjust dimensions in case things have been resized.
     this.container.select('svg')
@@ -214,7 +220,7 @@ define(function(require) {
       .attr('width', this.width);
 
     this.container.select('g.vis-group')
-      .attr("transform", "translate(" + this.radius + "," + (this.radius - (this.outerSpacing / 4)) + ")");
+      .attr("transform", "translate(" + this.radius + "," + (this.radius - (this.outerSpacing / 10)) + ")");
 
 
     // Note: this.urlSelections will be modified once the state specified by them
@@ -345,7 +351,10 @@ define(function(require) {
 
 
 
-    var barOffset = 115;
+    var barOffset = 110;
+    if(this.width < 960) {
+      barOffset = 95;
+    }
     node.selectAll('rect.node-rect')
       .transition()
       .duration(transitionDuration)
