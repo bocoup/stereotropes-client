@@ -11,7 +11,6 @@ define(function(require) {
   var TropeTile = require('../trope/trope-tile');
   var TropeDetails = require('../trope/trope-detail-header');
   var Analytics = require("../../shared/analytics");
-  var Mobile = require("../../shared/mobile");
 
   /**
    * The main visualization for the adjectives page.
@@ -81,12 +80,7 @@ define(function(require) {
     var self = this;
     this.container = d3.select(this._container);
 
-    var minWidth = 960;
-    if (Mobile.medium()) {
-      minWidth = 569;
-    } else if (Mobile.large()) {
-      minWidth = 768;
-    }
+    var minWidth = 569;
 
     this.width = _.max([parseInt(this.container.style('width'), 10), minWidth]);
     this.height = this.width;
@@ -98,9 +92,7 @@ define(function(require) {
     // this leaves space for the text and the bars.
     this.outerSpacing = 240;
 
-    if (Mobile.medium()) {
-      this.outerSpacing = 160;
-    } else if (Mobile.large()) {
+    if(this.width < 960) {
       this.outerSpacing = 200;
     }
 
@@ -305,7 +297,10 @@ define(function(require) {
       .text(function(d) { return d.name; });
 
 
-    var barOffset = 115;
+    var barOffset = 110;
+    if(this.width < 960) {
+      barOffset = 95;
+    }
     node.selectAll('rect.node-rect')
       .attr("width", function(d, i){ return self.rectScale(d.trope_count); })
       .attr("height", function(d, i){
