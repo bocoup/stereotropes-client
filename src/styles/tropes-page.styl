@@ -36,6 +36,20 @@
       .text-tile.navTile {
         height: unit($tile-size, 'px');
       }
+
+      .trope-tile.gender-f.selected {
+        .name {
+          transition: background-color ease .2s;
+          background-color: $female-col-75;
+        }
+      }
+
+      .trope-tile.gender-m.selected {
+        .name {
+          transition: background-color ease .2s;
+          background-color: $male-col-75;
+        }
+      }
     }
   }
 
