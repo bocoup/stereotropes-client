@@ -63,7 +63,26 @@ define(function(require) {
           adjVis.render();
         });
 
-        return adjVis.render();
+        $('a#countControl').click(function(){
+          adjVis.setSortOrder('count');
+          adjVis.update();
+          adjVis.render();
+          $(this).addClass('inactive');
+          $('a#ratioControl').removeClass('inactive');
+          return false;
+        });
+
+        $('a#ratioControl').click(function(){
+          adjVis.setSortOrder('ratio');
+          adjVis.update();
+          adjVis.render();
+          $(this).addClass('inactive');
+          $('a#countControl').removeClass('inactive');
+          return false;
+        });
+
+        window.adjvis = adjVis;
+
       });
     },
 
