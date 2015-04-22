@@ -12,6 +12,9 @@
     "tropes",
     "data"
   ],
+  "scripts" : {
+    "install" : "bower install"
+  },
   "author": "Bocoup Data Visualization Team",
   "license": "MIT",
   "bugs": {
