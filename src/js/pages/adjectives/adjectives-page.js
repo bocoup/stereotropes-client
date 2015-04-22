@@ -68,12 +68,12 @@ define(function(require) {
           adjVis.update();
           adjVis.render();
           $(this).addClass('inactive');
-          $('a#ratioControl').removeClass('inactive');
+          $('a#alphaControl').removeClass('inactive');
           return false;
         });
 
-        $('a#ratioControl').click(function(){
-          adjVis.setSortOrder('ratio');
+        $('a#alphaControl').click(function(){
+          adjVis.setSortOrder('alphabet');
           adjVis.update();
           adjVis.render();
           $(this).addClass('inactive');
